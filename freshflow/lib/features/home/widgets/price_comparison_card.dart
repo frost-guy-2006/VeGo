@@ -53,7 +53,7 @@ class PriceComparisonCard extends StatelessWidget {
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) => Container(
                           color: AppColors.background,
-                          child: Center(
+                          child: const Center(
                               child: Icon(Icons.broken_image,
                                   color: AppColors.secondary)),
                         ),
