@@ -72,7 +72,7 @@ class ProductDetailScreen extends StatelessWidget {
                           color: AppColors.background,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                              color: AppColors.primary.withOpacity(0.1)),
+                              color: AppColors.primary.withValues(alpha: 0.1)),
                         ),
                         child: Row(
                           children: [
@@ -119,12 +119,12 @@ class ProductDetailScreen extends StatelessWidget {
                         _LocalPriceBar(
                             label: 'Supermarket',
                             price: product.marketPrice,
-                            color: AppColors.secondary.withOpacity(0.3),
+                            color: AppColors.secondary.withValues(alpha: 0.3),
                             isHigh: true),
                         _LocalPriceBar(
                             label: 'Local Vendor',
                             price: product.marketPrice * 0.9,
-                            color: AppColors.secondary.withOpacity(0.3),
+                            color: AppColors.secondary.withValues(alpha: 0.3),
                             isHigh: false),
                         _LocalPriceBar(
                             label: 'FreshFlow',

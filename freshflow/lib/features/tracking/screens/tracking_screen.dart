@@ -17,7 +17,7 @@ class TrackingScreen extends StatefulWidget {
 class _TrackingScreenState extends State<TrackingScreen> {
   // Coordinates for HSR Layout, Sector 2 (Mock)
   final LatLng _userLocation = const LatLng(12.9121, 77.6446);
-  
+
   // Mock Route (Simulated Road)
   final List<LatLng> _routePoints = [
     const LatLng(12.9121, 77.6446), // User Home
@@ -43,12 +43,12 @@ class _TrackingScreenState extends State<TrackingScreen> {
   void _startSimulation() {
     _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
       if (!mounted) return;
-      
+
       setState(() {
         if (_currentPointIndex > 0) {
           _currentPointIndex--;
           _riderLocation = _routePoints[_currentPointIndex];
-          
+
           // Update ETA mock
           int minutes = (_currentPointIndex * 2) + 2;
           _eta = "$minutes mins";
@@ -86,7 +86,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
                   Polyline(
                     points: _routePoints,
                     strokeWidth: 4.0,
-                    color: AppColors.primary.withOpacity(0.5),
+                    color: AppColors.primary.withValues(alpha: 0.5),
                   ),
                   Polyline(
                     points: _routePoints.sublist(0, _currentPointIndex + 1),
@@ -102,7 +102,8 @@ class _TrackingScreenState extends State<TrackingScreen> {
                     point: _userLocation,
                     width: 40,
                     height: 40,
-                    child: const Icon(Icons.location_on, color: AppColors.accent, size: 40),
+                    child: const Icon(Icons.location_on,
+                        color: AppColors.accent, size: 40),
                   ),
                   // Rider Marker
                   Marker(
@@ -113,17 +114,20 @@ class _TrackingScreenState extends State<TrackingScreen> {
                       decoration: const BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
-                        boxShadow: [BoxShadow(blurRadius: 5, color: Colors.black26)],
+                        boxShadow: [
+                          BoxShadow(blurRadius: 5, color: Colors.black26)
+                        ],
                       ),
                       padding: const EdgeInsets.all(4),
-                      child: const Icon(Icons.delivery_dining, color: AppColors.primary, size: 24),
+                      child: const Icon(Icons.delivery_dining,
+                          color: AppColors.primary, size: 24),
                     ),
                   ),
                 ],
               ),
             ],
           ),
-          
+
           // Back Button
           Positioned(
             top: 50,
@@ -133,8 +137,8 @@ class _TrackingScreenState extends State<TrackingScreen> {
               child: IconButton(
                 icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
                 onPressed: () {
-                   Navigator.of(context).popUntil((route) => route.isFirst);
-                   context.read<CartProvider>().clearCart(); 
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                  context.read<CartProvider>().clearCart();
                 },
               ),
             ),
@@ -152,7 +156,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
@@ -186,14 +190,16 @@ class _TrackingScreenState extends State<TrackingScreen> {
                         ],
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
                         decoration: BoxDecoration(
                           color: AppColors.background,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.phone, color: AppColors.primary, size: 20),
+                            const Icon(Icons.phone,
+                                color: AppColors.primary, size: 20),
                             const SizedBox(width: 8),
                             Text(
                               'Call Rider',
@@ -215,7 +221,8 @@ class _TrackingScreenState extends State<TrackingScreen> {
                       const CircleAvatar(
                         radius: 20,
                         backgroundColor: AppColors.secondary,
-                        backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=33'),
+                        backgroundImage:
+                            NetworkImage('https://i.pravatar.cc/150?img=33'),
                       ),
                       const SizedBox(width: 12),
                       Column(
