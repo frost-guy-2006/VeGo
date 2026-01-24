@@ -18,12 +18,23 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _signIn() async {
     final phone = _phoneController.text.trim();
     if (phone.isEmpty) return;
+    final cleanedPhone = phone.replaceAll(RegExp(r'\s+'), '');
     
-    // Simple validation (mock-ish) - ensure it includes country code
-    String formattedPhone = phone;
-    if (!phone.startsWith('+')) {
-       // Assuming +91 for this context if missing
-       formattedPhone = '+91$phone';
+    // Validation
+    final phoneRegExp = RegExp(r'^\+?[0-9]{10,13}$');
+    if (!phoneRegExp.hasMatch(cleanedPhone)) {
+       if (mounted) {
+         ScaffoldMessenger.of(context).showSnackBar(
+           const SnackBar(content: Text('Please enter a valid phone number')),
+         );
+       }
+       return;
+    }
+
+    // Default to +91 if missing
+    String formattedPhone = cleanedPhone;
+    if (!cleanedPhone.startsWith('+')) {
+       formattedPhone = '+91$cleanedPhone';
     }
 
     try {

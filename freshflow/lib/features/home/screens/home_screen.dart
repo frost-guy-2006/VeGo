@@ -147,18 +147,49 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
 
-          // Product Grid
+import 'package:shimmer/shimmer.dart';
+
+// ... (inside build)
+
+          // Product Grid (Simulated Loading)
           SliverPadding(
             padding: const EdgeInsets.all(16),
-            sliver: SliverMasonryGrid.count(
-              crossAxisCount: 2,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childCount: mockProducts.length,
-              itemBuilder: (context, index) {
-                return SizedBox(
-                  height: 280, // Fixed height for consistency in grid
-                  child: PriceComparisonCard(product: mockProducts[index]),
+            sliver: FutureBuilder<List<Product>>(
+              future: Future.delayed(const Duration(seconds: 2), () => mockProducts),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return SliverMasonryGrid.count(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
+                    childCount: 4,
+                    itemBuilder: (context, index) {
+                      return Shimmer.fromColors(
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                        child: Container(
+                          height: 280,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }
+                
+                return SliverMasonryGrid.count(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  childCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    return SizedBox(
+                      height: 280,
+                      child: PriceComparisonCard(product: snapshot.data![index]),
+                    );
+                  },
                 );
               },
             ),

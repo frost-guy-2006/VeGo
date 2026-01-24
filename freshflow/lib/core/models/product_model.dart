@@ -15,6 +15,28 @@ class Product {
     required this.marketPrice,
     required this.harvestTime,
   }) : discountPercent = ((marketPrice - currentPrice) / marketPrice * 100).round();
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'imageUrl': imageUrl,
+      'currentPrice': currentPrice,
+      'marketPrice': marketPrice,
+      'harvestTime': harvestTime,
+    };
+  }
+
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(
+      id: json['id'],
+      name: json['name'],
+      imageUrl: json['imageUrl'],
+      currentPrice: (json['currentPrice'] as num).toDouble(),
+      marketPrice: (json['marketPrice'] as num).toDouble(),
+      harvestTime: json['harvestTime'],
+    );
+  }
 }
 
 // Mock Data

@@ -166,26 +166,25 @@ class CartBottomSheet extends StatelessWidget {
                       SizedBox(
                         width: double.infinity,
                         height: 56,
-                        child: ElevatedButton(
-                          onPressed: cart.items.isEmpty ? null : () {
-                             Navigator.push(
-                               context,
-                               MaterialPageRoute(builder: (_) => const TrackingScreen()),
-                             );
+                        child: SlideAction(
+                          text: "Slide to Pay",
+                          textStyle: GoogleFonts.plusJakartaSans(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                          outerColor: AppColors.primary,
+                          innerColor: Colors.white,
+                          key: const Key('slide_to_pay'),
+                          onSubmit: () async {
+                             if (cart.items.isNotEmpty) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => const TrackingScreen()),
+                                );
+                             }
+                             return null; // Reset slider
                           },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(28),
-                            ),
-                          ),
-                          child: Text(
-                            'Slide to Pay', // Simple button for now, can be upgraded to slider
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
                         ),
                       ),
                     ],
