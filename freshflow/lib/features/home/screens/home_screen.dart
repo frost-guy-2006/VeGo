@@ -56,9 +56,9 @@ class HomeScreen extends StatelessWidget {
                        right: 0, 
                        top: 0,
                        child: Container(
-                         padding: EdgeInsets.all(2),
-                         decoration: BoxDecoration(color: AppColors.accent, shape: BoxShape.circle),
-                         constraints: BoxConstraints(minWidth: 12, minHeight: 12),
+                         padding: const EdgeInsets.all(2),
+                         decoration: const BoxDecoration(color: AppColors.accent, shape: BoxShape.circle),
+                         constraints: const BoxConstraints(minWidth: 12, minHeight: 12),
                        )
                      )
                    ] 
@@ -202,16 +202,16 @@ import 'package:shimmer/shimmer.dart';
       // Bottom Navigation Bar Placeholder
       bottomNavigationBar: Container(
         height: 70,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
            color: Colors.white,
            boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)]
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-             IconButton(icon: Icon(Icons.home_filled, color: AppColors.primary), onPressed: (){}),
-             IconButton(icon: Icon(Icons.shopping_bag_outlined, color: AppColors.secondary), onPressed: (){}),
-             IconButton(icon: Icon(Icons.person_outline, color: AppColors.secondary), onPressed: (){}),
+             IconButton(icon: const Icon(Icons.home_filled, color: AppColors.primary), onPressed: (){}),
+             IconButton(icon: const Icon(Icons.shopping_bag_outlined, color: AppColors.secondary), onPressed: (){}),
+             IconButton(icon: const Icon(Icons.person_outline, color: AppColors.secondary), onPressed: (){}),
           ],
         ),
       ),

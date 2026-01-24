@@ -55,7 +55,8 @@ class FlashPriceWidget extends StatelessWidget {
                 ),
                 const Spacer(),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(10),
@@ -64,7 +65,8 @@ class FlashPriceWidget extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.timer_outlined, color: AppColors.accent, size: 16),
+                      const Icon(Icons.timer_outlined,
+                          color: AppColors.accent, size: 16),
                       const SizedBox(width: 6),
                       Text(
                         '04:23:12',
@@ -79,7 +81,7 @@ class FlashPriceWidget extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // 3D Effect Image
           Positioned(
             right: -20,
@@ -91,12 +93,14 @@ class FlashPriceWidget extends StatelessWidget {
               fit: BoxFit.contain,
               // Using errorBuilder to handle network issues gracefully in preview
               errorBuilder: (context, error, stackTrace) => Container(
-                 width: 160, height: 160, color: Colors.grey.withOpacity(0.3),
-                 child: Icon(Icons.image, color: Colors.white),
+                width: 160,
+                height: 160,
+                color: Colors.grey.withOpacity(0.3),
+                child: const Icon(Icons.image, color: Colors.white),
               ),
             ),
           ),
-          
+
           // Price Badge
           Positioned(
             right: 20,

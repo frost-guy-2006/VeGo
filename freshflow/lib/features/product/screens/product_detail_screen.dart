@@ -34,12 +34,12 @@ class ProductDetailScreen extends StatelessWidget {
                 child: Image.network(
                   product.imageUrl,
                   fit: BoxFit.cover,
-                  errorBuilder: (_,__,___) => Container(color: Colors.grey[200]),
+                  errorBuilder: (_, __, ___) =>
+                      Container(color: Colors.grey[200]),
                 ),
               ),
             ),
           ),
-          
           SliverToBoxAdapter(
             child: Container(
               padding: const EdgeInsets.all(24),
@@ -66,15 +66,18 @@ class ProductDetailScreen extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           color: AppColors.background,
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: AppColors.primary.withOpacity(0.1)),
+                          border: Border.all(
+                              color: AppColors.primary.withOpacity(0.1)),
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.schedule, size: 14, color: AppColors.secondary),
+                            const Icon(Icons.schedule,
+                                size: 14, color: AppColors.secondary),
                             const SizedBox(width: 4),
                             Text(
                               'Harvested ${product.harvestTime}',
@@ -90,7 +93,7 @@ class ProductDetailScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  
+
                   // Price Comparison Chart Mock
                   Text(
                     'Price History',
@@ -113,14 +116,27 @@ class ProductDetailScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        _LocalPriceBar(label: 'Supermarket', price: product.marketPrice, color: AppColors.secondary.withOpacity(0.3), isHigh: true),
-                        _LocalPriceBar(label: 'Local Vendor', price: product.marketPrice * 0.9, color: AppColors.secondary.withOpacity(0.3), isHigh: false),
-                        _LocalPriceBar(label: 'FreshFlow', price: product.currentPrice, color: AppColors.accent, isHigh: false, isSelected: true),
+                        _LocalPriceBar(
+                            label: 'Supermarket',
+                            price: product.marketPrice,
+                            color: AppColors.secondary.withOpacity(0.3),
+                            isHigh: true),
+                        _LocalPriceBar(
+                            label: 'Local Vendor',
+                            price: product.marketPrice * 0.9,
+                            color: AppColors.secondary.withOpacity(0.3),
+                            isHigh: false),
+                        _LocalPriceBar(
+                            label: 'FreshFlow',
+                            price: product.currentPrice,
+                            color: AppColors.accent,
+                            isHigh: false,
+                            isSelected: true),
                       ],
                     ),
                   ),
-                   const SizedBox(height: 24),
-                  
+                  const SizedBox(height: 24),
+
                   Text(
                     'Description',
                     style: GoogleFonts.plusJakartaSans(
@@ -145,7 +161,7 @@ class ProductDetailScreen extends StatelessWidget {
           ),
         ],
       ),
-      
+
       // Bottom Bar
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(24),
@@ -162,64 +178,64 @@ class ProductDetailScreen extends StatelessWidget {
         child: SafeArea(
           child: Row(
             children: [
-               Column(
-                 mainAxisSize: MainAxisSize.min,
-                 crossAxisAlignment: CrossAxisAlignment.start,
-                 children: [
-                   Text(
-                     'Price',
-                     style: GoogleFonts.plusJakartaSans(color: AppColors.secondary),
-                   ),
-                   Text(
-                     '\$${product.currentPrice.toStringAsFixed(2)}',
-                     style: GoogleFonts.plusJakartaSans(
-                       fontSize: 24,
-                       fontWeight: FontWeight.bold,
-                       color: AppColors.textDark,
-                     ),
-                   ),
-                 ],
-               ),
-               const SizedBox(width: 24),
-               Expanded(
-                 child: SizedBox(
-                   height: 56,
-                   child: ElevatedButton(
-                     onPressed: () {
-                       context.read<CartProvider>().addToCart(product);
-                       showModalBottomSheet(
-                         context: context, 
-                         backgroundColor: Colors.transparent,
-                         isScrollControlled: true,
-                         builder: (_) => SizedBox(
-                           height: MediaQuery.of(context).size.height * 0.7,
-                           child: const CartBottomSheet()
-                         ),
-                       );
-                     },
-                     style: ElevatedButton.styleFrom(
-                       backgroundColor: AppColors.primary,
-                       shape: RoundedRectangleBorder(
-                         borderRadius: BorderRadius.circular(28),
-                       ),
-                     ),
-                     child: Row(
-                       mainAxisAlignment: MainAxisAlignment.center,
-                       children: [
-                         const Icon(Icons.shopping_bag_outlined),
-                         const SizedBox(width: 8),
-                         Text(
-                           'Add to Cart',
-                           style: GoogleFonts.plusJakartaSans(
-                             fontSize: 16,
-                             fontWeight: FontWeight.bold,
-                           ),
-                         ),
-                       ],
-                     ),
-                   ),
-                 ),
-               ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Price',
+                    style:
+                        GoogleFonts.plusJakartaSans(color: AppColors.secondary),
+                  ),
+                  Text(
+                    '\$${product.currentPrice.toStringAsFixed(2)}',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textDark,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 24),
+              Expanded(
+                child: SizedBox(
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      context.read<CartProvider>().addToCart(product);
+                      showModalBottomSheet(
+                        context: context,
+                        backgroundColor: Colors.transparent,
+                        isScrollControlled: true,
+                        builder: (_) => SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.7,
+                            child: const CartBottomSheet()),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(28),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.shopping_bag_outlined),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Add to Cart',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -236,9 +252,9 @@ class _LocalPriceBar extends StatelessWidget {
   final bool isSelected;
 
   const _LocalPriceBar({
-    required this.label, 
-    required this.price, 
-    required this.color, 
+    required this.label,
+    required this.price,
+    required this.color,
     this.isHigh = false,
     this.isSelected = false,
   });
@@ -250,15 +266,17 @@ class _LocalPriceBar extends StatelessWidget {
       children: [
         if (isSelected)
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            margin: EdgeInsets.only(bottom: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            margin: const EdgeInsets.only(bottom: 4),
             decoration: BoxDecoration(
-               color: AppColors.primary,
-               borderRadius: BorderRadius.circular(8)
-            ),
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(8)),
             child: Text(
-               'Best Price',
-               style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+              'Best Price',
+              style: GoogleFonts.plusJakartaSans(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold),
             ),
           ),
         Text(
