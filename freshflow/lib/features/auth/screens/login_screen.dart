@@ -19,22 +19,22 @@ class _LoginScreenState extends State<LoginScreen> {
     final phone = _phoneController.text.trim();
     if (phone.isEmpty) return;
     final cleanedPhone = phone.replaceAll(RegExp(r'\s+'), '');
-    
+
     // Validation
-    final phoneRegExp = RegExp(r'^\+?[0-9]{10,13}$');
+    final phoneRegExp = RegExp(r'^[0-9]{10}$'); // Strict 10 digits
     if (!phoneRegExp.hasMatch(cleanedPhone)) {
-       if (mounted) {
-         ScaffoldMessenger.of(context).showSnackBar(
-           const SnackBar(content: Text('Please enter a valid phone number')),
-         );
-       }
-       return;
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please enter a valid phone number')),
+        );
+      }
+      return;
     }
 
     // Default to +91 if missing
     String formattedPhone = cleanedPhone;
     if (!cleanedPhone.startsWith('+')) {
-       formattedPhone = '+91$cleanedPhone';
+      formattedPhone = '+91$cleanedPhone';
     }
 
     try {
@@ -42,7 +42,8 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => OtpScreen(phoneNumber: formattedPhone)),
+          MaterialPageRoute(
+              builder: (_) => OtpScreen(phoneNumber: formattedPhone)),
         );
       }
     } catch (e) {
@@ -84,10 +85,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 48),
-              
+
               // Phone Input
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 decoration: BoxDecoration(
                   color: AppColors.background,
                   borderRadius: BorderRadius.circular(12),
@@ -103,12 +105,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   decoration: const InputDecoration(
                     border: InputBorder.none,
                     hintText: '+91 98765 43210',
-                    prefixIcon: Icon(Icons.phone_android, color: AppColors.secondary),
+                    prefixIcon:
+                        Icon(Icons.phone_android, color: AppColors.secondary),
                   ),
                 ),
               ),
               const SizedBox(height: 24),
-              
+
               // Button
               SizedBox(
                 width: double.infinity,
@@ -121,15 +124,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: isLoading 
-                     ? const CircularProgressIndicator(color: Colors.white)
-                     : Text(
-                        'Send OTP',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                  child: isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text(
+                          'Send OTP',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
                 ),
               ),
             ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:freshflow/core/models/product_model.dart';
 import 'package:freshflow/core/theme/app_colors.dart';
 import 'package:freshflow/features/home/widgets/flash_price_widget.dart';
@@ -158,9 +159,11 @@ class HomeScreen extends StatelessWidget {
           // Product Grid (Simulated Loading)
           SliverPadding(
             padding: const EdgeInsets.all(16),
-            sliver: FutureBuilder<List<Product>>(
-              future: Future.delayed(
-                  const Duration(seconds: 2), () => mockProducts),
+            sliver: StreamBuilder<List<Product>>(
+              stream: Supabase.instance.client
+                  .from('products')
+                  .stream(primaryKey: ['id']).map((data) =>
+                      data.map((item) => Product.fromJson(item)).toList()),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return SliverMasonryGrid.count(

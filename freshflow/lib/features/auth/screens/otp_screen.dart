@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:freshflow/core/providers/auth_provider.dart';
 import 'package:freshflow/core/theme/app_colors.dart';
@@ -14,16 +15,48 @@ class OtpScreen extends StatefulWidget {
 }
 
 class _OtpScreenState extends State<OtpScreen> {
+  Timer? _timer;
   final TextEditingController _otpController = TextEditingController();
+  int _start = 30;
+  bool _canResend = false;
+
+  @override
+  void initState() {
+    super.initState();
+    startTimer();
+  }
+
+  void startTimer() {
+    _start = 30;
+    _canResend = false;
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_start == 0) {
+        setState(() {
+          timer.cancel();
+          _canResend = true;
+        });
+      } else {
+        setState(() {
+          _start--;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _otpController.dispose();
+    super.dispose();
+  }
 
   Future<void> _verify() async {
     final otp = _otpController.text.trim();
-    if (otp.length != 6) return; // Basic validation
+    if (otp.length != 6) return;
 
     try {
       await context.read<AuthProvider>().verifyOtp(widget.phoneNumber, otp);
       if (mounted) {
-        // Navigate to Home and remove all previous routes
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => const HomeScreen()),
           (route) => false,
@@ -36,6 +69,14 @@ class _OtpScreenState extends State<OtpScreen> {
         );
       }
     }
+  }
+
+  void _resendOtp() {
+    // Mock resend logic or call provider
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('OTP Resent!')),
+    );
+    startTimer();
   }
 
   @override
@@ -72,10 +113,11 @@ class _OtpScreenState extends State<OtpScreen> {
                 ),
               ),
               const SizedBox(height: 48),
-              
-              // OTP Input (Simple TextField for now)
+
+              // OTP Input
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 decoration: BoxDecoration(
                   color: AppColors.background,
                   borderRadius: BorderRadius.circular(12),
@@ -99,7 +141,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              
+
               SizedBox(
                 width: double.infinity,
                 height: 56,
@@ -111,15 +153,32 @@ class _OtpScreenState extends State<OtpScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: isLoading 
-                     ? const CircularProgressIndicator(color: Colors.white)
-                     : Text(
-                        'Confirm',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                  child: isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text(
+                          'Confirm',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
+                ),
+              ),
+
+              const SizedBox(height: 24),
+              Center(
+                child: TextButton(
+                  onPressed: _canResend ? _resendOtp : null,
+                  child: Text(
+                    _canResend
+                        ? 'Resend Code'
+                        : 'Resend Code in 00:${_start.toString().padLeft(2, '0')}',
+                    style: GoogleFonts.plusJakartaSans(
+                      color:
+                          _canResend ? AppColors.primary : AppColors.secondary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
             ],

@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:freshflow/core/providers/cart_provider.dart';
@@ -17,41 +19,68 @@ class TrackingScreen extends StatefulWidget {
 class _TrackingScreenState extends State<TrackingScreen> {
   // Coordinates for HSR Layout, Sector 2 (Mock)
   final LatLng _userLocation = const LatLng(12.9121, 77.6446);
+  final LatLng _riderStartLocation = const LatLng(12.9150, 77.6500);
 
-  // Mock Route (Simulated Road)
-  final List<LatLng> _routePoints = [
-    const LatLng(12.9121, 77.6446), // User Home
-    const LatLng(12.9125, 77.6446),
-    const LatLng(12.9130, 77.6450), // Turn
-    const LatLng(12.9135, 77.6460),
-    const LatLng(12.9140, 77.6480),
-    const LatLng(12.9150, 77.6500), // Rider Start
-  ];
-
+  List<LatLng> _routePoints = [];
   late LatLng _riderLocation;
   Timer? _timer;
-  int _currentPointIndex = 5; // Start from the end (Rider comes to User)
-  String _eta = "12 mins";
+  int _currentPointIndex = 0;
+  String _eta = "Calculating...";
 
   @override
   void initState() {
     super.initState();
-    _riderLocation = _routePoints.last;
-    _startSimulation();
+    _riderLocation = _riderStartLocation;
+    // Initialize with straight line while fetching
+    _routePoints = [_riderStartLocation, _userLocation];
+    _fetchRoute();
+  }
+
+  Future<void> _fetchRoute() async {
+    try {
+      final url = Uri.parse(
+          'http://router.project-osrm.org/route/v1/driving/${_riderStartLocation.longitude},${_riderStartLocation.latitude};${_userLocation.longitude},${_userLocation.latitude}?overview=full&geometries=geojson');
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final coordinates =
+            data['routes'][0]['geometry']['coordinates'] as List;
+
+        setState(() {
+          _routePoints = coordinates
+              .map((point) => LatLng(point[1].toDouble(), point[0].toDouble()))
+              .toList();
+          _currentPointIndex = 0;
+          _startSimulation();
+        });
+      }
+    } catch (e) {
+      debugPrint("Error fetching route: $e");
+      // Fallback to simulation on straight line if fetch fails
+      _startSimulation();
+    }
   }
 
   void _startSimulation() {
-    _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
+    if (_routePoints.isEmpty) return;
+
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
       if (!mounted) return;
 
       setState(() {
-        if (_currentPointIndex > 0) {
-          _currentPointIndex--;
+        if (_currentPointIndex < _routePoints.length - 1) {
+          _currentPointIndex++;
           _riderLocation = _routePoints[_currentPointIndex];
 
-          // Update ETA mock
-          int minutes = (_currentPointIndex * 2) + 2;
-          _eta = "$minutes mins";
+          // Calculate simple OTA
+          int remainingPoints = _routePoints.length - _currentPointIndex;
+          int minutes = (remainingPoints / 10).ceil();
+          // Assuming each point takes 0.5 sec, roughly estimatation.
+          // Adjust logic for better realistic OTA if needed.
+          _eta = minutes < 1 ? "Arriving" : "$minutes mins";
         } else {
           _timer?.cancel();
           _eta = "Arrived";
@@ -89,9 +118,9 @@ class _TrackingScreenState extends State<TrackingScreen> {
                     color: AppColors.primary.withValues(alpha: 0.5),
                   ),
                   Polyline(
-                    points: _routePoints.sublist(0, _currentPointIndex + 1),
+                    points: _routePoints.sublist(_currentPointIndex),
                     strokeWidth: 4.0,
-                    color: AppColors.primary, // Active path
+                    color: AppColors.primary, // Active path remaining
                   ),
                 ],
               ),

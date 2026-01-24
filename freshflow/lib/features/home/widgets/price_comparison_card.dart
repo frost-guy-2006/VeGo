@@ -136,11 +136,13 @@ class PriceComparisonCard extends StatelessWidget {
               top: 130, // Adjust based on image height
               child: Container(
                 decoration: BoxDecoration(
-                  color: AppColors.primary,
+                  color: product.stock > 0 ? AppColors.primary : Colors.grey,
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.4),
+                      color:
+                          (product.stock > 0 ? AppColors.primary : Colors.grey)
+                              .withValues(alpha: 0.4),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -148,17 +150,20 @@ class PriceComparisonCard extends StatelessWidget {
                 ),
                 child: IconButton(
                   icon: const Icon(Icons.add, color: Colors.white, size: 20),
-                  onPressed: () {
-                    context.read<CartProvider>().addToCart(product);
-                    showModalBottomSheet(
-                      context: context,
-                      backgroundColor: Colors.transparent,
-                      isScrollControlled: true,
-                      builder: (_) => SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.7,
-                          child: const CartBottomSheet()),
-                    );
-                  },
+                  onPressed: product.stock > 0
+                      ? () {
+                          context.read<CartProvider>().addToCart(product);
+                          showModalBottomSheet(
+                            context: context,
+                            backgroundColor: Colors.transparent,
+                            isScrollControlled: true,
+                            builder: (_) => SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.7,
+                                child: const CartBottomSheet()),
+                          );
+                        }
+                      : null,
                   constraints:
                       const BoxConstraints(minWidth: 40, minHeight: 40),
                 ),

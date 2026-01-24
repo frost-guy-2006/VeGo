@@ -11,7 +11,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   await Supabase.initialize(
     url: Env.supabaseUrl,
     anonKey: Env.supabaseAnonKey,
@@ -41,10 +41,10 @@ class FreshFlowApp extends StatelessWidget {
               StreamBuilder<List<ConnectivityResult>>(
                 stream: Connectivity().onConnectivityChanged,
                 builder: (context, snapshot) {
-                  final isOffline = snapshot.hasData && 
-                                  snapshot.data!.contains(ConnectivityResult.none) &&
-                                  snapshot.data!.length == 1; // Only 'none' present
-                  
+                  final isOffline = snapshot.hasData &&
+                      (snapshot.data!.contains(ConnectivityResult.none) ||
+                          snapshot.data!.isEmpty);
+
                   if (isOffline) {
                     return Positioned(
                       bottom: 0,
@@ -59,7 +59,9 @@ class FreshFlowApp extends StatelessWidget {
                             alignment: Alignment.center,
                             child: const Text(
                               'No Internet Connection',
-                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
