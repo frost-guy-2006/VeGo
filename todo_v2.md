@@ -38,3 +38,15 @@ This list focuses on making the app production-ready by connecting real data, en
 - [x] **Offline Mode**
     - [x] Handle connectivity loss gracefully (Connectivity Plus package).
     - [x] Show "No Internet" UI instead of crashes.
+
+## 6. 🚀 Phase 3 & 4 (Home & Details)
+- [x] **Flash Price Widget**
+    - [x] Dynamic countdown timer.
+    - [x] Link to real featured product.
+- [x] **Home Screen**
+    - [x] Flash Sale section with horizontal scroll.
+    - [x] Real "Featured" products stream.
+- [x] **Product Details**
+    - [x] Hero Animations (Verified).
+    - [x] Harvest Time & Price Comparison (Verified).
+    - [x] Cart Integration (Verified).
