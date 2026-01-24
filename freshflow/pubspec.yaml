@@ -19,7 +19,7 @@ dependencies:
   shared_preferences: ^2.2.0
   shimmer: ^3.0.0
   slide_to_act: ^2.0.2
-  connectivity_plus: ^5.0.0
+  connectivity_plus: ^6.0.0
 
 dev_dependencies:
   flutter_test:

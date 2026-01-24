@@ -1,5 +1,5 @@
 class Env {
-  // TODO: Replace with your actual Supabase URL and Anon Key
-  static const String supabaseUrl = 'YOUR_SUPABASE_URL';
-  static const String supabaseAnonKey = 'YOUR_SUPABASE_ANON_KEY';
+  static const String supabaseUrl = 'https://xstagwqwesafzirsxhjw.supabase.co';
+  static const String supabaseAnonKey =
+      'sb_publishable_ykuTcV_mh3dITiTKijU6vw_6xfJaVI5';
 }
