@@ -1,127 +1,188 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:freshflow/core/models/product_model.dart';
 import 'package:freshflow/core/theme/app_colors.dart';
+import 'package:freshflow/features/product/screens/product_detail_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class FlashPriceWidget extends StatelessWidget {
-  const FlashPriceWidget({super.key});
+class FlashPriceWidget extends StatefulWidget {
+  final Product? product;
+  const FlashPriceWidget({super.key, this.product});
+
+  @override
+  State<FlashPriceWidget> createState() => _FlashPriceWidgetState();
+}
+
+class _FlashPriceWidgetState extends State<FlashPriceWidget> {
+  late Timer _timer;
+  Duration _timeLeft = const Duration(hours: 4, minutes: 23, seconds: 12);
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_timeLeft.inSeconds > 0) {
+        setState(() {
+          _timeLeft = _timeLeft - const Duration(seconds: 1);
+        });
+      } else {
+        timer.cancel();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 180,
-      width: 320,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          // Background Gradient Card
-          Container(
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [AppColors.primary, Color(0xFF252837)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.3),
-                  blurRadius: 15,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'FLASH DEAL',
-                  style: GoogleFonts.plusJakartaSans(
-                    color: AppColors.accent,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.5,
-                    fontSize: 12,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Fresh Organic\nBroccoli',
-                  style: GoogleFonts.plusJakartaSans(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                    height: 1.2,
-                  ),
-                ),
-                const Spacer(),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
-                    border:
-                        Border.all(color: Colors.white.withValues(alpha: 0.2)),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.timer_outlined,
-                          color: AppColors.accent, size: 16),
-                      const SizedBox(width: 6),
-                      Text(
-                        '04:23:12',
-                        style: GoogleFonts.plusJakartaSans(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+    if (widget.product == null) return const SizedBox.shrink();
+    final product = widget.product!;
+    final discount = ((product.marketPrice - product.currentPrice) /
+            product.marketPrice *
+            100)
+        .round();
 
-          // 3D Effect Image
-          Positioned(
-            right: -20,
-            bottom: 10,
-            child: Image.network(
-              'https://images.unsplash.com/photo-1459411621453-7b03977f4bfc?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-              height: 160,
-              width: 160,
-              fit: BoxFit.contain,
-              // Using errorBuilder to handle network issues gracefully in preview
-              errorBuilder: (context, error, stackTrace) => Container(
-                width: 160,
-                height: 160,
-                color: Colors.grey.withValues(alpha: 0.3),
-                child: const Icon(Icons.image, color: Colors.white),
-              ),
-            ),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ProductDetailScreen(product: product),
           ),
-
-          // Price Badge
-          Positioned(
-            right: 20,
-            top: 20,
-            child: Container(
-              padding: const EdgeInsets.all(8),
+        );
+      },
+      child: SizedBox(
+        height: 180,
+        width: 320,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            // Background Gradient Card
+            Container(
               decoration: BoxDecoration(
-                color: AppColors.accent,
-                borderRadius: BorderRadius.circular(50),
+                gradient: const LinearGradient(
+                  colors: [AppColors.primary, Color(0xFF252837)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.3),
+                    blurRadius: 15,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
               ),
-              child: Text(
-                '-40%',
-                style: GoogleFonts.plusJakartaSans(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'FLASH DEAL',
+                    style: GoogleFonts.plusJakartaSans(
+                      color: AppColors.accent,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.5,
+                      fontSize: 12,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: 160,
+                    child: Text(
+                      product.name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.plusJakartaSans(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                        height: 1.2,
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.2)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.timer_outlined,
+                            color: AppColors.accent, size: 16),
+                        const SizedBox(width: 6),
+                        Text(
+                          '${_timeLeft.inHours.toString().padLeft(2, '0')}:${(_timeLeft.inMinutes % 60).toString().padLeft(2, '0')}:${(_timeLeft.inSeconds % 60).toString().padLeft(2, '0')}',
+                          style: GoogleFonts.plusJakartaSans(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // 3D Effect Image
+            Positioned(
+              right: -20,
+              bottom: 10,
+              child: Hero(
+                tag: 'flash-product-${product.id}',
+                child: Image.network(
+                  product.imageUrl,
+                  height: 160,
+                  width: 160,
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    width: 160,
+                    height: 160,
+                    color: Colors.grey.withValues(alpha: 0.3),
+                    child: const Icon(Icons.image, color: Colors.white),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+
+            // Price Badge
+            if (discount > 0)
+              Positioned(
+                right: 20,
+                top: 20,
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.accent,
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: Text(
+                    '-$discount%',
+                    style: GoogleFonts.plusJakartaSans(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

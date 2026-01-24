@@ -111,15 +111,29 @@ class HomeScreen extends StatelessWidget {
           // Scrollable Flash Widgets
           SliverToBoxAdapter(
             child: SizedBox(
-              height: 220,
-              child: ListView.builder(
-                padding: const EdgeInsets.all(16),
-                scrollDirection: Axis.horizontal,
-                itemCount: 3, // Mock count
-                itemBuilder: (context, index) {
-                  return const Padding(
-                    padding: EdgeInsets.only(right: 16),
-                    child: FlashPriceWidget(),
+              height: 240, // Height increased for padding/shadows
+              child: StreamBuilder<List<Product>>(
+                stream: Supabase.instance.client
+                    .from('products')
+                    .stream(primaryKey: ['id'])
+                    .limit(5)
+                    .map((data) =>
+                        data.map((item) => Product.fromJson(item)).toList()),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 16),
+                        child: FlashPriceWidget(product: snapshot.data![index]),
+                      );
+                    },
                   );
                 },
               ),
