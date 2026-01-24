@@ -77,8 +77,9 @@ class FreshFlowApp extends StatelessWidget {
         home: Consumer<AuthProvider>(
           builder: (context, auth, _) {
             // Check for existing session
-            final session = Supabase.instance.client.auth.currentSession;
-            return session != null ? const HomeScreen() : const LoginScreen();
+            return auth.isAuthenticated
+                ? const HomeScreen()
+                : const LoginScreen();
           },
         ),
       ),
