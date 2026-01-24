@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:freshflow/core/models/product_model.dart';
 import 'package:freshflow/core/theme/app_colors.dart';
 import 'package:freshflow/features/home/widgets/flash_price_widget.dart';
@@ -42,34 +43,37 @@ class HomeScreen extends StatelessWidget {
                         color: AppColors.primary,
                       ),
                     ),
-                    const Icon(Icons.keyboard_arrow_down, color: AppColors.primary),
+                    const Icon(Icons.keyboard_arrow_down,
+                        color: AppColors.primary),
                   ],
                 ),
               ],
             ),
             actions: [
-              IconButton( // Notification Icon
-                 icon: Stack(
-                   children: [
-                     const Icon(Icons.notifications_outlined, color: AppColors.textDark),
-                     Positioned(
-                       right: 0, 
-                       top: 0,
-                       child: Container(
-                         padding: const EdgeInsets.all(2),
-                         decoration: const BoxDecoration(color: AppColors.accent, shape: BoxShape.circle),
-                         constraints: const BoxConstraints(minWidth: 12, minHeight: 12),
-                       )
-                     )
-                   ] 
-                 ),
-                 onPressed: () {},
+              IconButton(
+                // Notification Icon
+                icon: Stack(children: [
+                  const Icon(Icons.notifications_outlined,
+                      color: AppColors.textDark),
+                  Positioned(
+                      right: 0,
+                      top: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: const BoxDecoration(
+                            color: AppColors.accent, shape: BoxShape.circle),
+                        constraints:
+                            const BoxConstraints(minWidth: 12, minHeight: 12),
+                      ))
+                ]),
+                onPressed: () {},
               ),
               const SizedBox(width: 8),
               const CircleAvatar(
                 backgroundColor: AppColors.secondary,
                 radius: 18,
-                backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=12'), // Mock Profile
+                backgroundImage: NetworkImage(
+                    'https://i.pravatar.cc/150?img=12'), // Mock Profile
               ),
               const SizedBox(width: 16),
             ],
@@ -93,7 +97,8 @@ class HomeScreen extends StatelessWidget {
                     const SizedBox(width: 12),
                     Text(
                       'Search fresh vegetables...',
-                      style: GoogleFonts.plusJakartaSans(color: AppColors.secondary),
+                      style: GoogleFonts.plusJakartaSans(
+                          color: AppColors.secondary),
                     ),
                   ],
                 ),
@@ -147,15 +152,14 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
 
-import 'package:shimmer/shimmer.dart';
-
 // ... (inside build)
 
           // Product Grid (Simulated Loading)
           SliverPadding(
             padding: const EdgeInsets.all(16),
             sliver: FutureBuilder<List<Product>>(
-              future: Future.delayed(const Duration(seconds: 2), () => mockProducts),
+              future: Future.delayed(
+                  const Duration(seconds: 2), () => mockProducts),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return SliverMasonryGrid.count(
@@ -178,7 +182,7 @@ import 'package:shimmer/shimmer.dart';
                     },
                   );
                 }
-                
+
                 return SliverMasonryGrid.count(
                   crossAxisCount: 2,
                   mainAxisSpacing: 16,
@@ -187,14 +191,15 @@ import 'package:shimmer/shimmer.dart';
                   itemBuilder: (context, index) {
                     return SizedBox(
                       height: 280,
-                      child: PriceComparisonCard(product: snapshot.data![index]),
+                      child:
+                          PriceComparisonCard(product: snapshot.data![index]),
                     );
                   },
                 );
               },
             ),
           ),
-          
+
           // Bottom Padding
           const SliverToBoxAdapter(child: SizedBox(height: 80)),
         ],
@@ -203,15 +208,22 @@ import 'package:shimmer/shimmer.dart';
       bottomNavigationBar: Container(
         height: 70,
         decoration: const BoxDecoration(
-           color: Colors.white,
-           boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)]
-        ),
+            color: Colors.white,
+            boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)]),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-             IconButton(icon: const Icon(Icons.home_filled, color: AppColors.primary), onPressed: (){}),
-             IconButton(icon: const Icon(Icons.shopping_bag_outlined, color: AppColors.secondary), onPressed: (){}),
-             IconButton(icon: const Icon(Icons.person_outline, color: AppColors.secondary), onPressed: (){}),
+            IconButton(
+                icon: const Icon(Icons.home_filled, color: AppColors.primary),
+                onPressed: () {}),
+            IconButton(
+                icon: const Icon(Icons.shopping_bag_outlined,
+                    color: AppColors.secondary),
+                onPressed: () {}),
+            IconButton(
+                icon: const Icon(Icons.person_outline,
+                    color: AppColors.secondary),
+                onPressed: () {}),
           ],
         ),
       ),

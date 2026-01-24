@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:freshflow/features/tracking/screens/tracking_screen.dart';
+import 'package:slide_to_act/slide_to_act.dart';
 import 'package:freshflow/core/providers/cart_provider.dart';
 import 'package:freshflow/core/theme/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -29,7 +31,7 @@ class CartBottomSheet extends StatelessWidget {
               ),
             ),
           ),
-          
+
           Expanded(
             child: Consumer<CartProvider>(
               builder: (context, cart, child) {
@@ -38,7 +40,8 @@ class CartBottomSheet extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.shopping_cart_outlined, size: 64, color: AppColors.secondary),
+                        const Icon(Icons.shopping_cart_outlined,
+                            size: 64, color: AppColors.secondary),
                         const SizedBox(height: 16),
                         Text(
                           'Your cart is empty',
@@ -67,8 +70,11 @@ class CartBottomSheet extends StatelessWidget {
                             width: 64,
                             height: 64,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => Container(
-                               width: 64, height: 64, color: Colors.grey[200],
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                              width: 64,
+                              height: 64,
+                              color: Colors.grey[200],
                             ),
                           ),
                         ),
@@ -100,7 +106,8 @@ class CartBottomSheet extends StatelessWidget {
                             IconButton(
                               icon: const Icon(Icons.remove_circle_outline),
                               color: AppColors.secondary,
-                              onPressed: () => cart.decreaseQuantity(item.product.id),
+                              onPressed: () =>
+                                  cart.decreaseQuantity(item.product.id),
                             ),
                             Text(
                               '${item.quantity}',
@@ -123,11 +130,11 @@ class CartBottomSheet extends StatelessWidget {
               },
             ),
           ),
-          
+
           // Checkout Area
           Consumer<CartProvider>(
             builder: (context, cart, child) {
-               return Container(
+              return Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -177,13 +184,14 @@ class CartBottomSheet extends StatelessWidget {
                           innerColor: Colors.white,
                           key: const Key('slide_to_pay'),
                           onSubmit: () async {
-                             if (cart.items.isNotEmpty) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (_) => const TrackingScreen()),
-                                );
-                             }
-                             return null; // Reset slider
+                            if (cart.items.isNotEmpty) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => const TrackingScreen()),
+                              );
+                            }
+                            return null; // Reset slider
                           },
                         ),
                       ),

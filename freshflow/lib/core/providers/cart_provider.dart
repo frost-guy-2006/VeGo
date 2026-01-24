@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:freshflow/core/models/product_model.dart';
 
 class CartItem {
@@ -29,7 +31,8 @@ class CartProvider extends ChangeNotifier {
 
   List<CartItem> get items => List.unmodifiable(_items);
 
-  double get totalPrice => _items.fold(0, (sum, item) => sum + (item.product.currentPrice * item.quantity));
+  double get totalPrice => _items.fold(
+      0, (sum, item) => sum + (item.product.currentPrice * item.quantity));
 
   void addToCart(Product product) {
     var index = _items.indexWhere((item) => item.product.id == product.id);
@@ -47,7 +50,7 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
     _saveCart();
   }
-  
+
   void decreaseQuantity(String productId) {
     var index = _items.indexWhere((item) => item.product.id == productId);
     if (index >= 0) {
@@ -69,7 +72,8 @@ class CartProvider extends ChangeNotifier {
 
   Future<void> _saveCart() async {
     final prefs = await SharedPreferences.getInstance();
-    final String encodedData = jsonEncode(_items.map((e) => e.toJson()).toList());
+    final String encodedData =
+        jsonEncode(_items.map((e) => e.toJson()).toList());
     await prefs.setString('cart_items', encodedData);
   }
 
