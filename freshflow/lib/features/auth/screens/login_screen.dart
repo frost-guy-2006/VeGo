@@ -1,0 +1,130 @@
+import 'package:flutter/material.dart';
+import 'package:freshflow/core/providers/auth_provider.dart';
+import 'package:freshflow/features/auth/screens/otp_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:freshflow/core/theme/app_colors.dart';
+
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _phoneController = TextEditingController();
+
+  Future<void> _signIn() async {
+    final phone = _phoneController.text.trim();
+    if (phone.isEmpty) return;
+    
+    // Simple validation (mock-ish) - ensure it includes country code
+    String formattedPhone = phone;
+    if (!phone.startsWith('+')) {
+       // Assuming +91 for this context if missing
+       formattedPhone = '+91$phone';
+    }
+
+    try {
+      await context.read<AuthProvider>().signInWithPhone(formattedPhone);
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => OtpScreen(phoneNumber: formattedPhone)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${e.toString()}')),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isLoading = context.watch<AuthProvider>().isLoading;
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 48),
+              Text(
+                'Welcome to\nFreshFlow',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textDark,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Enter your phone number to get started',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 16,
+                  color: AppColors.secondary,
+                ),
+              ),
+              const SizedBox(height: 48),
+              
+              // Phone Input
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.background,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.black12),
+                ),
+                child: TextField(
+                  controller: _phoneController,
+                  keyboardType: TextInputType.phone,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    hintText: '+91 98765 43210',
+                    prefixIcon: Icon(Icons.phone_android, color: AppColors.secondary),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              
+              // Button
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: isLoading ? null : _signIn,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: isLoading 
+                     ? const CircularProgressIndicator(color: Colors.white)
+                     : Text(
+                        'Send OTP',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
