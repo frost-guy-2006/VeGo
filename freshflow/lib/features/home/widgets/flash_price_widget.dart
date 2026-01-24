@@ -24,7 +24,7 @@ class FlashPriceWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primary.withOpacity(0.3),
+                  color: AppColors.primary.withValues(alpha: 0.3),
                   blurRadius: 15,
                   offset: const Offset(0, 10),
                 ),
@@ -58,7 +58,7 @@ class FlashPriceWidget extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
+                    color: Colors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: Colors.white.withOpacity(0.2)),
                   ),
@@ -95,7 +95,7 @@ class FlashPriceWidget extends StatelessWidget {
               errorBuilder: (context, error, stackTrace) => Container(
                 width: 160,
                 height: 160,
-                color: Colors.grey.withOpacity(0.3),
+                color: Colors.grey.withValues(alpha: 0.3),
                 child: const Icon(Icons.image, color: Colors.white),
               ),
             ),
