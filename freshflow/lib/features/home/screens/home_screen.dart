@@ -13,9 +13,6 @@ import 'package:freshflow/features/home/widgets/price_comparison_card.dart';
 import 'package:freshflow/features/home/widgets/rain_mode_overlay.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:freshflow/features/home/widgets/floating_bottom_nav_bar.dart';
-
-import 'package:freshflow/core/services/notification_simulation_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -29,20 +26,11 @@ class _HomeScreenState extends State<HomeScreen> {
   // Rain Mode toggle (Simulated)
   bool _isRaining = false; // Disabled by default as per user request
 
-  String? _smartNudge;
-
   final List<Widget> _pages = [
     const HomeContent(),
     const CartScreen(),
     const ProfileScreen(),
   ];
-
-  @override
-  void initState() {
-    super.initState();
-    // Check for smart nudge
-    _smartNudge = NotificationSimulationService.getContextualNudge();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,66 +46,48 @@ class _HomeScreenState extends State<HomeScreen> {
           // Hero Feature: Rain Mode Overlay
           if (_currentIndex == 0) RainModeOverlay(isEnabled: _isRaining),
 
-          // Smart Notification Banner (Top)
-          if (_smartNudge != null && _currentIndex == 0)
-            Positioned(
-              top: 40, // Below status bar
-              left: 16,
-              right: 16,
-              child: Material(
-                elevation: 4,
-                borderRadius: BorderRadius.circular(12),
-                color: Colors.black.withOpacity(0.8),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.notifications_active,
-                          color: Colors.yellow, size: 20),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          _smartNudge!,
-                          style: GoogleFonts.plusJakartaSans(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () => setState(() => _smartNudge = null),
-                        child: const Icon(Icons.close,
-                            color: Colors.white70, size: 18),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
-          // Floating Bottom Nav Bar
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: FloatingBottomNavBar(
-              currentIndex: _currentIndex,
-              onTap: (index) => setState(() => _currentIndex = index),
-            ),
-          ),
-
-          // Floating Cart Bar (Adjusted Position)
+          // Show floating cart bar only on Home tab (index 0)
           if (_currentIndex == 0)
             const Positioned(
-              bottom: 100, // Above Nav Bar
+              bottom: 16,
               left: 0,
               right: 0,
               child: FloatingCartBar(),
             ),
         ],
       ),
+      bottomNavigationBar: Container(
+        height: 80,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildNavItem(Icons.home_filled, 0),
+            _buildNavItem(Icons.shopping_bag_outlined, 1),
+            _buildNavItem(Icons.person_outline, 2),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(IconData icon, int index) {
+    // Consumer to show badge on Cart Icon if needed, but we have floating bar now
+    final isSelected = _currentIndex == index;
+    return IconButton(
+      icon: Icon(
+        icon,
+        color: isSelected ? AppColors.primary : AppColors.secondary,
+        size: 28,
+      ),
+      onPressed: () {
+        setState(() {
+          _currentIndex = index;
+        });
+      },
     );
   }
 }
@@ -133,54 +103,74 @@ class HomeContent extends StatelessWidget {
         SliverAppBar(
           pinned: true,
           floating: true,
-          backgroundColor: Theme.of(context).cardColor,
+          backgroundColor: AppColors.background,
           elevation: 0,
-          toolbarHeight: 90,
+          expandedHeight: 120, // Increased for badge
+          toolbarHeight: 80,
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                '12 minutes', // Dynamic later
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 28, // Big text like Image 2
-                  fontWeight: FontWeight.w800,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
+              Row(
+                children: [
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.black, // Zepto-like dark badge
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.bolt, color: Colors.yellow, size: 14),
+                        const SizedBox(width: 4),
+                        Text(
+                          '10 MINS',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'to Home',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textDark,
+                    ),
+                  ),
+                ],
               ),
+              const SizedBox(height: 4),
               Row(
                 children: [
                   Text(
-                    'Home - HSR Layout, Sector 2', // Combined address
+                    'HSR Layout, Sector 2',
                     style: GoogleFonts.plusJakartaSans(
-                      fontSize: 13,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.7),
+                      color: AppColors.secondary,
                     ),
                   ),
-                  Icon(Icons.arrow_drop_down,
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.7),
-                      size: 20),
+                  const Icon(Icons.keyboard_arrow_down,
+                      color: AppColors.secondary, size: 18),
                 ],
               ),
             ],
           ),
           actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: CircleAvatar(
-                radius: 20,
-                backgroundColor:
-                    Theme.of(context).colorScheme.surfaceContainerHighest,
-                child: Icon(Icons.person,
-                    color: Theme.of(context).colorScheme.onSurface),
+            IconButton(
+              icon: const CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Icon(Icons.person, color: AppColors.textDark),
               ),
+              onPressed: () {},
             ),
+            const SizedBox(width: 16),
           ],
         ),
 

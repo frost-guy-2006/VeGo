@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freshflow/core/providers/auth_provider.dart';
 import 'package:freshflow/core/theme/app_colors.dart';
-import 'package:freshflow/core/providers/theme_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -79,10 +78,6 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 24),
-            // Settings
-            const SettingsSection(),
-
             const Spacer(),
 
             // Logout Button
@@ -147,39 +142,6 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ],
-    );
-  }
-}
-
-class SettingsSection extends StatelessWidget {
-  const SettingsSection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final isDark = themeProvider.themeMode == ThemeMode.dark;
-
-    return Column(
-      children: [
-        SwitchListTile(
-          title: Text('Dark Mode',
-              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
-          value: isDark,
-          onChanged: (val) {
-            themeProvider.setThemeMode(val ? ThemeMode.dark : ThemeMode.light);
-          },
-        ),
-        SwitchListTile(
-          title: Text('Material You Theme',
-              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
-          subtitle: Text('Use dynamic system colors',
-              style: GoogleFonts.plusJakartaSans(fontSize: 12)),
-          value: themeProvider.isDynamicColorEnabled,
-          onChanged: (val) {
-            themeProvider.toggleDynamicColor(val);
-          },
         ),
       ],
     );
