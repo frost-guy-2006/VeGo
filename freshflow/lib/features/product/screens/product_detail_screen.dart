@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:freshflow/core/models/product_model.dart';
 import 'package:freshflow/core/providers/cart_provider.dart';
 import 'package:freshflow/core/theme/app_colors.dart';
-import 'package:freshflow/features/cart/widgets/cart_bottom_sheet.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -188,7 +187,7 @@ class ProductDetailScreen extends StatelessWidget {
                         GoogleFonts.plusJakartaSans(color: AppColors.secondary),
                   ),
                   Text(
-                    '\$${product.currentPrice.toStringAsFixed(2)}',
+                    '₹${product.currentPrice.toStringAsFixed(0)}',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -204,13 +203,14 @@ class ProductDetailScreen extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () {
                       context.read<CartProvider>().addToCart(product);
-                      showModalBottomSheet(
-                        context: context,
-                        backgroundColor: Colors.transparent,
-                        isScrollControlled: true,
-                        builder: (_) => SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.7,
-                            child: const CartBottomSheet()),
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('${product.name} added to cart'),
+                          duration: const Duration(milliseconds: 1500),
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                        ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -280,7 +280,7 @@ class _LocalPriceBar extends StatelessWidget {
             ),
           ),
         Text(
-          '\$${price.toStringAsFixed(0)}',
+          '₹${price.toStringAsFixed(0)}',
           style: GoogleFonts.plusJakartaSans(
             fontWeight: FontWeight.bold,
             color: isSelected ? AppColors.textDark : AppColors.secondary,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freshflow/features/cart/screens/cart_screen.dart';
+import 'package:freshflow/features/cart/widgets/floating_cart_bar.dart';
+import 'package:freshflow/features/home/widgets/category_grid.dart';
 import 'package:freshflow/features/profile/screens/profile_screen.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -30,9 +32,21 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _pages,
+      body: Stack(
+        children: [
+          IndexedStack(
+            index: _currentIndex,
+            children: _pages,
+          ),
+          // Show floating cart bar only on Home tab (index 0)
+          if (_currentIndex == 0)
+            const Positioned(
+              bottom: 16,
+              left: 0,
+              right: 0,
+              child: FloatingCartBar(),
+            ),
+        ],
       ),
       bottomNavigationBar: Container(
         height: 80,
@@ -53,6 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildNavItem(IconData icon, int index) {
+    // Consumer to show badge on Cart Icon if needed, but we have floating bar now
     final isSelected = _currentIndex == index;
     return IconButton(
       icon: Icon(
@@ -76,70 +91,82 @@ class HomeContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomScrollView(
       slivers: [
-        // Sticky Header
+        // Sticky Header with 10-min Delivery Badge
         SliverAppBar(
           pinned: true,
           floating: true,
           backgroundColor: AppColors.background,
           elevation: 0,
-          expandedHeight: 100,
+          expandedHeight: 120, // Increased for badge
+          toolbarHeight: 80,
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Delivering to',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 12,
-                  color: AppColors.secondary,
-                ),
+              Row(
+                children: [
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.black, // Zepto-like dark badge
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.bolt, color: Colors.yellow, size: 14),
+                        const SizedBox(width: 4),
+                        Text(
+                          '10 MINS',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'to Home',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textDark,
+                    ),
+                  ),
+                ],
               ),
+              const SizedBox(height: 4),
               Row(
                 children: [
                   Text(
-                    'HSR Layout, Sector 2', // Mock Location
+                    'HSR Layout, Sector 2',
                     style: GoogleFonts.plusJakartaSans(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.secondary,
                     ),
                   ),
                   const Icon(Icons.keyboard_arrow_down,
-                      color: AppColors.primary),
+                      color: AppColors.secondary, size: 18),
                 ],
               ),
             ],
           ),
           actions: [
             IconButton(
-              // Notification Icon
-              icon: Stack(children: [
-                const Icon(Icons.notifications_outlined,
-                    color: AppColors.textDark),
-                Positioned(
-                    right: 0,
-                    top: 0,
-                    child: Container(
-                      padding: const EdgeInsets.all(2),
-                      decoration: const BoxDecoration(
-                          color: AppColors.accent, shape: BoxShape.circle),
-                      constraints:
-                          const BoxConstraints(minWidth: 12, minHeight: 12),
-                    ))
-              ]),
+              icon: const CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Icon(Icons.person, color: AppColors.textDark),
+              ),
               onPressed: () {},
-            ),
-            const SizedBox(width: 8),
-            // Avatar
-            const CircleAvatar(
-              backgroundColor: AppColors.secondary,
-              radius: 18,
-              backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=12'),
             ),
             const SizedBox(width: 16),
           ],
         ),
 
-        // Search Field Placeholder
+        // Search Field
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -156,7 +183,7 @@ class HomeContent extends StatelessWidget {
                   const Icon(Icons.search, color: AppColors.secondary),
                   const SizedBox(width: 12),
                   Text(
-                    'Search fresh vegetables...',
+                    'Search "Paneer"',
                     style:
                         GoogleFonts.plusJakartaSans(color: AppColors.secondary),
                   ),
@@ -166,10 +193,16 @@ class HomeContent extends StatelessWidget {
           ),
         ),
 
+        // Categories Grid (New)
+        const SliverPadding(
+          padding: EdgeInsets.symmetric(vertical: 16),
+          sliver: CategoryGrid(),
+        ),
+
         // Scrollable Flash Widgets
         SliverToBoxAdapter(
           child: SizedBox(
-            height: 240, // Height increased for padding/shadows
+            height: 200,
             child: StreamBuilder<List<Product>>(
               stream: Supabase.instance.client
                   .from('products')
@@ -183,15 +216,11 @@ class HomeContent extends StatelessWidget {
                 }
 
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(
-                    child: Text('No flash deals available',
-                        style: GoogleFonts.plusJakartaSans(
-                            color: AppColors.secondary)),
-                  );
+                  return const SizedBox.shrink();
                 }
 
                 return ListView.builder(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   scrollDirection: Axis.horizontal,
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
@@ -209,34 +238,21 @@ class HomeContent extends StatelessWidget {
         // Section Title
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Fresh Harvest',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textDark,
-                  ),
-                ),
-                Text(
-                  'See all',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 14,
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              'Fresh Harvest',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textDark,
+              ),
             ),
           ),
         ),
 
         // Product Grid
         SliverPadding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           sliver: StreamBuilder<List<Product>>(
             stream: Supabase.instance.client
                 .from('products')
@@ -246,15 +262,15 @@ class HomeContent extends StatelessWidget {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return SliverMasonryGrid.count(
                   crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 12,
                   childCount: 4,
                   itemBuilder: (context, index) {
                     return Shimmer.fromColors(
                       baseColor: Colors.grey[300]!,
                       highlightColor: Colors.grey[100]!,
                       child: Container(
-                        height: 280,
+                        height: 240,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16),
@@ -280,12 +296,11 @@ class HomeContent extends StatelessWidget {
 
               return SliverMasonryGrid.count(
                 crossAxisCount: 2,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
+                mainAxisSpacing: 12,
+                crossAxisSpacing: 12,
                 childCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
                   return SizedBox(
-                    height: 280,
                     child: PriceComparisonCard(product: snapshot.data![index]),
                   );
                 },
@@ -294,8 +309,8 @@ class HomeContent extends StatelessWidget {
           ),
         ),
 
-        // Bottom Padding
-        const SliverToBoxAdapter(child: SizedBox(height: 80)),
+        // Bottom Padding for Floating Bar
+        const SliverToBoxAdapter(child: SizedBox(height: 100)),
       ],
     );
   }
