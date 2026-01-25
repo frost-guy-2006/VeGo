@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:freshflow/core/models/product_model.dart';
-import 'package:freshflow/core/theme/app_colors.dart';
-import 'package:freshflow/features/home/widgets/price_comparison_card.dart';
+import 'package:vego/core/models/product_model.dart';
+import 'package:vego/core/theme/app_colors.dart';
+import 'package:vego/features/home/widgets/price_comparison_card.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';

@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:freshflow/features/tracking/widgets/granular_timeline_widget.dart';
+import 'package:vego/features/tracking/widgets/granular_timeline_widget.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:freshflow/core/providers/cart_provider.dart';
-import 'package:freshflow/core/theme/app_colors.dart';
+import 'package:vego/core/providers/cart_provider.dart';
+import 'package:vego/core/theme/app_colors.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';

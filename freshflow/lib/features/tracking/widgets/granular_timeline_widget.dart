@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:freshflow/core/theme/app_colors.dart';
+import 'package:vego/core/theme/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class GranularTimelineWidget extends StatefulWidget {

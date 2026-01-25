@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:freshflow/core/models/product_model.dart';
+import 'package:vego/core/models/product_model.dart';
 
 class CartItem {
   final Product product;

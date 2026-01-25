@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:freshflow/core/providers/cart_provider.dart';
-import 'package:freshflow/features/cart/screens/cart_screen.dart';
+import 'package:vego/core/providers/cart_provider.dart';
+import 'package:vego/features/cart/screens/cart_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 

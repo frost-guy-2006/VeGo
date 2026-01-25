@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:freshflow/core/providers/auth_provider.dart';
-import 'package:freshflow/features/auth/screens/otp_screen.dart';
+import 'package:vego/core/providers/auth_provider.dart';
+import 'package:vego/features/auth/screens/otp_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:freshflow/core/theme/app_colors.dart';
+import 'package:vego/core/theme/app_colors.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

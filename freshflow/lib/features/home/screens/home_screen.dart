@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:freshflow/features/cart/screens/cart_screen.dart';
-import 'package:freshflow/features/cart/widgets/floating_cart_bar.dart';
-import 'package:freshflow/features/home/widgets/category_grid.dart';
-import 'package:freshflow/features/search/screens/search_screen.dart'; // Added import
-import 'package:freshflow/features/profile/screens/profile_screen.dart';
+import 'package:vego/features/cart/screens/cart_screen.dart';
+import 'package:vego/features/cart/widgets/floating_cart_bar.dart';
+import 'package:vego/features/home/widgets/category_grid.dart';
+import 'package:vego/features/search/screens/search_screen.dart'; // Added import
+import 'package:vego/features/profile/screens/profile_screen.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:freshflow/core/models/product_model.dart';
-import 'package:freshflow/core/theme/app_colors.dart';
-import 'package:freshflow/features/home/widgets/flash_price_widget.dart';
-import 'package:freshflow/features/home/widgets/price_comparison_card.dart';
-import 'package:freshflow/features/home/widgets/rain_mode_overlay.dart';
+import 'package:vego/core/models/product_model.dart';
+import 'package:vego/core/theme/app_colors.dart';
+import 'package:vego/features/home/widgets/flash_price_widget.dart';
+import 'package:vego/features/home/widgets/price_comparison_card.dart';
+import 'package:vego/features/home/widgets/rain_mode_overlay.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 

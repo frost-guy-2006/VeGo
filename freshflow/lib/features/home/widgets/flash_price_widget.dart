@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:freshflow/core/models/product_model.dart';
-import 'package:freshflow/core/theme/app_colors.dart';
-import 'package:freshflow/features/product/screens/product_detail_screen.dart';
+import 'package:vego/core/models/product_model.dart';
+import 'package:vego/core/theme/app_colors.dart';
+import 'package:vego/features/product/screens/product_detail_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class FlashPriceWidget extends StatefulWidget {

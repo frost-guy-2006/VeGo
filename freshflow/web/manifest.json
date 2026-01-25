@@ -1,6 +1,6 @@
 {
-    "name": "freshflow",
-    "short_name": "freshflow",
+    "name": "VeGo",
+    "short_name": "VeGo",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

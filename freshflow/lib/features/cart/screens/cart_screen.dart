@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:freshflow/core/providers/cart_provider.dart';
-import 'package:freshflow/core/theme/app_colors.dart';
-import 'package:freshflow/features/cart/widgets/cart_hero_widgets.dart';
-import 'package:freshflow/features/tracking/screens/tracking_screen.dart';
+import 'package:vego/core/providers/cart_provider.dart';
+import 'package:vego/core/theme/app_colors.dart';
+import 'package:vego/features/cart/widgets/cart_hero_widgets.dart';
+import 'package:vego/features/tracking/screens/tracking_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:slide_to_act/slide_to_act.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:freshflow/core/constants/env.dart';
-import 'package:freshflow/core/providers/auth_provider.dart';
-import 'package:freshflow/features/auth/screens/login_screen.dart';
+import 'package:vego/core/constants/env.dart';
+import 'package:vego/core/providers/auth_provider.dart';
+import 'package:vego/features/auth/screens/login_screen.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
 import 'core/providers/cart_provider.dart';
@@ -31,7 +31,7 @@ class FreshFlowApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CartProvider()),
       ],
       child: MaterialApp(
-        title: 'FreshFlow',
+        title: 'VeGo',
         theme: AppTheme.lightTheme,
         debugShowCheckedModeBanner: false,
         builder: (context, child) {
