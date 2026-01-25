@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:freshflow/features/tracking/widgets/granular_timeline_widget.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -297,106 +298,9 @@ class _TrackingScreenState extends State<TrackingScreen> {
             bottom: 30,
             left: 16,
             right: 16,
-            child: Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Arriving in',
-                            style: GoogleFonts.plusJakartaSans(
-                              color: AppColors.secondary,
-                              fontSize: 14,
-                            ),
-                          ),
-                          Text(
-                            _eta,
-                            style: GoogleFonts.plusJakartaSans(
-                              color: AppColors.textDark,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: AppColors.background,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.phone,
-                                color: AppColors.primary, size: 20),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Call Rider',
-                              style: GoogleFonts.plusJakartaSans(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  const Divider(),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      const CircleAvatar(
-                        radius: 20,
-                        backgroundColor: AppColors.secondary,
-                        backgroundImage:
-                            NetworkImage('https://i.pravatar.cc/150?img=33'),
-                      ),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Ramesh Kumar',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: AppColors.textDark,
-                            ),
-                          ),
-                          Text(
-                            'Start Rating: 4.8',
-                            style: GoogleFonts.plusJakartaSans(
-                              color: AppColors.secondary,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+            child: GranularTimelineWidget(
+              eta: _eta,
+              onCallRider: () {},
             ),
           ),
         ],

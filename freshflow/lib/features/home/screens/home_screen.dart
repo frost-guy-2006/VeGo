@@ -9,6 +9,7 @@ import 'package:freshflow/core/models/product_model.dart';
 import 'package:freshflow/core/theme/app_colors.dart';
 import 'package:freshflow/features/home/widgets/flash_price_widget.dart';
 import 'package:freshflow/features/home/widgets/price_comparison_card.dart';
+import 'package:freshflow/features/home/widgets/rain_mode_overlay.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
@@ -21,6 +22,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
+  // Rain Mode toggle (Simulated)
+  bool _isRaining = true;
 
   final List<Widget> _pages = [
     const HomeContent(),
@@ -38,6 +41,10 @@ class _HomeScreenState extends State<HomeScreen> {
             index: _currentIndex,
             children: _pages,
           ),
+
+          // Hero Feature: Rain Mode Overlay
+          if (_currentIndex == 0) RainModeOverlay(isEnabled: _isRaining),
+
           // Show floating cart bar only on Home tab (index 0)
           if (_currentIndex == 0)
             const Positioned(
