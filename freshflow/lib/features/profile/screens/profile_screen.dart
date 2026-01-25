@@ -116,8 +116,6 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  }
-
   Widget _buildProfileRow(IconData icon, String label, String value) {
     return Row(
       children: [
@@ -166,15 +164,18 @@ class SettingsSection extends StatelessWidget {
     return Column(
       children: [
         SwitchListTile(
-          title: Text('Dark Mode', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
+          title: Text('Dark Mode',
+              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
           value: isDark,
           onChanged: (val) {
-             themeProvider.setThemeMode(val ? ThemeMode.dark : ThemeMode.light);
+            themeProvider.setThemeMode(val ? ThemeMode.dark : ThemeMode.light);
           },
         ),
         SwitchListTile(
-          title: Text('Material You Theme', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
-          subtitle: Text('Use dynamic system colors', style: GoogleFonts.plusJakartaSans(fontSize: 12)),
+          title: Text('Material You Theme',
+              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
+          subtitle: Text('Use dynamic system colors',
+              style: GoogleFonts.plusJakartaSans(fontSize: 12)),
           value: themeProvider.isDynamicColorEnabled,
           onChanged: (val) {
             themeProvider.toggleDynamicColor(val);
