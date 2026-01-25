@@ -39,13 +39,14 @@ class PriceComparisonCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Product Image
-                Expanded(
-                  flex: 6,
-                  child: Hero(
-                    tag: 'product-image-${product.id}',
-                    child: ClipRRect(
-                      borderRadius:
-                          const BorderRadius.vertical(top: Radius.circular(16)),
+                Hero(
+                  tag: 'product-image-${product.id}',
+                  child: ClipRRect(
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(16)),
+                    child: SizedBox(
+                      // Use SizedBox instead of Expanded
+                      height: 140, // Fixed height for image
                       child: Image.network(
                         product.imageUrl,
                         width: double.infinity,
@@ -62,68 +63,69 @@ class PriceComparisonCard extends StatelessWidget {
                 ),
 
                 // Details
-                Expanded(
-                  flex: 4,
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              product.name,
+                Padding(
+                  // Remove Expanded
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            product.name,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                              color: AppColors.textDark,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Harvested at ${product.harvestTime}',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 12,
+                              color: AppColors.secondary,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow
+                                .ellipsis, // added overflow protection
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12), // Added spacing
+                      // Price Block
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            '₹${product.currentPrice.toStringAsFixed(0)}',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              color: AppColors.textDark,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 2),
+                            child: Text(
+                              '₹${product.marketPrice.toStringAsFixed(0)}',
                               style: GoogleFonts.plusJakartaSans(
                                 fontWeight: FontWeight.w600,
-                                fontSize: 16,
-                                color: AppColors.textDark,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Harvested at ${product.harvestTime}',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 12,
-                                color: AppColors.secondary,
+                                fontSize: 14,
+                                color: AppColors.accent,
+                                decoration: TextDecoration.lineThrough,
+                                decorationColor: AppColors.accent,
                               ),
                             ),
-                          ],
-                        ),
-
-                        // Price Block
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              '₹${product.currentPrice.toStringAsFixed(0)}',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                                color: AppColors.textDark,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 2),
-                              child: Text(
-                                '₹${product.marketPrice.toStringAsFixed(0)}',
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                  color: AppColors.accent,
-                                  decoration: TextDecoration.lineThrough,
-                                  decorationColor: AppColors.accent,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ],
