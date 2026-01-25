@@ -86,7 +86,7 @@ class FreeDeliveryProgressBar extends StatelessWidget {
                 ),
               ),
               if (isUnlocked)
-                Text(
+                const Text(
                   '🎉',
                   style: TextStyle(fontSize: 24),
                 ),

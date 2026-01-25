@@ -135,8 +135,9 @@ class _GranularTimelineWidgetState extends State<GranularTimelineWidget> {
   Widget _buildStep(int stepIndex, String title,
       {String? subtext, required bool isCompleted, required bool isCurrent}) {
     Color color = isCompleted ? AppColors.primary : Colors.grey[300]!;
-    if (isCurrent && _currentStep < 3)
+    if (isCurrent && _currentStep < 3) {
       color = Colors.orange; // Highlight active processing step
+    }
 
     return Row(
       children: [

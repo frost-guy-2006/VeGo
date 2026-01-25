@@ -30,7 +30,7 @@ class _TrackingScreenState extends State<TrackingScreen>
   AnimationController? _animController;
   int _currentPointIndex = 0;
   String _eta = "Calculating...";
-  double _riderRotation = 0.0;
+  final double _riderRotation = 0.0;
 
   // Undo Logic
   int _undoSeconds = 60;
@@ -305,7 +305,7 @@ class _TrackingScreenState extends State<TrackingScreen>
               child: Center(
                 child: Container(
                   margin: const EdgeInsets.symmetric(horizontal: 20),
-                  decoration: BoxDecoration(boxShadow: [
+                  decoration: const BoxDecoration(boxShadow: [
                     BoxShadow(
                         color: Colors.black26,
                         blurRadius: 10,

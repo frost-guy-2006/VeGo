@@ -65,11 +65,12 @@ class CartScreen extends StatelessWidget {
                       return SmartSwapWidget(onSwap: () {
                         // Mock Swap Logic: In real app, replace item.
                         // For now, show a snackbar.
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
                           content: Text('Swapped! You saved ₹20.'),
                           backgroundColor: Colors.green,
                           behavior: SnackBarBehavior.floating,
-                          margin: const EdgeInsets.all(20),
+                          margin: EdgeInsets.all(20),
                         ));
                       });
                     }

@@ -13,6 +13,7 @@ import 'package:freshflow/features/home/widgets/price_comparison_card.dart';
 import 'package:freshflow/features/home/widgets/rain_mode_overlay.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:freshflow/features/home/widgets/floating_bottom_nav_bar.dart';
 
 import 'package:freshflow/core/services/notification_simulation_service.dart';
 
@@ -96,51 +97,29 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
 
-          // Show floating cart bar only on Home tab (index 0)
+          // Floating Bottom Nav Bar
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: FloatingBottomNavBar(
+              currentIndex: _currentIndex,
+              onTap: (index) => setState(() => _currentIndex = index),
+            ),
+          ),
+
+          // Floating Cart Bar (Adjusted Position)
           if (_currentIndex == 0)
             const Positioned(
-              bottom: 16,
+              bottom: 100, // Above Nav Bar
               left: 0,
               right: 0,
               child: FloatingCartBar(),
             ),
         ],
       ),
-      bottomNavigationBar: Container(
-        height: 80,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildNavItem(Icons.home_filled, 0),
-            _buildNavItem(Icons.shopping_bag_outlined, 1),
-            _buildNavItem(Icons.person_outline, 2),
-          ],
-        ),
-      ),
     );
   }
-
-  Widget _buildNavItem(IconData icon, int index) {
-    // Consumer to show badge on Cart Icon if needed, but we have floating bar now
-    final isSelected = _currentIndex == index;
-    return IconButton(
-      icon: Icon(
-        icon,
-        color: isSelected ? AppColors.primary : AppColors.secondary,
-        size: 28,
-      ),
-      onPressed: () {
-        setState(() {
-          _currentIndex = index;
-        });
-      },
-    );
-  }
-}
 
 class HomeContent extends StatelessWidget {
   const HomeContent({super.key});
