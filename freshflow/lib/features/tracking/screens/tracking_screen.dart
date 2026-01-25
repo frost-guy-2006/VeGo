@@ -84,9 +84,48 @@ class _TrackingScreenState extends State<TrackingScreen> {
         } else {
           _timer?.cancel();
           _eta = "Arrived";
+          _showOrderCompletedDialog();
         }
       });
     });
+  }
+
+  void _showOrderCompletedDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Column(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.green, size: 64),
+            const SizedBox(height: 16),
+            Text(
+              'Order Delivered!',
+              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        content: Text(
+          'Enjoy your fresh vegetables! How was the delivery?',
+          textAlign: TextAlign.center,
+          style: GoogleFonts.plusJakartaSans(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).popUntil((route) => route.isFirst);
+              context.read<CartProvider>().clearCart();
+            },
+            child: Text(
+              'Back to Home',
+              style: GoogleFonts.plusJakartaSans(
+                  fontWeight: FontWeight.bold, color: AppColors.primary),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

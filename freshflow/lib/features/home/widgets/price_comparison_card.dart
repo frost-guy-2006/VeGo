@@ -3,7 +3,6 @@ import 'package:freshflow/core/models/product_model.dart';
 import 'package:freshflow/core/theme/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:freshflow/core/providers/cart_provider.dart';
-import 'package:freshflow/features/cart/widgets/cart_bottom_sheet.dart';
 import 'package:freshflow/features/product/screens/product_detail_screen.dart';
 import 'package:provider/provider.dart';
 
