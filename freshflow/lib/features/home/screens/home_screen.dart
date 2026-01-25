@@ -24,7 +24,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   // Rain Mode toggle (Simulated)
-  bool _isRaining = false; // Disabled by default as per user request
+  final bool _isRaining = false; // Disabled by default as per user request
 
   final List<Widget> _pages = [
     const HomeContent(),
