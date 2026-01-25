@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freshflow/features/cart/screens/cart_screen.dart';
 import 'package:freshflow/features/cart/widgets/floating_cart_bar.dart';
 import 'package:freshflow/features/home/widgets/category_grid.dart';
+import 'package:freshflow/features/search/screens/search_screen.dart'; // Added import
 import 'package:freshflow/features/profile/screens/profile_screen.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -177,24 +178,36 @@ class HomeContent extends StatelessWidget {
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              height: 50,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.black.withOpacity(0.05)),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.search, color: AppColors.secondary),
-                  const SizedBox(width: 12),
-                  Text(
-                    'Search "Paneer"',
-                    style:
-                        GoogleFonts.plusJakartaSans(color: AppColors.secondary),
-                  ),
-                ],
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      const SearchScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
+                ));
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.black.withOpacity(0.05)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.search, color: AppColors.secondary),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Search "Red" or "Tomato"', // Updated hint for discovery
+                      style: GoogleFonts.plusJakartaSans(
+                          color: AppColors.secondary),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
