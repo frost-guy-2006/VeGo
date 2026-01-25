@@ -6,62 +6,64 @@ class CategoryGrid extends StatelessWidget {
   const CategoryGrid({super.key});
 
   final List<Map<String, dynamic>> categories = const [
-    {'name': 'Vegetables', 'color': Color(0xFFE8F5E9), 'icon': '🥦'},
-    {'name': 'Fruits', 'color': Color(0xFFFFF3E0), 'icon': '🍎'},
-    {'name': 'Dairy', 'color': Color(0xFFE3F2FD), 'icon': '🥛'},
-    {'name': 'Munchies', 'color': Color(0xFFFFEBEE), 'icon': '🍿'},
-    {'name': 'Cold Drinks', 'color': Color(0xFFE0F2F1), 'icon': '🥤'},
-    {'name': 'Instant', 'color': Color(0xFFF3E5F5), 'icon': '🍜'},
-    {'name': 'Bakery', 'color': Color(0xFFFFF8E1), 'icon': '🍞'},
-    {'name': 'Tea/Coffee', 'color': Color(0xFFEFEBE9), 'icon': '☕'},
+    {'name': 'All', 'icon': Icons.grid_view},
+    {'name': 'Vegetables', 'icon': Icons.eco_outlined},
+    {'name': 'Fruits', 'icon': Icons.apple_outlined},
+    {'name': 'Dairy', 'icon': Icons.local_drink_outlined},
+    {'name': 'Munchies', 'icon': Icons.cookie_outlined},
+    {'name': 'Cold Drinks', 'icon': Icons.local_bar_outlined},
+    {'name': 'Instant', 'icon': Icons.ramen_dining_outlined},
+    {'name': 'Bakery', 'icon': Icons.breakfast_dining_outlined},
+    {'name': 'Tea/Coffee', 'icon': Icons.coffee_outlined},
   ];
 
   @override
   Widget build(BuildContext context) {
-    return SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      sliver: SliverGrid(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 12,
-          childAspectRatio: 0.8,
-        ),
-        delegate: SliverChildBuilderDelegate(
-          (context, index) {
+    return SliverToBoxAdapter(
+      child: Container(
+        height: 100,
+        color: Colors.white,
+        child: ListView.separated(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          scrollDirection: Axis.horizontal,
+          itemCount: categories.length,
+          separatorBuilder: (context, index) => const SizedBox(width: 24),
+          itemBuilder: (context, index) {
             final cat = categories[index];
+            final isSelected = index == 0; // Default Select "All"
             return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: cat['color'],
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Center(
-                      child: Text(
-                        cat['icon'],
-                        style: const TextStyle(fontSize: 32),
-                      ),
-                    ),
-                  ),
+                Icon(
+                  cat['icon'],
+                  size: 28,
+                  color: isSelected ? AppColors.textDark : Colors.grey.shade400,
                 ),
                 const SizedBox(height: 8),
                 Text(
                   cat['name'],
                   style: GoogleFonts.plusJakartaSans(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textDark,
+                    fontSize: 12,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                    color:
+                        isSelected ? AppColors.textDark : Colors.grey.shade500,
                   ),
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
+                const SizedBox(height: 4),
+                if (isSelected)
+                  Container(
+                    height: 3,
+                    width: 20,
+                    decoration: BoxDecoration(
+                      color: AppColors.textDark,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  )
+                else
+                  const SizedBox(height: 3),
               ],
             );
           },
-          childCount: categories.length,
         ),
       ),
     );

@@ -213,11 +213,8 @@ class HomeContent extends StatelessWidget {
           ),
         ),
 
-        // Categories Grid (New)
-        const SliverPadding(
-          padding: EdgeInsets.symmetric(vertical: 16),
-          sliver: CategoryGrid(),
-        ),
+        // Categories Bar (Horizontal)
+        const CategoryGrid(),
 
         // Scrollable Flash Widgets
         SliverToBoxAdapter(

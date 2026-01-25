@@ -71,7 +71,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
   void _undoOrder() {
     _undoTimer?.cancel();
     Navigator.pop(context); // Go back to Cart
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       content: Text('Order Cancelled'),
       backgroundColor: Colors.red,
     ));
@@ -265,7 +265,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
               child: Center(
                 child: Container(
                   margin: const EdgeInsets.symmetric(horizontal: 20),
-                  decoration: BoxDecoration(boxShadow: [
+                  decoration: const BoxDecoration(boxShadow: [
                     BoxShadow(
                         color: Colors.black26,
                         blurRadius: 10,
