@@ -50,6 +50,40 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> signInWithEmail(String email, String password) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      await _supabase.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+    } catch (e) {
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> signUpWithEmail(String email, String password) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      await _supabase.auth.signUp(
+        email: email,
+        password: password,
+      );
+    } catch (e) {
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> signOut() async {
     await _supabase.auth.signOut();
     notifyListeners();
