@@ -105,8 +105,8 @@ class HomeContent extends StatelessWidget {
           floating: true,
           backgroundColor: AppColors.background,
           elevation: 0,
-          expandedHeight: 120, // Increased for badge
-          toolbarHeight: 80,
+          expandedHeight: 90, // Reduced from 120
+          toolbarHeight: 70, // Reduced from 80
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -177,7 +177,8 @@ class HomeContent extends StatelessWidget {
         // Search Field
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(
+                horizontal: 16), // Removed vertical padding
             child: GestureDetector(
               onTap: () {
                 Navigator.of(context).push(PageRouteBuilder(
