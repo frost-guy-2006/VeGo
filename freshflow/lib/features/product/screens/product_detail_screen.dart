@@ -261,6 +261,13 @@ class _LocalPriceBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Calculate max height available for the bar (leaving space for text)
+    // Assuming container is ~150px, text takes ~40px, padding ~10px.
+    // We'll normalize in the parent or just use a safe scaling here relative to a fixed max.
+    // Better approach: Use Flexible/Expanded if possible, or robust scaling.
+    // For now, capping the height via normalization passed from parent would be best,
+    // but without changing parent signature too much, let's just use a safer constrained height.
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -289,7 +296,9 @@ class _LocalPriceBar extends StatelessWidget {
         const SizedBox(height: 8),
         Container(
           width: 40,
-          height: price * 2.5, // Simple scaling
+          // Fixed: Use valid constraints. Normalize assuming max price ~200-300 maps to ~80px
+          // Or just clamp it.
+          height: (price / 250 * 80).clamp(20.0, 100.0),
           decoration: BoxDecoration(
             color: color,
             borderRadius: BorderRadius.circular(8),

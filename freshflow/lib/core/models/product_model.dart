@@ -24,10 +24,11 @@ class Product {
     return {
       'id': id,
       'name': name,
-      'imageUrl': imageUrl,
-      'currentPrice': currentPrice,
-      'marketPrice': marketPrice,
-      'harvestTime': harvestTime,
+      'image_url': imageUrl,
+      'current_price': currentPrice,
+      'market_price': marketPrice,
+      'harvest_time': harvestTime,
+      'stock': stock,
     };
   }
 
@@ -35,10 +36,14 @@ class Product {
     return Product(
       id: json['id'],
       name: json['name'],
-      imageUrl: json['image_url'] ?? '',
-      currentPrice: (json['current_price'] as num?)?.toDouble() ?? 0.0,
-      marketPrice: (json['market_price'] as num?)?.toDouble() ?? 0.0,
-      harvestTime: json['harvest_time'] ?? '',
+      imageUrl: json['image_url'] ?? json['imageUrl'] ?? '',
+      currentPrice:
+          (json['current_price'] ?? json['currentPrice'] as num?)?.toDouble() ??
+              0.0,
+      marketPrice:
+          (json['market_price'] ?? json['marketPrice'] as num?)?.toDouble() ??
+              0.0,
+      harvestTime: json['harvest_time'] ?? json['harvestTime'] ?? '',
       stock: json['stock'] as int? ?? 0,
     );
   }
