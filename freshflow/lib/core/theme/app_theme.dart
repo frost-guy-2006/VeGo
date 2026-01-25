@@ -50,11 +50,6 @@ class AppTheme {
           ),
         ),
       ),
-      cardTheme: CardTheme(
-        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      ),
     );
   }
 
