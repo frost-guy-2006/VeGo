@@ -24,7 +24,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   // Rain Mode toggle (Simulated)
-  bool _isRaining = true;
+  bool _isRaining = false; // Disabled by default as per user request
 
   final List<Widget> _pages = [
     const HomeContent(),
@@ -279,6 +279,20 @@ class HomeContent extends StatelessWidget {
                 .stream(primaryKey: ['id']).map((data) =>
                     data.map((item) => Product.fromJson(item)).toList()),
             builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                debugPrint('Product Stream Error: ${snapshot.error}');
+                return SliverToBoxAdapter(
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(32.0),
+                      child: Text('Error loading products: ${snapshot.error}',
+                          style:
+                              GoogleFonts.plusJakartaSans(color: Colors.red)),
+                    ),
+                  ),
+                );
+              }
+
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return SliverMasonryGrid.count(
                   crossAxisCount: 2,
@@ -306,9 +320,32 @@ class HomeContent extends StatelessWidget {
                   child: Center(
                     child: Padding(
                       padding: const EdgeInsets.all(32.0),
-                      child: Text('No products found',
-                          style: GoogleFonts.plusJakartaSans(
-                              color: AppColors.secondary)),
+                      child: Column(
+                        children: [
+                          const Icon(Icons.shopping_basket_outlined,
+                              size: 48, color: Colors.grey),
+                          const SizedBox(height: 16),
+                          Text('No products found',
+                              style: GoogleFonts.plusJakartaSans(
+                                  color: AppColors
+                                      .textDark, // Dark color for visibility
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold)),
+                          Text('Try running the seed script.',
+                              style: GoogleFonts.plusJakartaSans(
+                                  color: AppColors.secondary, fontSize: 12)),
+                          const SizedBox(height: 16),
+                          ElevatedButton.icon(
+                            onPressed: _seedData,
+                            icon: const Icon(Icons.cloud_upload, size: 16),
+                            label: const Text('Seed Database'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -333,5 +370,72 @@ class HomeContent extends StatelessWidget {
         const SliverToBoxAdapter(child: SizedBox(height: 100)),
       ],
     );
+  }
+
+  Future<void> _seedData() async {
+    try {
+      // Data from seed_data.sql
+      final data = [
+        {
+          'name': 'Fresh Tomatoes',
+          'image_url':
+              'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=300&q=80',
+          'current_price': 45,
+          'market_price': 60,
+          'harvest_time': 'Harvested 2 hours ago',
+          'stock': 100
+        },
+        {
+          'name': 'Organic Carrots',
+          'image_url':
+              'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&w=300&q=80',
+          'current_price': 60,
+          'market_price': 85,
+          'harvest_time': 'Harvested today morning',
+          'stock': 50
+        },
+        {
+          'name': 'Green Spinach',
+          'image_url':
+              'https://images.unsplash.com/photo-1576045057995-568f588f82fb?auto=format&fit=crop&w=300&q=80',
+          'current_price': 30,
+          'market_price': 45,
+          'harvest_time': 'Harvested 4 hours ago',
+          'stock': 30
+        },
+        {
+          'name': 'Red Bell Pepper',
+          'image_url':
+              'https://images.unsplash.com/photo-1563565375-f3fdf5dbc240?auto=format&fit=crop&w=300&q=80',
+          'current_price': 120,
+          'market_price': 160,
+          'harvest_time': 'Harvested yesterday',
+          'stock': 40
+        },
+        {
+          'name': 'Fresh Broccoli',
+          'image_url':
+              'https://images.unsplash.com/photo-1459411621453-7b03977f4bfc?auto=format&fit=crop&w=300&q=80',
+          'current_price': 85,
+          'market_price': 120,
+          'harvest_time': 'Harvested today',
+          'stock': 60
+        },
+        {
+          'name': 'Red Apples',
+          'image_url':
+              'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=300&q=80',
+          'current_price': 180,
+          'market_price': 220,
+          'harvest_time': 'Fresh from Shimla',
+          'stock': 80
+        },
+      ];
+
+      await Supabase.instance.client.from('products').upsert(data);
+      debugPrint('Database seeded successfully!');
+    } catch (e) {
+      debugPrint('Error seeding database: $e');
+    }
   }
 }
