@@ -17,16 +17,20 @@ class TrackingScreen extends StatefulWidget {
   State<TrackingScreen> createState() => _TrackingScreenState();
 }
 
-class _TrackingScreenState extends State<TrackingScreen> {
+class _TrackingScreenState extends State<TrackingScreen>
+    with TickerProviderStateMixin {
   // Coordinates for HSR Layout, Sector 2 (Mock)
   final LatLng _userLocation = const LatLng(12.9121, 77.6446);
   final LatLng _riderStartLocation = const LatLng(12.9150, 77.6500);
 
   List<LatLng> _routePoints = [];
   late LatLng _riderLocation;
-  Timer? _timer;
+
+  // Animation Logic
+  AnimationController? _animController;
   int _currentPointIndex = 0;
   String _eta = "Calculating...";
+  double _riderRotation = 0.0;
 
   // Undo Logic
   int _undoSeconds = 60;
@@ -40,17 +44,9 @@ class _TrackingScreenState extends State<TrackingScreen> {
     _routePoints = [_riderStartLocation, _userLocation];
     _fetchRoute();
     _startUndoTimer();
-
-    // Auto-clear cart when entering tracking (Order Placed)
-    // Delay slightly to allow Undo to maybe revert it?
-    // Actually, "Slide to Pay" should technically clear cart but we might want to keep it
-    // if we want to support "Undo" restoring it?
-    // Current flow: Slide to Pay -> Pushes Tracking.
-    // Cart is NOT cleared in previous screen. It should be cleared here or on "Undo" pop.
-    // If Undo -> Pop (Cart is still full).
-    // If Timer ends -> Cart cleared.
-    // Let's implement that.
   }
+
+  // ... (Undo Logic Methods remain same: _startUndoTimer, _undoOrder)
 
   void _startUndoTimer() {
     _undoTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -60,7 +56,6 @@ class _TrackingScreenState extends State<TrackingScreen> {
         });
       } else {
         _undoTimer?.cancel();
-        // Commit order: Clear cart now
         if (mounted) {
           context.read<CartProvider>().clearCart();
         }
@@ -70,12 +65,15 @@ class _TrackingScreenState extends State<TrackingScreen> {
 
   void _undoOrder() {
     _undoTimer?.cancel();
-    Navigator.pop(context); // Go back to Cart
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    _animController?.stop();
+    Navigator.pop(context);
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       content: Text('Order Cancelled'),
       backgroundColor: Colors.red,
     ));
   }
+
+  // ...
 
   Future<void> _fetchRoute() async {
     try {
@@ -89,47 +87,89 @@ class _TrackingScreenState extends State<TrackingScreen> {
         final coordinates =
             data['routes'][0]['geometry']['coordinates'] as List;
 
-        setState(() {
-          _routePoints = coordinates
-              .map((point) => LatLng(point[1].toDouble(), point[0].toDouble()))
-              .toList();
-          _currentPointIndex = 0;
-          _startSimulation();
-        });
+        if (mounted) {
+          setState(() {
+            _routePoints = coordinates
+                .map(
+                    (point) => LatLng(point[1].toDouble(), point[0].toDouble()))
+                .toList();
+            _currentPointIndex = 0;
+            _startSmoothAnimation();
+          });
+        }
       }
     } catch (e) {
       debugPrint("Error fetching route: $e");
-      // Fallback to simulation on straight line if fetch fails
-      _startSimulation();
+      _startSmoothAnimation(); // Fallback
     }
   }
 
-  void _startSimulation() {
-    if (_routePoints.isEmpty) return;
+  void _startSmoothAnimation() {
+    if (_routePoints.isEmpty || _routePoints.length < 2) return;
 
-    _timer?.cancel();
-    _timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
-      if (!mounted) return;
+    // Dispose previous controller if any
+    _animController?.dispose();
 
-      setState(() {
-        if (_currentPointIndex < _routePoints.length - 1) {
-          _currentPointIndex++;
-          _riderLocation = _routePoints[_currentPointIndex];
-
-          // Calculate simple OTA
-          int remainingPoints = _routePoints.length - _currentPointIndex;
-          int minutes = (remainingPoints / 10).ceil();
-          // Assuming each point takes 0.5 sec, roughly estimatation.
-          // Adjust logic for better realistic OTA if needed.
-          _eta = minutes < 1 ? "Arriving" : "$minutes mins";
-        } else {
-          _timer?.cancel();
-          _eta = "Arrived";
-          _showOrderCompletedDialog();
-        }
-      });
-    });
+    // Create a new controller for the entire route or segment by segment?
+    // Segment by segment is easier for bearing updates.
+    _animateNextSegment();
   }
+
+  void _animateNextSegment() {
+    if (_currentPointIndex >= _routePoints.length - 1) {
+      _eta = "Arrived";
+      _showOrderCompletedDialog();
+      return;
+    }
+
+    final start = _routePoints[_currentPointIndex];
+    final end = _routePoints[_currentPointIndex + 1];
+
+    // Calculate Bearing
+    // Simple bearing approximation
+    // Note: LatLng doesn't have bearingTo built-in always, doing simple atan2
+    // Or just 0.0 if not critical, but let's try.
+    // Actually, we can just leave rotation 0 for MVP or calculate it.
+    // Let's omit complex bearing for now to safe typos, just move smooth.
+
+    // Determine duration based on distance? Or fixed for smoothness?
+    // Let's say 1 second per segment for demo.
+    const segmentDuration = Duration(milliseconds: 1000);
+
+    _animController =
+        AnimationController(vsync: this, duration: segmentDuration);
+
+    final latTween = Tween<double>(begin: start.latitude, end: end.latitude);
+    final lngTween = Tween<double>(begin: start.longitude, end: end.longitude);
+
+    _animController!.addListener(() {
+      if (mounted) {
+        setState(() {
+          _riderLocation = LatLng(latTween.evaluate(_animController!),
+              lngTween.evaluate(_animController!));
+        });
+      }
+    });
+
+    _animController!.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        if (mounted) {
+          setState(() {
+            _currentPointIndex++;
+            // Update ETA
+            int remainingPoints = _routePoints.length - _currentPointIndex;
+            int minutes = (remainingPoints / 10).ceil(); // Mock logic
+            _eta = minutes < 1 ? "Arriving" : "$minutes mins";
+          });
+          _animateNextSegment();
+        }
+      }
+    });
+
+    _animController!.forward();
+  }
+
+  // ... (Dialog methods remain same)
 
   void _showOrderCompletedDialog() {
     showDialog(
@@ -171,7 +211,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
 
   @override
   void dispose() {
-    _timer?.cancel();
+    _animController?.dispose();
     _undoTimer?.cancel();
     super.dispose();
   }

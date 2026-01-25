@@ -14,6 +14,8 @@ import 'package:freshflow/features/home/widgets/rain_mode_overlay.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
+import 'package:freshflow/core/services/notification_simulation_service.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -26,11 +28,20 @@ class _HomeScreenState extends State<HomeScreen> {
   // Rain Mode toggle (Simulated)
   bool _isRaining = false; // Disabled by default as per user request
 
+  String? _smartNudge;
+
   final List<Widget> _pages = [
     const HomeContent(),
     const CartScreen(),
     const ProfileScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Check for smart nudge
+    _smartNudge = NotificationSimulationService.getContextualNudge();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +56,45 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // Hero Feature: Rain Mode Overlay
           if (_currentIndex == 0) RainModeOverlay(isEnabled: _isRaining),
+
+          // Smart Notification Banner (Top)
+          if (_smartNudge != null && _currentIndex == 0)
+            Positioned(
+              top: 40, // Below status bar
+              left: 16,
+              right: 16,
+              child: Material(
+                elevation: 4,
+                borderRadius: BorderRadius.circular(12),
+                color: Colors.black.withOpacity(0.8),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.notifications_active,
+                          color: Colors.yellow, size: 20),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          _smartNudge!,
+                          style: GoogleFonts.plusJakartaSans(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => setState(() => _smartNudge = null),
+                        child: const Icon(Icons.close,
+                            color: Colors.white70, size: 18),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
 
           // Show floating cart bar only on Home tab (index 0)
           if (_currentIndex == 0)
