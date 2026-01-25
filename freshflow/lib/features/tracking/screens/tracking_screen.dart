@@ -27,6 +27,10 @@ class _TrackingScreenState extends State<TrackingScreen> {
   int _currentPointIndex = 0;
   String _eta = "Calculating...";
 
+  // Undo Logic
+  int _undoSeconds = 60;
+  Timer? _undoTimer;
+
   @override
   void initState() {
     super.initState();
@@ -34,6 +38,42 @@ class _TrackingScreenState extends State<TrackingScreen> {
     // Initialize with straight line while fetching
     _routePoints = [_riderStartLocation, _userLocation];
     _fetchRoute();
+    _startUndoTimer();
+
+    // Auto-clear cart when entering tracking (Order Placed)
+    // Delay slightly to allow Undo to maybe revert it?
+    // Actually, "Slide to Pay" should technically clear cart but we might want to keep it
+    // if we want to support "Undo" restoring it?
+    // Current flow: Slide to Pay -> Pushes Tracking.
+    // Cart is NOT cleared in previous screen. It should be cleared here or on "Undo" pop.
+    // If Undo -> Pop (Cart is still full).
+    // If Timer ends -> Cart cleared.
+    // Let's implement that.
+  }
+
+  void _startUndoTimer() {
+    _undoTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_undoSeconds > 0) {
+        setState(() {
+          _undoSeconds--;
+        });
+      } else {
+        _undoTimer?.cancel();
+        // Commit order: Clear cart now
+        if (mounted) {
+          context.read<CartProvider>().clearCart();
+        }
+      }
+    });
+  }
+
+  void _undoOrder() {
+    _undoTimer?.cancel();
+    Navigator.pop(context); // Go back to Cart
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Order Cancelled'),
+      backgroundColor: Colors.red,
+    ));
   }
 
   Future<void> _fetchRoute() async {
@@ -131,6 +171,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
   @override
   void dispose() {
     _timer?.cancel();
+    _undoTimer?.cancel();
     super.dispose();
   }
 
@@ -206,11 +247,50 @@ class _TrackingScreenState extends State<TrackingScreen> {
                 icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
                 onPressed: () {
                   Navigator.of(context).popUntil((route) => route.isFirst);
+                  // Don't clear cart if just backing out, but usually tracking implies order placed.
+                  // If backing out without undo, order continues.
+                  // For this demo, let's assume back goes home and keeps order running in background (simulated).
                   context.read<CartProvider>().clearCart();
                 },
               ),
             ),
           ),
+
+          // Hero Feature 3: Undo Button (60s Timer)
+          if (_undoSeconds > 0)
+            Positioned(
+              bottom: 240, // Above status panel
+              left: 0, right: 0,
+              child: Center(
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(boxShadow: [
+                    BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 10,
+                        offset: Offset(0, 4))
+                  ]),
+                  child: ElevatedButton.icon(
+                    onPressed: _undoOrder,
+                    icon: const Icon(Icons.undo, color: Colors.white),
+                    label: Text(
+                      'Undo Order ($_undoSeconds s)',
+                      style: GoogleFonts.plusJakartaSans(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Colors.white),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 32, vertical: 16),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30)),
+                    ),
+                  ),
+                ),
+              ),
+            ),
 
           // Status Panel
           Positioned(

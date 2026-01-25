@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freshflow/core/providers/cart_provider.dart';
 import 'package:freshflow/core/theme/app_colors.dart';
+import 'package:freshflow/features/cart/widgets/cart_hero_widgets.dart';
 import 'package:freshflow/features/tracking/screens/tracking_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -49,12 +50,30 @@ class CartScreen extends StatelessWidget {
 
           return Column(
             children: [
+              // Hero Feature 1: Gamified Delivery Bar
+              FreeDeliveryProgressBar(currentTotal: cart.totalPrice),
+
               Expanded(
                 child: ListView.separated(
-                  padding: const EdgeInsets.all(24),
-                  itemCount: cart.items.length,
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  itemCount:
+                      cart.items.length + 1, // +1 for Swap Widget at the bottom
                   separatorBuilder: (_, __) => const SizedBox(height: 16),
                   itemBuilder: (context, index) {
+                    // Hero Feature 2: Smart Swap at the end of list
+                    if (index == cart.items.length) {
+                      return SmartSwapWidget(onSwap: () {
+                        // Mock Swap Logic: In real app, replace item.
+                        // For now, show a snackbar.
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('Swapped! You saved ₹20.'),
+                          backgroundColor: Colors.green,
+                          behavior: SnackBarBehavior.floating,
+                          margin: const EdgeInsets.all(20),
+                        ));
+                      });
+                    }
+
                     final item = cart.items[index];
                     return Container(
                       decoration: BoxDecoration(
