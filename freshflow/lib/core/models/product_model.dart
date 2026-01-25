@@ -16,8 +16,9 @@ class Product {
     required this.marketPrice,
     required this.harvestTime,
     required this.stock,
-  }) : discountPercent =
-            ((marketPrice - currentPrice) / marketPrice * 100).round();
+            marketPrice > 0
+                ? ((marketPrice - currentPrice) / marketPrice * 100).round()
+                : 0;
 
   Map<String, dynamic> toJson() {
     return {
