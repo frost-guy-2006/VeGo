@@ -120,6 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
 
 class HomeContent extends StatelessWidget {
   const HomeContent({super.key});
@@ -132,74 +133,54 @@ class HomeContent extends StatelessWidget {
         SliverAppBar(
           pinned: true,
           floating: true,
-          backgroundColor: AppColors.background,
+          backgroundColor: Theme.of(context).cardColor,
           elevation: 0,
-          expandedHeight: 120, // Increased for badge
-          toolbarHeight: 80,
+          toolbarHeight: 90,
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.black, // Zepto-like dark badge
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.bolt, color: Colors.yellow, size: 14),
-                        const SizedBox(width: 4),
-                        Text(
-                          '10 MINS',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'to Home',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textDark,
-                    ),
-                  ),
-                ],
+              Text(
+                '12 minutes', // Dynamic later
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 28, // Big text like Image 2
+                  fontWeight: FontWeight.w800,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
               ),
-              const SizedBox(height: 4),
               Row(
                 children: [
                   Text(
-                    'HSR Layout, Sector 2',
+                    'Home - HSR Layout, Sector 2', // Combined address
                     style: GoogleFonts.plusJakartaSans(
-                      fontSize: 14,
+                      fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.secondary,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.7),
                     ),
                   ),
-                  const Icon(Icons.keyboard_arrow_down,
-                      color: AppColors.secondary, size: 18),
+                  Icon(Icons.arrow_drop_down,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.7),
+                      size: 20),
                 ],
               ),
             ],
           ),
           actions: [
-            IconButton(
-              icon: const CircleAvatar(
-                backgroundColor: Colors.white,
-                child: Icon(Icons.person, color: AppColors.textDark),
+            Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: CircleAvatar(
+                radius: 20,
+                backgroundColor:
+                    Theme.of(context).colorScheme.surfaceContainerHighest,
+                child: Icon(Icons.person,
+                    color: Theme.of(context).colorScheme.onSurface),
               ),
-              onPressed: () {},
             ),
-            const SizedBox(width: 16),
           ],
         ),
 
