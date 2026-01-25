@@ -100,7 +100,7 @@ class PriceComparisonCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
-                              '\$${product.currentPrice.toStringAsFixed(0)}',
+                              '₹${product.currentPrice.toStringAsFixed(0)}',
                               style: GoogleFonts.plusJakartaSans(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20,
@@ -111,7 +111,7 @@ class PriceComparisonCard extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.only(bottom: 2),
                               child: Text(
-                                '\$${product.marketPrice.toStringAsFixed(0)}',
+                                '₹${product.marketPrice.toStringAsFixed(0)}',
                                 style: GoogleFonts.plusJakartaSans(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 14,
@@ -153,14 +153,14 @@ class PriceComparisonCard extends StatelessWidget {
                   onPressed: product.stock > 0
                       ? () {
                           context.read<CartProvider>().addToCart(product);
-                          showModalBottomSheet(
-                            context: context,
-                            backgroundColor: Colors.transparent,
-                            isScrollControlled: true,
-                            builder: (_) => SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.7,
-                                child: const CartBottomSheet()),
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('${product.name} added to cart'),
+                              duration: const Duration(seconds: 1),
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                            ),
                           );
                         }
                       : null,

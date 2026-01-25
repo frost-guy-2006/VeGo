@@ -160,7 +160,7 @@ class CartBottomSheet extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            '\$${cart.totalPrice.toStringAsFixed(2)}',
+                            '₹${cart.totalPrice.toStringAsFixed(0)}',
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
