@@ -120,8 +120,16 @@ class HomeScreen extends StatelessWidget {
                     .map((data) =>
                         data.map((item) => Product.fromJson(item)).toList()),
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(
+                      child: Text('No flash deals available',
+                          style: GoogleFonts.plusJakartaSans(
+                              color: AppColors.secondary)),
+                    );
                   }
 
                   return ListView.builder(
@@ -198,6 +206,19 @@ class HomeScreen extends StatelessWidget {
                         ),
                       );
                     },
+                  );
+                }
+
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return SliverToBoxAdapter(
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(32.0),
+                        child: Text('No products found',
+                            style: GoogleFonts.plusJakartaSans(
+                                color: AppColors.secondary)),
+                      ),
+                    ),
                   );
                 }
 
