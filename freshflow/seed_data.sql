@@ -1,4 +1,4 @@
--- Seed Data for FreshFlow Products
+-- Seed Data for VeGo Products
 -- Run this in your Supabase SQL Editor
 
 delete from public.products; -- Clear existing products to avoid duplicates

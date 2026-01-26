@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:vego/core/models/product_model.dart';
+import 'package:vego/core/repositories/product_repository.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:vego/features/home/widgets/price_comparison_card.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -16,6 +16,7 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
+  final ProductRepository _productRepository = ProductRepository();
   List<Product> _searchResults = [];
   bool _isLoading = false;
   String? _activeColorFilter; // "Red", "Blue", etc.
@@ -54,12 +55,8 @@ class _SearchScreenState extends State<SearchScreen> {
     }
 
     try {
-      // Fetch all products (Mock search - in real app use textSearch or filtering on DB)
-      // Since we compute color client-side in model, we need to fetch all and filter client side for demo
-      final response = await Supabase.instance.client.from('products').select();
-
-      final allProducts =
-          (response as List).map((item) => Product.fromJson(item)).toList();
+      // Fetch all products using repository
+      final allProducts = await _productRepository.fetchProducts();
 
       List<Product> filtered;
       if (_activeColorFilter != null) {

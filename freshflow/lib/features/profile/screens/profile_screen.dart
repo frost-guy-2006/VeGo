@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vego/core/providers/auth_provider.dart';
+import 'package:vego/core/providers/theme_provider.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +12,7 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Mock user data
     final user = context.read<AuthProvider>().currentUser;
-    final email = user?.email ?? 'user@freshflow.com';
+    final email = user?.email ?? 'user@vego.app';
     final phone = user?.phone ?? '+91 98765 43210';
 
     return Scaffold(
@@ -44,7 +45,7 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'FreshFlow User',
+              'VeGo User',
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -76,6 +77,65 @@ class ProfileScreen extends StatelessWidget {
                       'HSR Layout, Sector 2, Bengaluru'),
                 ],
               ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Dark Mode Toggle
+            Consumer<ThemeProvider>(
+              builder: (context, themeProvider, _) {
+                return Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.04),
+                        blurRadius: 10,
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: AppColors.background,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Icon(
+                              themeProvider.isDarkMode
+                                  ? Icons.dark_mode_rounded
+                                  : Icons.light_mode_rounded,
+                              color: AppColors.primary,
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Text(
+                            'Dark Mode',
+                            style: GoogleFonts.outfit(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textDark,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Switch.adaptive(
+                        value: themeProvider.isDarkMode,
+                        onChanged: (_) => themeProvider.toggleTheme(),
+                        activeColor: AppColors.primary,
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
 
             const Spacer(),

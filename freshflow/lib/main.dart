@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vego/core/constants/env.dart';
 import 'package:vego/core/providers/auth_provider.dart';
+import 'package:vego/core/providers/theme_provider.dart';
 import 'package:vego/features/auth/screens/login_screen.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
@@ -17,11 +18,11 @@ Future<void> main() async {
     anonKey: Env.supabaseAnonKey,
   );
 
-  runApp(const FreshFlowApp());
+  runApp(const VeGoApp());
 }
 
-class FreshFlowApp extends StatelessWidget {
-  const FreshFlowApp({super.key});
+class VeGoApp extends StatelessWidget {
+  const VeGoApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -29,59 +30,66 @@ class FreshFlowApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
-      child: MaterialApp(
-        title: 'VeGo',
-        theme: AppTheme.lightTheme,
-        debugShowCheckedModeBanner: false,
-        builder: (context, child) {
-          return Stack(
-            children: [
-              if (child != null) child,
-              StreamBuilder<List<ConnectivityResult>>(
-                stream: Connectivity().onConnectivityChanged,
-                builder: (context, snapshot) {
-                  final isOffline = snapshot.hasData &&
-                      (snapshot.data!.contains(ConnectivityResult.none) ||
-                          snapshot.data!.isEmpty);
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            title: 'VeGo',
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeProvider.themeMode,
+            debugShowCheckedModeBanner: false,
+            builder: (context, child) {
+              return Stack(
+                children: [
+                  if (child != null) child,
+                  StreamBuilder<List<ConnectivityResult>>(
+                    stream: Connectivity().onConnectivityChanged,
+                    builder: (context, snapshot) {
+                      final isOffline = snapshot.hasData &&
+                          (snapshot.data!.contains(ConnectivityResult.none) ||
+                              snapshot.data!.isEmpty);
 
-                  if (isOffline) {
-                    return Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      child: Material(
-                        color: Colors.red,
-                        child: SafeArea(
-                          top: false,
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            alignment: Alignment.center,
-                            child: const Text(
-                              'No Internet Connection',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
+                      if (isOffline) {
+                        return Positioned(
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          child: Material(
+                            color: Colors.red,
+                            child: SafeArea(
+                              top: false,
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                alignment: Alignment.center,
+                                child: const Text(
+                                  'No Internet Connection',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    );
-                  }
-                  return const SizedBox.shrink();
-                },
-              ),
-            ],
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
+                ],
+              );
+            },
+            home: Consumer<AuthProvider>(
+              builder: (context, auth, _) {
+                // Check for existing session
+                return auth.isAuthenticated
+                    ? const HomeScreen()
+                    : const LoginScreen();
+              },
+            ),
           );
         },
-        home: Consumer<AuthProvider>(
-          builder: (context, auth, _) {
-            // Check for existing session
-            return auth.isAuthenticated
-                ? const HomeScreen()
-                : const LoginScreen();
-          },
-        ),
       ),
     );
   }

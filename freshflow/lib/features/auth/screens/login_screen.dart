@@ -135,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 const SizedBox(height: 48),
                 Text(
-                  'Welcome to\nFreshFlow',
+                  'Welcome to\nVeGo',
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,

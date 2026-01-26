@@ -126,7 +126,7 @@ class ProductDetailScreen extends StatelessWidget {
                             color: AppColors.secondary.withValues(alpha: 0.3),
                             isHigh: false),
                         _LocalPriceBar(
-                            label: 'FreshFlow',
+                            label: 'VeGo',
                             price: product.currentPrice,
                             color: AppColors.accent,
                             isHigh: false,

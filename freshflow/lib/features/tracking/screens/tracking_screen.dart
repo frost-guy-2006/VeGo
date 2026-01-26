@@ -189,7 +189,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
             children: [
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.freshflow.app',
+                userAgentPackageName: 'com.vego.app',
               ),
               PolylineLayer(
                 polylines: [

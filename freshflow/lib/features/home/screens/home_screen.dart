@@ -224,10 +224,11 @@ class HomeContent extends StatelessWidget {
             child: StreamBuilder<List<Product>>(
               stream: Supabase.instance.client
                   .from('products')
-                  .stream(primaryKey: ['id'])
+                  .select()
                   .limit(5)
-                  .map((data) =>
-                      data.map((item) => Product.fromJson(item)).toList()),
+                  .then((data) =>
+                      data.map((item) => Product.fromJson(item)).toList())
+                  .asStream(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -274,8 +275,10 @@ class HomeContent extends StatelessWidget {
           sliver: StreamBuilder<List<Product>>(
             stream: Supabase.instance.client
                 .from('products')
-                .stream(primaryKey: ['id']).map((data) =>
-                    data.map((item) => Product.fromJson(item)).toList()),
+                .select()
+                .then((data) =>
+                    data.map((item) => Product.fromJson(item)).toList())
+                .asStream(),
             builder: (context, snapshot) {
               if (snapshot.hasError) {
                 debugPrint('Product Stream Error: ${snapshot.error}');
