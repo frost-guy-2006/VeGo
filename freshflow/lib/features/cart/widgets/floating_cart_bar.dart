@@ -83,7 +83,7 @@ class _FloatingCartBarState extends State<FloatingCartBar>
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primary.withOpacity(0.4),
+                      color: AppColors.primary.withValues(alpha: 0.4),
                       blurRadius: 20,
                       offset: const Offset(0, 8),
                     ),
@@ -102,7 +102,7 @@ class _FloatingCartBarState extends State<FloatingCartBar>
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -122,7 +122,7 @@ class _FloatingCartBarState extends State<FloatingCartBar>
                             Text(
                               'item${cart.items.length > 1 ? 's' : ''} in cart',
                               style: GoogleFonts.outfit(
-                                color: Colors.white.withOpacity(0.8),
+                                color: Colors.white.withValues(alpha: 0.8),
                                 fontSize: 11,
                                 letterSpacing: 0.5,
                               ),

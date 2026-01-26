@@ -163,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       onSelected: (selected) {
                         setState(() => _isEmailMode = !selected);
                       },
-                      selectedColor: AppColors.primary.withOpacity(0.2),
+                      selectedColor: AppColors.primary.withValues(alpha: 0.2),
                       labelStyle: TextStyle(
                         color: !_isEmailMode ? AppColors.primary : Colors.grey,
                         fontWeight: FontWeight.bold,
@@ -176,7 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       onSelected: (selected) {
                         setState(() => _isEmailMode = selected);
                       },
-                      selectedColor: AppColors.primary.withOpacity(0.2),
+                      selectedColor: AppColors.primary.withValues(alpha: 0.2),
                       labelStyle: TextStyle(
                         color: _isEmailMode ? AppColors.primary : Colors.grey,
                         fontWeight: FontWeight.bold,
