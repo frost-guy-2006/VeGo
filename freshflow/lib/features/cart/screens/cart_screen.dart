@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:vego/core/providers/cart_provider.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:vego/features/cart/widgets/cart_hero_widgets.dart';
@@ -93,17 +94,16 @@ class CartScreen extends StatelessWidget {
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: Image.network(
-                              item.product.imageUrl,
+                            child: CachedNetworkImage(
+                              imageUrl: item.product.imageUrl,
                               width: 80,
                               height: 80,
                               fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  Container(
-                                width: 80,
-                                height: 80,
+                              placeholder: (context, url) => Container(
                                 color: Colors.grey[200],
                               ),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
                             ),
                           ),
                           const SizedBox(width: 16),

@@ -8,6 +8,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:vego/core/models/product_model.dart';
 import 'package:vego/core/theme/app_colors.dart';
+import 'package:vego/core/repositories/product_repository.dart';
 import 'package:vego/features/home/widgets/flash_price_widget.dart';
 import 'package:vego/features/home/widgets/price_comparison_card.dart';
 import 'package:vego/features/home/widgets/rain_mode_overlay.dart';
@@ -65,21 +66,22 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildNavItem(Icons.home_filled, 0),
-            _buildNavItem(Icons.shopping_bag_outlined, 1),
-            _buildNavItem(Icons.person_outline, 2),
+            _buildNavItem(Icons.home_rounded, Icons.home_outlined, 0),
+            _buildNavItem(
+                Icons.shopping_bag_rounded, Icons.shopping_bag_outlined, 1),
+            _buildNavItem(Icons.person_rounded, Icons.person_outline, 2),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildNavItem(IconData icon, int index) {
-    // Consumer to show badge on Cart Icon if needed, but we have floating bar now
+  Widget _buildNavItem(
+      IconData selectedIcon, IconData unselectedIcon, int index) {
     final isSelected = _currentIndex == index;
     return IconButton(
       icon: Icon(
-        icon,
+        isSelected ? selectedIcon : unselectedIcon,
         color: isSelected ? AppColors.primary : AppColors.secondary,
         size: 28,
       ),
@@ -92,284 +94,455 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class HomeContent extends StatelessWidget {
+class HomeContent extends StatefulWidget {
   const HomeContent({super.key});
 
   @override
+  State<HomeContent> createState() => _HomeContentState();
+}
+
+class _HomeContentState extends State<HomeContent> {
+  // Key to force rebuild of StreamBuilders on refresh
+  Key _refreshKey = UniqueKey();
+
+  late Future<List<Product>> _flashDealsFuture;
+
+  // Pagination state
+  final ProductRepository _productRepository = ProductRepository();
+  final ScrollController _scrollController = ScrollController();
+  List<Product> _products = [];
+  int _currentPage = 0;
+  bool _isLoading = false;
+  bool _hasMore = true;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _flashDealsFuture = _loadFlashDeals();
+    _loadInitialProducts();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    // Trigger load more when user scrolls near the bottom
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      _loadMoreProducts();
+    }
+  }
+
+  Future<void> _loadInitialProducts() async {
+    if (_isLoading) return;
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final products = await _productRepository.fetchProductsPaginated(
+        page: 0,
+        pageSize: ProductRepository.defaultPageSize,
+      );
+
+      setState(() {
+        _products = products;
+        _currentPage = 0;
+        _hasMore = products.length >= ProductRepository.defaultPageSize;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _loadMoreProducts() async {
+    if (_isLoading || !_hasMore) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final nextPage = _currentPage + 1;
+      final newProducts = await _productRepository.fetchProductsPaginated(
+        page: nextPage,
+        pageSize: ProductRepository.defaultPageSize,
+      );
+
+      setState(() {
+        _products.addAll(newProducts);
+        _currentPage = nextPage;
+        _hasMore = newProducts.length >= ProductRepository.defaultPageSize;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _onRefresh() async {
+    setState(() {
+      _refreshKey = UniqueKey();
+      _flashDealsFuture = _loadFlashDeals();
+      _products = [];
+      _currentPage = 0;
+      _hasMore = true;
+    });
+
+    await _loadInitialProducts();
+  }
+
+  Future<List<Product>> _loadFlashDeals() async {
+    final data =
+        await Supabase.instance.client.from('products').select().limit(5);
+    return data.map((item) => Product.fromJson(item)).toList();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        // Sticky Header with 10-min Delivery Badge
-        SliverAppBar(
-          pinned: true,
-          floating: true,
-          backgroundColor: AppColors.background,
-          elevation: 0,
-          expandedHeight: 90, // Reduced from 120
-          toolbarHeight: 70, // Reduced from 80
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.black, // Zepto-like dark badge
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.bolt, color: Colors.yellow, size: 14),
-                        const SizedBox(width: 4),
-                        Text(
-                          '10 MINS',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'to Home',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textDark,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Row(
-                children: [
-                  Text(
-                    'HSR Layout, Sector 2',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.secondary,
-                    ),
-                  ),
-                  const Icon(Icons.keyboard_arrow_down,
-                      color: AppColors.secondary, size: 18),
-                ],
-              ),
-            ],
-          ),
-          actions: [
-            IconButton(
-              icon: const CircleAvatar(
-                backgroundColor: Colors.white,
-                child: Icon(Icons.person, color: AppColors.textDark),
-              ),
-              onPressed: () {},
-            ),
-            const SizedBox(width: 16),
-          ],
-        ),
-
-        // Search Field
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 16), // Removed vertical padding
-            child: GestureDetector(
-              onTap: () {
-                Navigator.of(context).push(PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) =>
-                      const SearchScreen(),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(opacity: animation, child: child);
-                  },
-                ));
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.black.withOpacity(0.05)),
-                ),
-                child: Row(
+    return RefreshIndicator(
+      onRefresh: _onRefresh,
+      color: AppColors.primary,
+      backgroundColor: AppColors.surface,
+      strokeWidth: 3,
+      displacement: 60,
+      child: CustomScrollView(
+        key: _refreshKey,
+        controller: _scrollController,
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          // Sticky Header with 10-min Delivery Badge
+          SliverAppBar(
+            pinned: true,
+            floating: true,
+            backgroundColor: AppColors.background,
+            elevation: 0,
+            expandedHeight: 90, // Reduced from 120
+            toolbarHeight: 70, // Reduced from 80
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    const Icon(Icons.search, color: AppColors.secondary),
-                    const SizedBox(width: 12),
-                    Text(
-                      'Search "Red" or "Tomato"', // Updated hint for discovery
-                      style: GoogleFonts.plusJakartaSans(
-                          color: AppColors.secondary),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-
-        // Categories Bar (Horizontal)
-        const CategoryGrid(),
-
-        // Scrollable Flash Widgets
-        SliverToBoxAdapter(
-          child: SizedBox(
-            height: 200,
-            child: StreamBuilder<List<Product>>(
-              stream: Supabase.instance.client
-                  .from('products')
-                  .select()
-                  .limit(5)
-                  .then((data) =>
-                      data.map((item) => Product.fromJson(item)).toList())
-                  .asStream(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const SizedBox.shrink();
-                }
-
-                return ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 16),
-                      child: FlashPriceWidget(product: snapshot.data![index]),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-        ),
-
-        // Section Title
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              'Fresh Harvest',
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textDark,
-              ),
-            ),
-          ),
-        ),
-
-        // Product Grid
-        SliverPadding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          sliver: StreamBuilder<List<Product>>(
-            stream: Supabase.instance.client
-                .from('products')
-                .select()
-                .then((data) =>
-                    data.map((item) => Product.fromJson(item)).toList())
-                .asStream(),
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                debugPrint('Product Stream Error: ${snapshot.error}');
-                return SliverToBoxAdapter(
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(32.0),
-                      child: Text('Error loading products: ${snapshot.error}',
-                          style:
-                              GoogleFonts.plusJakartaSans(color: Colors.red)),
-                    ),
-                  ),
-                );
-              }
-
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return SliverMasonryGrid.count(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  childCount: 4,
-                  itemBuilder: (context, index) {
-                    return Shimmer.fromColors(
-                      baseColor: Colors.grey[300]!,
-                      highlightColor: Colors.grey[100]!,
-                      child: Container(
-                        height: 240,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.black, // Zepto-like dark badge
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                    );
-                  },
-                );
-              }
-
-              if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return SliverToBoxAdapter(
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(32.0),
-                      child: Column(
+                      child: Row(
                         children: [
-                          const Icon(Icons.shopping_basket_outlined,
-                              size: 48, color: Colors.grey),
-                          const SizedBox(height: 16),
-                          Text('No products found',
-                              style: GoogleFonts.plusJakartaSans(
-                                  color: AppColors
-                                      .textDark, // Dark color for visibility
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold)),
-                          Text('Try running the seed script.',
-                              style: GoogleFonts.plusJakartaSans(
-                                  color: AppColors.secondary, fontSize: 12)),
-                          const SizedBox(height: 16),
-                          ElevatedButton.icon(
-                            onPressed: _seedData,
-                            icon: const Icon(Icons.cloud_upload, size: 16),
-                            label: const Text('Seed Database'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primary,
-                              foregroundColor: Colors.white,
+                          const Icon(Icons.bolt,
+                              color: Colors.yellow, size: 14),
+                          const SizedBox(width: 4),
+                          Text(
+                            '10 MINS',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                );
-              }
+                    const SizedBox(width: 8),
+                    Text(
+                      'to Home',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textDark,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Text(
+                      'HSR Layout, Sector 2',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.secondary,
+                      ),
+                    ),
+                    const Icon(Icons.keyboard_arrow_down,
+                        color: AppColors.secondary, size: 18),
+                  ],
+                ),
+              ],
+            ),
+            actions: [
+              IconButton(
+                icon: const CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.person, color: AppColors.textDark),
+                ),
+                onPressed: () {},
+              ),
+              const SizedBox(width: 16),
+            ],
+          ),
 
-              return SliverMasonryGrid.count(
-                crossAxisCount: 2,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                childCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  return SizedBox(
-                    child: PriceComparisonCard(product: snapshot.data![index]),
+          // Search Field
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 16), // Removed vertical padding
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        const SearchScreen(),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      return FadeTransition(opacity: animation, child: child);
+                    },
+                  ));
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.black.withOpacity(0.05)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.search, color: AppColors.secondary),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Search "Red" or "Tomato"', // Updated hint for discovery
+                        style: GoogleFonts.plusJakartaSans(
+                            color: AppColors.secondary),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // Categories Bar (Horizontal)
+          const CategoryGrid(),
+
+          // Scrollable Flash Widgets
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: 200,
+              child: FutureBuilder<List<Product>>(
+                future: _flashDealsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 16),
+                        child: FlashPriceWidget(product: snapshot.data![index]),
+                      );
+                    },
                   );
                 },
-              );
-            },
+              ),
+            ),
+          ),
+
+          // Section Title
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                'Fresh Harvest',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textDark,
+                ),
+              ),
+            ),
+          ),
+
+          // Product Grid - Now using paginated data
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            sliver: _buildProductGrid(),
+          ),
+
+          // Loading indicator for pagination
+          if (_isLoading && _products.isNotEmpty)
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 24),
+                child: Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(AppColors.primary),
+                  ),
+                ),
+              ),
+            ),
+
+          // "Load more" indicator or "End of list" message
+          if (!_hasMore && _products.isNotEmpty)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Center(
+                  child: Text(
+                    'You\'ve seen all products! 🎉',
+                    style: GoogleFonts.plusJakartaSans(
+                      color: AppColors.secondary,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+          // Bottom Padding for Floating Bar
+          const SliverToBoxAdapter(child: SizedBox(height: 100)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProductGrid() {
+    // Initial loading state
+    if (_isLoading && _products.isEmpty) {
+      return SliverMasonryGrid.count(
+        crossAxisCount: 2,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        childCount: 4,
+        itemBuilder: (context, index) {
+          return Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Container(
+              height: 240,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+          );
+        },
+      );
+    }
+
+    // Error state
+    if (_errorMessage != null && _products.isEmpty) {
+      return SliverToBoxAdapter(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32.0),
+            child: Column(
+              children: [
+                const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                const SizedBox(height: 16),
+                Text('Error loading products',
+                    style: GoogleFonts.plusJakartaSans(
+                        color: AppColors.textDark,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold)),
+                Text(_errorMessage!,
+                    style: GoogleFonts.plusJakartaSans(
+                        color: AppColors.secondary, fontSize: 12)),
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: _loadInitialProducts,
+                  icon: const Icon(Icons.refresh, size: 16),
+                  label: const Text('Retry'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
+      );
+    }
 
-        // Bottom Padding for Floating Bar
-        const SliverToBoxAdapter(child: SizedBox(height: 100)),
-      ],
+    // Empty state
+    if (_products.isEmpty) {
+      return SliverToBoxAdapter(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32.0),
+            child: Column(
+              children: [
+                const Icon(Icons.shopping_basket_outlined,
+                    size: 48, color: Colors.grey),
+                const SizedBox(height: 16),
+                Text('No products found',
+                    style: GoogleFonts.plusJakartaSans(
+                        color: AppColors.textDark,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold)),
+                Text('Try running the seed script.',
+                    style: GoogleFonts.plusJakartaSans(
+                        color: AppColors.secondary, fontSize: 12)),
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: _seedData,
+                  icon: const Icon(Icons.cloud_upload, size: 16),
+                  label: const Text('Seed Database'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Products grid with pagination
+    return SliverMasonryGrid.count(
+      crossAxisCount: 2,
+      mainAxisSpacing: 12,
+      crossAxisSpacing: 12,
+      childCount: _products.length,
+      itemBuilder: (context, index) {
+        return SizedBox(
+          child: PriceComparisonCard(
+            product: _products[index],
+            index: index,
+          ),
+        );
+      },
     );
   }
 

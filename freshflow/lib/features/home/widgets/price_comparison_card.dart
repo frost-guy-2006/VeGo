@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:vego/core/models/product_model.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:vego/core/theme/app_theme.dart';
+import 'package:vego/core/providers/wishlist_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:vego/core/providers/cart_provider.dart';
 import 'package:vego/features/product/screens/product_detail_screen.dart';
@@ -280,6 +281,84 @@ class _PriceComparisonCardState extends State<PriceComparisonCard> {
                         letterSpacing: 0.5,
                       ),
                     ),
+                  ),
+                ),
+
+                // Wishlist/Favorite Button
+                Positioned(
+                  top: 12,
+                  right: 12,
+                  child: Consumer<WishlistProvider>(
+                    builder: (context, wishlistProvider, child) {
+                      final isInWishlist =
+                          wishlistProvider.isInWishlist(product.id);
+                      return GestureDetector(
+                        onTap: () {
+                          wishlistProvider.toggleWishlist(product);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Row(
+                                children: [
+                                  Icon(
+                                    isInWishlist
+                                        ? Icons.heart_broken
+                                        : Icons.favorite,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    isInWishlist
+                                        ? 'Removed from wishlist'
+                                        : 'Added to wishlist',
+                                  ),
+                                ],
+                              ),
+                              duration: const Duration(milliseconds: 1500),
+                              behavior: SnackBarBehavior.floating,
+                              backgroundColor: isInWishlist
+                                  ? AppColors.secondary
+                                  : AppColors.accent,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12)),
+                            ),
+                          );
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: isInWishlist
+                                ? AppColors.accent.withOpacity(0.9)
+                                : Colors.black.withOpacity(0.3),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 200),
+                            transitionBuilder:
+                                (Widget child, Animation<double> animation) {
+                              return ScaleTransition(
+                                  scale: animation, child: child);
+                            },
+                            child: Icon(
+                              isInWishlist
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              key: ValueKey<bool>(isInWishlist),
+                              color: Colors.white,
+                              size: 18,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
 

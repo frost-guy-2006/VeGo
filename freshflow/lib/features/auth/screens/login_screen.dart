@@ -163,10 +163,17 @@ class _LoginScreenState extends State<LoginScreen> {
                       onSelected: (selected) {
                         setState(() => _isEmailMode = !selected);
                       },
-                      selectedColor: AppColors.primary.withOpacity(0.2),
+                      selectedColor: AppColors.primary,
+                      backgroundColor: AppColors.surfaceAlt,
                       labelStyle: TextStyle(
-                        color: !_isEmailMode ? AppColors.primary : Colors.grey,
+                        color:
+                            !_isEmailMode ? Colors.white : AppColors.textMuted,
                         fontWeight: FontWeight.bold,
+                      ),
+                      checkmarkColor: Colors.white,
+                      side: BorderSide.none,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -176,10 +183,17 @@ class _LoginScreenState extends State<LoginScreen> {
                       onSelected: (selected) {
                         setState(() => _isEmailMode = selected);
                       },
-                      selectedColor: AppColors.primary.withOpacity(0.2),
+                      selectedColor: AppColors.primary,
+                      backgroundColor: AppColors.surfaceAlt,
                       labelStyle: TextStyle(
-                        color: _isEmailMode ? AppColors.primary : Colors.grey,
+                        color:
+                            _isEmailMode ? Colors.white : AppColors.textMuted,
                         fontWeight: FontWeight.bold,
+                      ),
+                      checkmarkColor: Colors.white,
+                      side: BorderSide.none,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
                       ),
                     ),
                   ],
@@ -202,10 +216,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
+                        color: AppColors.textDark,
                       ),
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         hintText: '+91 98765 43210',
+                        hintStyle: TextStyle(color: AppColors.textMuted),
                         prefixIcon: Icon(Icons.phone_android,
                             color: AppColors.secondary),
                       ),
@@ -219,6 +235,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: isLoading ? null : _signInPhone,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -250,10 +267,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
+                        color: AppColors.textDark,
                       ),
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         hintText: 'john@example.com',
+                        hintStyle: TextStyle(color: AppColors.textMuted),
                         prefixIcon: Icon(Icons.email_outlined,
                             color: AppColors.secondary),
                       ),
@@ -275,10 +294,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
+                        color: AppColors.textDark,
                       ),
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         hintText: 'Password',
+                        hintStyle: TextStyle(color: AppColors.textMuted),
                         prefixIcon: Icon(Icons.lock_outline,
                             color: AppColors.secondary),
                       ),
@@ -294,6 +315,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             onPressed: isLoading ? null : _signUpEmail,
                             style: OutlinedButton.styleFrom(
                               side: const BorderSide(color: AppColors.primary),
+                              foregroundColor: AppColors.primary,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -319,6 +341,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             onPressed: isLoading ? null : _signInEmail,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),

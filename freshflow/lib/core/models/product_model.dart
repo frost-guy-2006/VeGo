@@ -64,7 +64,9 @@ class Product {
     return Product(
       id: json['id'],
       name: name,
-      imageUrl: json['image_url'] ?? json['imageUrl'] ?? '',
+      imageUrl: (json['image_url'] ?? json['imageUrl'] ?? '').toString().isEmpty
+          ? _getDefaultImage(name)
+          : (json['image_url'] ?? json['imageUrl']),
       currentPrice:
           (json['current_price'] ?? json['currentPrice'] as num?)?.toDouble() ??
               0.0,
@@ -75,5 +77,40 @@ class Product {
       stock: json['stock'] as int? ?? 0,
       color: inferredColor,
     );
+  }
+
+  static String _getDefaultImage(String productName) {
+    final name = productName.toLowerCase();
+    if (name.contains('tomato')) {
+      return 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=300&q=80';
+    } else if (name.contains('carrot')) {
+      return 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&w=300&q=80';
+    } else if (name.contains('spinach')) {
+      return 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?auto=format&fit=crop&w=300&q=80';
+    } else if (name.contains('broccoli')) {
+      return 'https://images.unsplash.com/photo-1459411621453-7b03977f4bfc?auto=format&fit=crop&w=300&q=80';
+    } else if (name.contains('apple')) {
+      return 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=300&q=80';
+    } else if (name.contains('banana')) {
+      return 'https://images.unsplash.com/photo-1571771896328-7963057c1e9c?auto=format&fit=crop&w=300&q=80';
+    } else if (name.contains('orange')) {
+      return 'https://images.unsplash.com/photo-1547514701-42782101795e?auto=format&fit=crop&w=300&q=80';
+    } else if (name.contains('potato')) {
+      return 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=300&q=80';
+    } else if (name.contains('onion')) {
+      return 'https://images.unsplash.com/photo-1506801718693-6cbe163dd497?auto=format&fit=crop&w=300&q=80';
+    } else if (name.contains('cucumber')) {
+      return 'https://images.unsplash.com/photo-1449300079323-02e209d9d3a6?auto=format&fit=crop&w=300&q=80';
+    } else if (name.contains('pepper') || name.contains('capsicum')) {
+      return 'https://images.unsplash.com/photo-1563565375-f3fdf5dbc240?auto=format&fit=crop&w=300&q=80';
+    } else if (name.contains('milk')) {
+      return 'https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=300&q=80';
+    } else if (name.contains('bread')) {
+      return 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=300&q=80';
+    } else if (name.contains('egg')) {
+      return 'https://images.unsplash.com/photo-1519448135893-b6ed8e37602e?auto=format&fit=crop&w=300&q=80';
+    }
+    // Generic fresh produce fallback
+    return 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=300&q=80';
   }
 }

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:vego/core/constants/env.dart';
 import 'package:vego/core/providers/auth_provider.dart';
 import 'package:vego/core/providers/theme_provider.dart';
+import 'package:vego/core/providers/wishlist_provider.dart';
+import 'package:vego/core/providers/order_provider.dart';
+import 'package:vego/core/providers/address_provider.dart';
 import 'package:vego/features/auth/screens/login_screen.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
@@ -31,6 +34,21 @@ class VeGoApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) {
+          final wishlistProvider = WishlistProvider();
+          wishlistProvider.loadFromStorage();
+          return wishlistProvider;
+        }),
+        ChangeNotifierProvider(create: (_) {
+          final orderProvider = OrderProvider();
+          orderProvider.loadFromStorage();
+          return orderProvider;
+        }),
+        ChangeNotifierProvider(create: (_) {
+          final addressProvider = AddressProvider();
+          addressProvider.loadFromStorage();
+          return addressProvider;
+        }),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {

@@ -5,6 +5,9 @@ import 'package:vego/core/models/product_model.dart';
 class ProductRepository {
   final SupabaseClient _client = Supabase.instance.client;
 
+  /// Default page size for pagination
+  static const int defaultPageSize = 10;
+
   /// Fetch all products from database
   Future<List<Product>> fetchProducts() async {
     final response = await _client
@@ -13,6 +16,46 @@ class ProductRepository {
         .order('created_at', ascending: false);
 
     return (response as List).map((json) => Product.fromJson(json)).toList();
+  }
+
+  /// Fetch products with pagination support
+  /// [page] - Zero-indexed page number
+  /// [pageSize] - Number of items per page
+  Future<List<Product>> fetchProductsPaginated({
+    int page = 0,
+    int pageSize = defaultPageSize,
+    String? category,
+  }) async {
+    final offset = page * pageSize;
+
+    var query = _client.from('products').select();
+
+    // Apply category filter if specified
+    if (category != null && category != 'All') {
+      query = query.eq('category', category);
+    }
+
+    final response = await query
+        .order('created_at', ascending: false)
+        .range(offset, offset + pageSize - 1);
+
+    return (response as List).map((json) => Product.fromJson(json)).toList();
+  }
+
+  /// Check if there are more products to load
+  Future<bool> hasMoreProducts({
+    int currentCount = 0,
+    String? category,
+  }) async {
+    var query = _client.from('products').select('id');
+
+    if (category != null && category != 'All') {
+      query = query.eq('category', category);
+    }
+
+    final response = await query;
+    final totalCount = (response as List).length;
+    return currentCount < totalCount;
   }
 
   /// Fetch products by category
