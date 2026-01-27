@@ -55,12 +55,12 @@ class _PriceComparisonCardState extends State<PriceComparisonCard> {
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: AppColors.border.withOpacity(0.5),
+                color: AppColors.border.withValues(alpha: 0.5),
                 width: 1,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primary.withOpacity(0.08),
+                  color: AppColors.primary.withValues(alpha: 0.08),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                 ),
@@ -114,7 +114,7 @@ class _PriceComparisonCardState extends State<PriceComparisonCard> {
                                     end: Alignment.bottomCenter,
                                     colors: [
                                       Colors.transparent,
-                                      AppColors.primary.withOpacity(0.05),
+                                      AppColors.primary.withValues(alpha: 0.05),
                                     ],
                                   ),
                                 ),
@@ -217,7 +217,7 @@ class _PriceComparisonCardState extends State<PriceComparisonCard> {
                           color: (product.stock > 0
                                   ? AppColors.accent
                                   : Colors.grey)
-                              .withOpacity(0.4),
+                              .withValues(alpha: 0.4),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
@@ -266,7 +266,7 @@ class _PriceComparisonCardState extends State<PriceComparisonCard> {
                       borderRadius: BorderRadius.circular(10),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.accentWarm.withOpacity(0.4),
+                          color: AppColors.accentWarm.withValues(alpha: 0.4),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -329,12 +329,12 @@ class _PriceComparisonCardState extends State<PriceComparisonCard> {
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
                             color: isInWishlist
-                                ? AppColors.accent.withOpacity(0.9)
-                                : Colors.black.withOpacity(0.3),
+                                ? AppColors.accent.withValues(alpha: 0.9)
+                                : Colors.black.withValues(alpha: 0.3),
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
+                                color: Colors.black.withValues(alpha: 0.2),
                                 blurRadius: 8,
                                 offset: const Offset(0, 2),
                               ),
@@ -371,10 +371,10 @@ class _PriceComparisonCardState extends State<PriceComparisonCard> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: AppColors.error.withOpacity(0.1),
+                        color: AppColors.error.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
                         border:
-                            Border.all(color: AppColors.error.withOpacity(0.3)),
+                            Border.all(color: AppColors.error.withValues(alpha: 0.3)),
                       ),
                       child: Text(
                         'Only ${product.stock} left!',
