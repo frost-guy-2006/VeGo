@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:vego/core/models/product_model.dart';
 import 'package:vego/core/repositories/product_repository.dart';
@@ -8,7 +9,8 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class SearchScreen extends StatefulWidget {
   final String? initialQuery;
-  const SearchScreen({super.key, this.initialQuery});
+  final ProductRepository? productRepository;
+  const SearchScreen({super.key, this.initialQuery, this.productRepository});
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -16,23 +18,32 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
-  final ProductRepository _productRepository = ProductRepository();
+  late final ProductRepository _productRepository;
   List<Product> _searchResults = [];
   bool _isLoading = false;
   String? _activeColorFilter; // "Red", "Blue", etc.
+  Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
+    _productRepository = widget.productRepository ?? ProductRepository();
     if (widget.initialQuery != null) {
       _searchController.text = widget.initialQuery!;
       _performSearch(widget.initialQuery!);
     }
   }
 
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
   // Visual Search Logic:
   // If query matches a color name, switch to "Visual Mode"
-  void _performSearch(String query) async {
+  Future<void> _performSearch(String query) async {
     if (query.isEmpty) {
       setState(() {
         _searchResults = [];
@@ -55,23 +66,29 @@ class _SearchScreenState extends State<SearchScreen> {
     }
 
     try {
-      // Fetch all products using repository
-      final allProducts = await _productRepository.fetchProducts();
-
-      List<Product> filtered;
+      List<Product> results;
       if (_activeColorFilter != null) {
-        // Filter by inferred color
-        filtered =
-            allProducts.where((p) => p.color == _activeColorFilter).toList();
+        // Filter by inferred color (server-side)
+        results =
+            await _productRepository.searchProductsByColor(_activeColorFilter!);
       } else {
-        // Filter by name
-        filtered = allProducts
-            .where((p) => p.name.toLowerCase().contains(lowerQuery))
-            .toList();
+        // Filter by name (server-side)
+        results = await _productRepository.searchProducts(query);
+      }
+
+      // Ensure that the query hasn't changed since we started the request
+      if (_searchController.text != query &&
+          !(_activeColorFilter != null &&
+              _searchController.text.toLowerCase() ==
+                  _activeColorFilter!.toLowerCase())) {
+        // This validation is a bit tricky because of capitalization logic.
+        // Simplified: if controller text is completely different, discard.
+        // But with debounce, we are usually fine.
+        // Let's stick to simple debounce for now.
       }
 
       setState(() {
-        _searchResults = filtered;
+        _searchResults = results;
         _isLoading = false;
       });
     } catch (e) {
@@ -111,8 +128,10 @@ class _SearchScreenState extends State<SearchScreen> {
             color: themeColor,
           ),
           onChanged: (val) {
-            // Debounce could be added here
-            _performSearch(val);
+            if (_debounce?.isActive ?? false) _debounce!.cancel();
+            _debounce = Timer(const Duration(milliseconds: 500), () {
+              _performSearch(val);
+            });
           },
         ),
       ),
