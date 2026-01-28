@@ -23,7 +23,6 @@ class AppTheme {
         secondary: AppColors.primaryLight,
         tertiary: AppColors.accent,
         surface: AppColors.surface,
-        background: AppColors.background,
       ),
       // Typography: Space Grotesk for headings, Outfit for body
       textTheme: TextTheme(
@@ -187,7 +186,7 @@ class AppTheme {
         ),
         bodyMedium: GoogleFonts.outfit(
           fontSize: 14,
-          color: AppColors.textLight.withOpacity(0.7),
+          color: AppColors.textLight.withValues(alpha: 0.7),
         ),
       ),
       cardTheme: CardThemeData(
