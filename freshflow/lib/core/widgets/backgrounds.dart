@@ -59,7 +59,7 @@ class DecorativeBlob extends StatelessWidget {
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.3),
+            color: color.withValues(alpha: 0.3),
             blurRadius: blur,
             spreadRadius: blur / 2,
           ),
@@ -89,15 +89,15 @@ class FrostedGlass extends StatelessWidget {
       child: Container(
         padding: padding ?? const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.7),
+          color: Colors.white.withValues(alpha: 0.7),
           borderRadius: BorderRadius.circular(borderRadius),
           border: Border.all(
-            color: Colors.white.withOpacity(0.3),
+            color: Colors.white.withValues(alpha: 0.3),
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),

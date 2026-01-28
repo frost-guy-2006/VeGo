@@ -84,7 +84,7 @@ class AddressManagementScreen extends StatelessWidget {
               width: 120,
               height: 120,
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -217,7 +217,7 @@ class _AddressCard extends StatelessWidget {
             : null,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
           ),
         ],
@@ -233,7 +233,7 @@ class _AddressCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
+                    color: AppColors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -663,8 +663,8 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(16)),
                   ),
                 ),
                 child: _isLoading
@@ -726,21 +726,21 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
               prefixIcon: Icon(icon, color: AppColors.secondary, size: 20),
               filled: true,
               fillColor: Colors.white,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+              border: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(12)),
                 borderSide: BorderSide(color: AppColors.border),
               ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+              enabledBorder: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(12)),
                 borderSide: BorderSide(color: AppColors.border),
               ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.primary),
+              focusedBorder: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+                borderSide: BorderSide(color: AppColors.primary),
               ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.error),
+              errorBorder: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+                borderSide: BorderSide(color: AppColors.error),
               ),
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
