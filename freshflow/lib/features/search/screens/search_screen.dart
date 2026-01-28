@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:vego/core/models/product_model.dart';
 import 'package:vego/core/repositories/product_repository.dart';
@@ -8,7 +9,8 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class SearchScreen extends StatefulWidget {
   final String? initialQuery;
-  const SearchScreen({super.key, this.initialQuery});
+  final ProductRepository? productRepository;
+  const SearchScreen({super.key, this.initialQuery, this.productRepository});
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -16,67 +18,92 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
-  final ProductRepository _productRepository = ProductRepository();
+  late final ProductRepository _productRepository;
   List<Product> _searchResults = [];
   bool _isLoading = false;
   String? _activeColorFilter; // "Red", "Blue", etc.
+  Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
+    _productRepository = widget.productRepository ?? ProductRepository();
     if (widget.initialQuery != null) {
       _searchController.text = widget.initialQuery!;
-      _performSearch(widget.initialQuery!);
+      _executeSearch(widget.initialQuery!);
     }
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _performSearch(String query) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      if (mounted) _executeSearch(query);
+    });
   }
 
   // Visual Search Logic:
   // If query matches a color name, switch to "Visual Mode"
-  void _performSearch(String query) async {
+  Future<void> _executeSearch(String query) async {
     if (query.isEmpty) {
-      setState(() {
-        _searchResults = [];
-        _activeColorFilter = null;
-      });
+      if (mounted) {
+        setState(() {
+          _searchResults = [];
+          _activeColorFilter = null;
+        });
+      }
       return;
     }
 
-    setState(() => _isLoading = true);
+    if (mounted) setState(() => _isLoading = true);
 
     // Check for color keywords
     final lowerQuery = query.toLowerCase();
+    String? localActiveColorFilter;
     if (['red', 'blue', 'green', 'orange', 'yellow'].contains(lowerQuery)) {
-      _activeColorFilter = lowerQuery;
+      localActiveColorFilter = lowerQuery;
       // Capitalize first letter for display
-      _activeColorFilter =
+      localActiveColorFilter =
           lowerQuery[0].toUpperCase() + lowerQuery.substring(1);
     } else {
-      _activeColorFilter = null;
+      localActiveColorFilter = null;
+    }
+
+    if (mounted) {
+      setState(() {
+        _activeColorFilter = localActiveColorFilter;
+      });
     }
 
     try {
-      // Fetch all products using repository
-      final allProducts = await _productRepository.fetchProducts();
-
       List<Product> filtered;
-      if (_activeColorFilter != null) {
-        // Filter by inferred color
-        filtered =
-            allProducts.where((p) => p.color == _activeColorFilter).toList();
+      if (localActiveColorFilter != null) {
+        // Filter by server-side color search
+        filtered = await _productRepository
+            .searchProductsByColor(localActiveColorFilter);
       } else {
-        // Filter by name
-        filtered = allProducts
-            .where((p) => p.name.toLowerCase().contains(lowerQuery))
-            .toList();
+        // Filter by server-side name search
+        filtered = await _productRepository.searchProducts(lowerQuery);
       }
 
-      setState(() {
-        _searchResults = filtered;
-        _isLoading = false;
-      });
+      // Check if query is still valid (in case another search started, though debounce helps)
+      if (_searchController.text != query) return;
+
+      if (mounted) {
+        setState(() {
+          _searchResults = filtered;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
       debugPrint('Search error: $e');
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -123,7 +150,7 @@ class _SearchScreenState extends State<SearchScreen> {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
-              color: themeColor.withOpacity(0.1),
+              color: themeColor.withValues(alpha: 0.1),
               child: Row(
                 children: [
                   Container(
@@ -135,7 +162,8 @@ class _SearchScreenState extends State<SearchScreen> {
                       border: Border.all(color: Colors.white, width: 2),
                       boxShadow: [
                         BoxShadow(
-                            color: themeColor.withOpacity(0.4), blurRadius: 8)
+                            color: themeColor.withValues(alpha: 0.4),
+                            blurRadius: 8)
                       ],
                     ),
                   ),
