@@ -66,7 +66,7 @@ class OrderHistoryScreen extends StatelessWidget {
               width: 120,
               height: 120,
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -131,7 +131,7 @@ class _OrderCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
           ),
         ],
@@ -349,32 +349,32 @@ class _StatusBadge extends StatelessWidget {
 
     switch (status) {
       case OrderStatus.pending:
-        bgColor = Colors.orange.withOpacity(0.1);
+        bgColor = Colors.orange.withValues(alpha: 0.1);
         textColor = Colors.orange;
         icon = Icons.schedule;
         break;
       case OrderStatus.confirmed:
-        bgColor = Colors.blue.withOpacity(0.1);
+        bgColor = Colors.blue.withValues(alpha: 0.1);
         textColor = Colors.blue;
         icon = Icons.check_circle_outline;
         break;
       case OrderStatus.preparing:
-        bgColor = AppColors.primary.withOpacity(0.1);
+        bgColor = AppColors.primary.withValues(alpha: 0.1);
         textColor = AppColors.primary;
         icon = Icons.restaurant;
         break;
       case OrderStatus.outForDelivery:
-        bgColor = AppColors.accent.withOpacity(0.1);
+        bgColor = AppColors.accent.withValues(alpha: 0.1);
         textColor = AppColors.accent;
         icon = Icons.delivery_dining;
         break;
       case OrderStatus.delivered:
-        bgColor = Colors.green.withOpacity(0.1);
+        bgColor = Colors.green.withValues(alpha: 0.1);
         textColor = Colors.green;
         icon = Icons.check_circle;
         break;
       case OrderStatus.cancelled:
-        bgColor = Colors.red.withOpacity(0.1);
+        bgColor = Colors.red.withValues(alpha: 0.1);
         textColor = Colors.red;
         icon = Icons.cancel;
         break;

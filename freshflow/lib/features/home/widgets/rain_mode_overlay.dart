@@ -49,7 +49,7 @@ class _RainModeOverlayState extends State<RainModeOverlay>
       child: Stack(
         children: [
           // Dark Tint
-          Container(color: Colors.black.withOpacity(0.1)),
+          Container(color: Colors.black.withValues(alpha: 0.1)),
 
           // Rain Animation
           AnimatedBuilder(
@@ -71,7 +71,7 @@ class _RainModeOverlayState extends State<RainModeOverlay>
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.blueGrey[900]!.withOpacity(0.9),
+                color: Colors.blueGrey[900]!.withValues(alpha: 0.9),
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: const [
                   BoxShadow(color: Colors.black26, blurRadius: 10)
@@ -135,7 +135,7 @@ class RainPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.blue.withOpacity(0.3)
+      ..color = Colors.blue.withValues(alpha: 0.3)
       ..strokeWidth = 1.5
       ..strokeCap = StrokeCap.round;
 

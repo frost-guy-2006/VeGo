@@ -187,7 +187,7 @@ class AppTheme {
         ),
         bodyMedium: GoogleFonts.outfit(
           fontSize: 14,
-          color: AppColors.textLight.withOpacity(0.7),
+          color: AppColors.textLight.withValues(alpha: 0.7),
         ),
       ),
       cardTheme: CardThemeData(
