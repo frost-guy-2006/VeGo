@@ -152,17 +152,21 @@ class _HomeContentState extends State<HomeContent> {
         pageSize: ProductRepository.defaultPageSize,
       );
 
-      setState(() {
-        _products = products;
-        _currentPage = 0;
-        _hasMore = products.length >= ProductRepository.defaultPageSize;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _products = products;
+          _currentPage = 0;
+          _hasMore = products.length >= ProductRepository.defaultPageSize;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _errorMessage = e.toString();
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _errorMessage = e.toString();
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -180,16 +184,20 @@ class _HomeContentState extends State<HomeContent> {
         pageSize: ProductRepository.defaultPageSize,
       );
 
-      setState(() {
-        _products.addAll(newProducts);
-        _currentPage = nextPage;
-        _hasMore = newProducts.length >= ProductRepository.defaultPageSize;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _products.addAll(newProducts);
+          _currentPage = nextPage;
+          _hasMore = newProducts.length >= ProductRepository.defaultPageSize;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -322,7 +330,7 @@ class _HomeContentState extends State<HomeContent> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.black.withOpacity(0.05)),
+                    border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
                   ),
                   child: Row(
                     children: [
