@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:vego/core/models/product_model.dart';
 import 'package:vego/core/repositories/product_repository.dart';
@@ -20,6 +22,7 @@ class _SearchScreenState extends State<SearchScreen> {
   List<Product> _searchResults = [];
   bool _isLoading = false;
   String? _activeColorFilter; // "Red", "Blue", etc.
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -30,10 +33,18 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
   // Visual Search Logic:
   // If query matches a color name, switch to "Visual Mode"
   void _performSearch(String query) async {
     if (query.isEmpty) {
+      if (!mounted) return;
       setState(() {
         _searchResults = [];
         _activeColorFilter = null;
@@ -41,42 +52,40 @@ class _SearchScreenState extends State<SearchScreen> {
       return;
     }
 
+    if (!mounted) return;
     setState(() => _isLoading = true);
 
     // Check for color keywords
     final lowerQuery = query.toLowerCase();
+    String? detectedColor;
     if (['red', 'blue', 'green', 'orange', 'yellow'].contains(lowerQuery)) {
-      _activeColorFilter = lowerQuery;
-      // Capitalize first letter for display
-      _activeColorFilter =
-          lowerQuery[0].toUpperCase() + lowerQuery.substring(1);
-    } else {
-      _activeColorFilter = null;
+      detectedColor = lowerQuery[0].toUpperCase() + lowerQuery.substring(1);
     }
 
     try {
-      // Fetch all products using repository
-      final allProducts = await _productRepository.fetchProducts();
-
-      List<Product> filtered;
-      if (_activeColorFilter != null) {
-        // Filter by inferred color
-        filtered =
-            allProducts.where((p) => p.color == _activeColorFilter).toList();
+      List<Product> results;
+      if (detectedColor != null) {
+        // Optimized: Fetch by color keywords
+        results = await _productRepository.searchProductsByColor(detectedColor);
+        // Client-side refinement to match strict Model logic
+        results = results.where((p) => p.color == detectedColor).toList();
       } else {
-        // Filter by name
-        filtered = allProducts
-            .where((p) => p.name.toLowerCase().contains(lowerQuery))
-            .toList();
+        // Optimized: Server-side text search
+        results = await _productRepository.searchProducts(query);
       }
 
+      if (!mounted) return;
+      // Race condition check: ignore if query changed
+      if (_searchController.text != query) return;
+
       setState(() {
-        _searchResults = filtered;
+        _searchResults = results;
+        _activeColorFilter = detectedColor;
         _isLoading = false;
       });
     } catch (e) {
       debugPrint('Search error: $e');
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -111,8 +120,10 @@ class _SearchScreenState extends State<SearchScreen> {
             color: themeColor,
           ),
           onChanged: (val) {
-            // Debounce could be added here
-            _performSearch(val);
+            if (_debounce?.isActive ?? false) _debounce!.cancel();
+            _debounce = Timer(const Duration(milliseconds: 500), () {
+              _performSearch(val);
+            });
           },
         ),
       ),
@@ -123,7 +134,7 @@ class _SearchScreenState extends State<SearchScreen> {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
-              color: themeColor.withOpacity(0.1),
+              color: themeColor.withValues(alpha: 0.1),
               child: Row(
                 children: [
                   Container(
@@ -135,7 +146,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       border: Border.all(color: Colors.white, width: 2),
                       boxShadow: [
                         BoxShadow(
-                            color: themeColor.withOpacity(0.4), blurRadius: 8)
+                            color: themeColor.withValues(alpha: 0.4), blurRadius: 8)
                       ],
                     ),
                   ),

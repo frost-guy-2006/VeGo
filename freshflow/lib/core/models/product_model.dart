@@ -10,6 +10,14 @@ class Product {
 
   final String? color; // inferred from name for demo
 
+  static const Map<String, List<String>> colorKeywords = {
+    'Red': ['red', 'tomato', 'apple', 'strawberry'],
+    'Green': ['green', 'spinach', 'broccoli', 'cucumber'],
+    'Orange': ['orange', 'carrot', 'banana'],
+    'Blue': ['blue'],
+    'Yellow': ['yellow'],
+  };
+
   Product({
     required this.id,
     required this.name,
@@ -39,21 +47,13 @@ class Product {
     final name = json['name'] as String;
     // Mock Visual Search Tagging logic
     String? inferredColor;
-    if (name.toLowerCase().contains('red') ||
-        name.toLowerCase().contains('tomato') ||
-        name.toLowerCase().contains('apple') ||
-        name.toLowerCase().contains('strawberry')) {
-      inferredColor = 'Red';
-    } else if (name.toLowerCase().contains('green') ||
-        name.toLowerCase().contains('spinach') ||
-        name.toLowerCase().contains('broccoli') ||
-        name.toLowerCase().contains('cucumber')) {
-      inferredColor = 'Green';
-    } else if (name.toLowerCase().contains('orange') ||
-        name.toLowerCase().contains('carrot') ||
-        name.toLowerCase().contains('banana')) {
-      // Banana is yellow/orange-ish in context or we can add Yellow
-      inferredColor = 'Orange';
+    final lowerName = name.toLowerCase();
+
+    for (final entry in colorKeywords.entries) {
+      if (entry.value.any((keyword) => lowerName.contains(keyword))) {
+        inferredColor = entry.key;
+        break;
+      }
     }
 
     // For "Blue Packet" demo, let's arbitrarily tag something as Blue if it doesn't match above or if we add specific items later.
