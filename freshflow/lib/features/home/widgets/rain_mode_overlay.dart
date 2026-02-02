@@ -49,15 +49,18 @@ class _RainModeOverlayState extends State<RainModeOverlay>
       child: Stack(
         children: [
           // Dark Tint
-          Container(color: Colors.black.withOpacity(0.1)),
+          Container(color: Colors.black.withValues(alpha: 0.1)),
 
           // Rain Animation
           AnimatedBuilder(
             animation: _controller,
             builder: (context, child) {
               return CustomPaint(
-                painter:
-                    RainPainter(drops: _drops, progress: _controller.value),
+                painter: RainPainter(
+                  drops: _drops,
+                  progress: _controller.value,
+                  random: _random,
+                ),
                 size: Size.infinite,
               );
             },
@@ -71,7 +74,7 @@ class _RainModeOverlayState extends State<RainModeOverlay>
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.blueGrey[900]!.withOpacity(0.9),
+                color: Colors.blueGrey[900]!.withValues(alpha: 0.9),
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: const [
                   BoxShadow(color: Colors.black26, blurRadius: 10)
@@ -129,13 +132,18 @@ class RainDrop {
 class RainPainter extends CustomPainter {
   final List<RainDrop> drops;
   final double progress;
+  final Random random;
 
-  RainPainter({required this.drops, required this.progress});
+  RainPainter({
+    required this.drops,
+    required this.progress,
+    required this.random,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.blue.withOpacity(0.3)
+      ..color = Colors.blue.withValues(alpha: 0.3)
       ..strokeWidth = 1.5
       ..strokeCap = StrokeCap.round;
 
@@ -150,7 +158,7 @@ class RainPainter extends CustomPainter {
       drop.y += drop.speed * 0.02; // Move down
       if (drop.y > 1.0) {
         drop.y = -drop.length; // Reset to top
-        drop.x = Random().nextDouble(); // Random new X
+        drop.x = random.nextDouble(); // Random new X
       }
 
       final startX = drop.x * size.width;
