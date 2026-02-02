@@ -9,6 +9,7 @@ class Product {
   final int discountPercent;
 
   final String? color; // inferred from name for demo
+  final String? category; // product category (Fruits, Vegetables, etc.)
 
   Product({
     required this.id,
@@ -19,6 +20,7 @@ class Product {
     required this.harvestTime,
     required this.stock,
     this.color,
+    this.category,
   }) : discountPercent = marketPrice > 0
             ? ((marketPrice - currentPrice) / marketPrice * 100).round()
             : 0;
@@ -32,6 +34,7 @@ class Product {
       'market_price': marketPrice,
       'harvest_time': harvestTime,
       'stock': stock,
+      'category': category,
     };
   }
 
@@ -76,6 +79,7 @@ class Product {
       harvestTime: json['harvest_time'] ?? json['harvestTime'] ?? '',
       stock: json['stock'] as int? ?? 0,
       color: inferredColor,
+      category: json['category'] as String?,
     );
   }
 

@@ -5,6 +5,7 @@ import 'package:vego/core/providers/theme_provider.dart';
 import 'package:vego/core/providers/wishlist_provider.dart';
 import 'package:vego/core/providers/order_provider.dart';
 import 'package:vego/core/providers/address_provider.dart';
+import 'package:vego/core/providers/product_provider.dart';
 import 'package:vego/features/auth/screens/login_screen.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
@@ -48,6 +49,11 @@ class VeGoApp extends StatelessWidget {
           final addressProvider = AddressProvider();
           addressProvider.loadFromStorage();
           return addressProvider;
+        }),
+        ChangeNotifierProvider(create: (_) {
+          final productProvider = ProductProvider();
+          productProvider.initialize();
+          return productProvider;
         }),
       ],
       child: Consumer<ThemeProvider>(
