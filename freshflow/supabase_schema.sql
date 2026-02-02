@@ -7,6 +7,7 @@ create table public.products (
   market_price numeric not null,
   harvest_time text,
   stock integer default 0,
+  category text, -- Product category (Vegetables, Fruits, Dairy, Bakery, Tea/Coffee)
   created_at timestamptz default now()
 );
 

@@ -548,8 +548,9 @@ class _HomeContentState extends State<HomeContent> {
 
   Future<void> _seedData() async {
     try {
-      // Data from seed_data.sql
+      // Data from seed_data.sql with categories
       final data = [
+        // Vegetables
         {
           'name': 'Fresh Tomatoes',
           'image_url':
@@ -557,7 +558,8 @@ class _HomeContentState extends State<HomeContent> {
           'current_price': 45,
           'market_price': 60,
           'harvest_time': 'Harvested 2 hours ago',
-          'stock': 100
+          'stock': 100,
+          'category': 'Vegetables'
         },
         {
           'name': 'Organic Carrots',
@@ -566,7 +568,8 @@ class _HomeContentState extends State<HomeContent> {
           'current_price': 60,
           'market_price': 85,
           'harvest_time': 'Harvested today morning',
-          'stock': 50
+          'stock': 50,
+          'category': 'Vegetables'
         },
         {
           'name': 'Green Spinach',
@@ -575,7 +578,8 @@ class _HomeContentState extends State<HomeContent> {
           'current_price': 30,
           'market_price': 45,
           'harvest_time': 'Harvested 4 hours ago',
-          'stock': 30
+          'stock': 30,
+          'category': 'Vegetables'
         },
         {
           'name': 'Red Bell Pepper',
@@ -584,7 +588,8 @@ class _HomeContentState extends State<HomeContent> {
           'current_price': 120,
           'market_price': 160,
           'harvest_time': 'Harvested yesterday',
-          'stock': 40
+          'stock': 40,
+          'category': 'Vegetables'
         },
         {
           'name': 'Fresh Broccoli',
@@ -593,8 +598,20 @@ class _HomeContentState extends State<HomeContent> {
           'current_price': 85,
           'market_price': 120,
           'harvest_time': 'Harvested today',
-          'stock': 60
+          'stock': 60,
+          'category': 'Vegetables'
         },
+        {
+          'name': 'Cucumber',
+          'image_url':
+              'https://images.unsplash.com/photo-1449300079323-02e209d9d3a6?auto=format&fit=crop&w=300&q=80',
+          'current_price': 25,
+          'market_price': 35,
+          'harvest_time': 'Harvested 5 hours ago',
+          'stock': 45,
+          'category': 'Vegetables'
+        },
+        // Fruits
         {
           'name': 'Red Apples',
           'image_url':
@@ -602,7 +619,171 @@ class _HomeContentState extends State<HomeContent> {
           'current_price': 180,
           'market_price': 220,
           'harvest_time': 'Fresh from Shimla',
-          'stock': 80
+          'stock': 80,
+          'category': 'Fruits'
+        },
+        {
+          'name': 'Bananas',
+          'image_url':
+              'https://images.unsplash.com/photo-1603833665858-e61d17a86271?auto=format&fit=crop&w=300&q=80',
+          'current_price': 60,
+          'market_price': 80,
+          'harvest_time': 'Organic',
+          'stock': 70,
+          'category': 'Fruits'
+        },
+        {
+          'name': 'Strawberries',
+          'image_url':
+              'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?auto=format&fit=crop&w=300&q=80',
+          'current_price': 250,
+          'market_price': 300,
+          'harvest_time': 'Freshly picked',
+          'stock': 25,
+          'category': 'Fruits'
+        },
+        {
+          'name': 'Oranges',
+          'image_url':
+              'https://images.unsplash.com/photo-1547514354-9520a29f86b1?auto=format&fit=crop&w=300&q=80',
+          'current_price': 100,
+          'market_price': 140,
+          'harvest_time': 'Juicy & Sweet',
+          'stock': 60,
+          'category': 'Fruits'
+        },
+        {
+          'name': 'Mangoes',
+          'image_url':
+              'https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=300&q=80',
+          'current_price': 200,
+          'market_price': 280,
+          'harvest_time': 'Alphonso variety',
+          'stock': 40,
+          'category': 'Fruits'
+        },
+        // Dairy
+        {
+          'name': 'Fresh Milk',
+          'image_url':
+              'https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=300&q=80',
+          'current_price': 65,
+          'market_price': 70,
+          'harvest_time': 'Farm fresh daily',
+          'stock': 100,
+          'category': 'Dairy'
+        },
+        {
+          'name': 'Greek Yogurt',
+          'image_url':
+              'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=300&q=80',
+          'current_price': 120,
+          'market_price': 150,
+          'harvest_time': 'High protein',
+          'stock': 50,
+          'category': 'Dairy'
+        },
+        {
+          'name': 'Cottage Cheese',
+          'image_url':
+              'https://images.unsplash.com/photo-1559561853-08451507cbe7?auto=format&fit=crop&w=300&q=80',
+          'current_price': 180,
+          'market_price': 220,
+          'harvest_time': 'Fresh paneer',
+          'stock': 35,
+          'category': 'Dairy'
+        },
+        {
+          'name': 'Butter',
+          'image_url':
+              'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?auto=format&fit=crop&w=300&q=80',
+          'current_price': 250,
+          'market_price': 280,
+          'harvest_time': 'Unsalted premium',
+          'stock': 45,
+          'category': 'Dairy'
+        },
+        // Bakery
+        {
+          'name': 'Whole Wheat Bread',
+          'image_url':
+              'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=300&q=80',
+          'current_price': 45,
+          'market_price': 55,
+          'harvest_time': 'Baked fresh today',
+          'stock': 80,
+          'category': 'Bakery'
+        },
+        {
+          'name': 'Croissants',
+          'image_url':
+              'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=300&q=80',
+          'current_price': 120,
+          'market_price': 150,
+          'harvest_time': 'Buttery & flaky',
+          'stock': 30,
+          'category': 'Bakery'
+        },
+        {
+          'name': 'Chocolate Muffin',
+          'image_url':
+              'https://images.unsplash.com/photo-1607958996333-41aef7caefaa?auto=format&fit=crop&w=300&q=80',
+          'current_price': 80,
+          'market_price': 100,
+          'harvest_time': 'Double chocolate',
+          'stock': 40,
+          'category': 'Bakery'
+        },
+        {
+          'name': 'Bagels',
+          'image_url':
+              'https://images.unsplash.com/photo-1558401391-7899b4bd5bbf?auto=format&fit=crop&w=300&q=80',
+          'current_price': 60,
+          'market_price': 80,
+          'harvest_time': 'Plain & sesame',
+          'stock': 50,
+          'category': 'Bakery'
+        },
+        // Tea/Coffee
+        {
+          'name': 'Assam Tea',
+          'image_url':
+              'https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=300&q=80',
+          'current_price': 180,
+          'market_price': 220,
+          'harvest_time': 'Premium CTC',
+          'stock': 60,
+          'category': 'Tea/Coffee'
+        },
+        {
+          'name': 'Green Tea',
+          'image_url':
+              'https://images.unsplash.com/photo-1627435601361-ec25f5b1d0e5?auto=format&fit=crop&w=300&q=80',
+          'current_price': 250,
+          'market_price': 300,
+          'harvest_time': 'Japanese Sencha',
+          'stock': 35,
+          'category': 'Tea/Coffee'
+        },
+        {
+          'name': 'Arabica Coffee',
+          'image_url':
+              'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&w=300&q=80',
+          'current_price': 450,
+          'market_price': 550,
+          'harvest_time': 'Single origin',
+          'stock': 25,
+          'category': 'Tea/Coffee'
+        },
+        {
+          'name': 'Earl Grey Tea',
+          'image_url':
+              'https://images.unsplash.com/photo-1594631252845-29fc4cc8cde9?auto=format&fit=crop&w=300&q=80',
+          'current_price': 200,
+          'market_price': 250,
+          'harvest_time': 'Bergamot flavored',
+          'stock': 40,
+          'category': 'Tea/Coffee'
         },
       ];
 

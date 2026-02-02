@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:vego/core/theme/app_colors.dart';
+import 'package:vego/features/category/screens/category_products_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CategoryGrid extends StatefulWidget {
@@ -19,17 +21,6 @@ class _CategoryGridState extends State<CategoryGrid> {
     {'name': 'Vegetables', 'icon': Icons.eco_rounded, 'color': 0xFF22C55E},
     {'name': 'Fruits', 'icon': Icons.spa_rounded, 'color': 0xFFE63946},
     {'name': 'Dairy', 'icon': Icons.local_drink_rounded, 'color': 0xFF3B82F6},
-    {'name': 'Munchies', 'icon': Icons.cookie_rounded, 'color': 0xFFFF9F1C},
-    {
-      'name': 'Cold Drinks',
-      'icon': Icons.local_bar_rounded,
-      'color': 0xFF06B6D4
-    },
-    {
-      'name': 'Instant',
-      'icon': Icons.ramen_dining_rounded,
-      'color': 0xFFF59E0B
-    },
     {
       'name': 'Bakery',
       'icon': Icons.breakfast_dining_rounded,
@@ -62,13 +53,30 @@ class _CategoryGridState extends State<CategoryGrid> {
             final cat = categories[index];
             final isSelected = index == _selectedIndex;
             final categoryColor = Color(cat['color'] as int);
+            final categoryName = cat['name'] as String;
+            final categoryIcon = cat['icon'] as IconData;
 
             return GestureDetector(
               onTap: () {
                 setState(() {
                   _selectedIndex = index;
                 });
-                widget.onCategoryChanged?.call(cat['name'] as String);
+                widget.onCategoryChanged?.call(categoryName);
+
+                // Navigate to category page for non-All categories
+                if (categoryName != 'All') {
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                      type: PageTransitionType.rightToLeft,
+                      child: CategoryProductsScreen(
+                        categoryName: categoryName,
+                        categoryColor: categoryColor,
+                        categoryIcon: categoryIcon,
+                      ),
+                    ),
+                  );
+                }
               },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
