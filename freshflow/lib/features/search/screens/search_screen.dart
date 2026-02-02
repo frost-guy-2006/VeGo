@@ -123,7 +123,7 @@ class _SearchScreenState extends State<SearchScreen> {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
-              color: themeColor.withOpacity(0.1),
+              color: themeColor.withValues(alpha: 0.1),
               child: Row(
                 children: [
                   Container(
@@ -135,7 +135,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       border: Border.all(color: Colors.white, width: 2),
                       boxShadow: [
                         BoxShadow(
-                            color: themeColor.withOpacity(0.4), blurRadius: 8)
+                            color: themeColor.withValues(alpha: 0.4), blurRadius: 8)
                       ],
                     ),
                   ),
