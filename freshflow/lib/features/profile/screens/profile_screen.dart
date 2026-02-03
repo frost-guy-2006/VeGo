@@ -19,7 +19,7 @@ class ProfileScreen extends StatelessWidget {
     // Mock user data
     final user = context.read<AuthProvider>().currentUser;
     final email = user?.email ?? 'user@vego.app';
-    final phone = user?.phone ?? '+91 98765 43210';
+    // final phone = user?.phone ?? '+91 98765 43210'; // Unused
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -81,7 +81,7 @@ class ProfileScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.04),
+                            color: Colors.black.withValues(alpha: 0.04),
                             blurRadius: 10,
                           ),
                         ],
@@ -135,7 +135,7 @@ class ProfileScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(16),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.04),
+                                  color: Colors.black.withValues(alpha: 0.04),
                                   blurRadius: 10,
                                 ),
                               ],
@@ -145,7 +145,7 @@ class ProfileScreen extends StatelessWidget {
                                 Container(
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                    color: AppColors.accent.withOpacity(0.1),
+                                    color: AppColors.accent.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: const Icon(
@@ -169,7 +169,7 @@ class ProfileScreen extends StatelessWidget {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 10, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: AppColors.accent.withOpacity(0.1),
+                                    color: AppColors.accent.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Text(
@@ -214,7 +214,7 @@ class ProfileScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(16),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.04),
+                                  color: Colors.black.withValues(alpha: 0.04),
                                   blurRadius: 10,
                                 ),
                               ],
@@ -224,7 +224,7 @@ class ProfileScreen extends StatelessWidget {
                                 Container(
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                    color: AppColors.primary.withOpacity(0.1),
+                                    color: AppColors.primary.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: const Icon(
@@ -249,7 +249,7 @@ class ProfileScreen extends StatelessWidget {
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 10, vertical: 4),
                                     decoration: BoxDecoration(
-                                      color: AppColors.primary.withOpacity(0.1),
+                                      color: AppColors.primary.withValues(alpha: 0.1),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Text(
@@ -295,7 +295,7 @@ class ProfileScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(16),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.04),
+                                  color: Colors.black.withValues(alpha: 0.04),
                                   blurRadius: 10,
                                 ),
                               ],
@@ -306,7 +306,7 @@ class ProfileScreen extends StatelessWidget {
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
                                     color:
-                                        AppColors.accentWarm.withOpacity(0.1),
+                                        AppColors.accentWarm.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: const Icon(
@@ -332,7 +332,7 @@ class ProfileScreen extends StatelessWidget {
                                         horizontal: 10, vertical: 4),
                                     decoration: BoxDecoration(
                                       color:
-                                          AppColors.accentWarm.withOpacity(0.1),
+                                          AppColors.accentWarm.withValues(alpha: 0.1),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Text(
@@ -369,7 +369,7 @@ class ProfileScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.04),
+                                color: Colors.black.withValues(alpha: 0.04),
                                 blurRadius: 10,
                               ),
                             ],
@@ -407,7 +407,7 @@ class ProfileScreen extends StatelessWidget {
                               Switch.adaptive(
                                 value: themeProvider.isDarkMode,
                                 onChanged: (_) => themeProvider.toggleTheme(),
-                                activeColor: AppColors.primary,
+                                activeTrackColor: AppColors.primary,
                               ),
                             ],
                           ),

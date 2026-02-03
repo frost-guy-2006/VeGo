@@ -36,6 +36,44 @@ void main() {
       expect(product.imageUrl, contains('unsplash.com'));
       // Should pick up the hardcoded tomato url
     });
+
+    test('Product.fromJson infers color correctly', () {
+      final redJson = {
+        'id': '3',
+        'name': 'Red Apple',
+        'image_url': 'url',
+        'current_price': 50.0,
+        'market_price': 60.0,
+        'harvest_time': 'Yesterday',
+        'stock': 20
+      };
+      final redProduct = Product.fromJson(redJson);
+      expect(redProduct.color, 'Red');
+
+      final greenJson = {
+        'id': '4',
+        'name': 'Fresh Spinach',
+        'image_url': 'url',
+        'current_price': 50.0,
+        'market_price': 60.0,
+        'harvest_time': 'Yesterday',
+        'stock': 20
+      };
+      final greenProduct = Product.fromJson(greenJson);
+      expect(greenProduct.color, 'Green');
+
+      final orangeJson = {
+        'id': '5',
+        'name': 'Carrot Bunch',
+        'image_url': 'url',
+        'current_price': 50.0,
+        'market_price': 60.0,
+        'harvest_time': 'Yesterday',
+        'stock': 20
+      };
+      final orangeProduct = Product.fromJson(orangeJson);
+      expect(orangeProduct.color, 'Orange');
+    });
   });
 
   group('WishlistProvider Tests', () {
