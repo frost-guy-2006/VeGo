@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:vego/core/models/product_model.dart';
 import 'package:vego/core/repositories/product_repository.dart';
@@ -8,7 +10,13 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class SearchScreen extends StatefulWidget {
   final String? initialQuery;
-  const SearchScreen({super.key, this.initialQuery});
+  final ProductRepository? productRepository;
+
+  const SearchScreen({
+    super.key,
+    this.initialQuery,
+    this.productRepository,
+  });
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -16,18 +24,26 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
-  final ProductRepository _productRepository = ProductRepository();
+  late final ProductRepository _productRepository;
   List<Product> _searchResults = [];
   bool _isLoading = false;
   String? _activeColorFilter; // "Red", "Blue", etc.
+  Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
+    _productRepository = widget.productRepository ?? ProductRepository();
     if (widget.initialQuery != null) {
       _searchController.text = widget.initialQuery!;
       _performSearch(widget.initialQuery!);
     }
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
   }
 
   // Visual Search Logic:
@@ -43,32 +59,38 @@ class _SearchScreenState extends State<SearchScreen> {
 
     setState(() => _isLoading = true);
 
-    // Check for color keywords
+    // Check for color keywords using Product model source of truth
     final lowerQuery = query.toLowerCase();
-    if (['red', 'blue', 'green', 'orange', 'yellow'].contains(lowerQuery)) {
-      _activeColorFilter = lowerQuery;
-      // Capitalize first letter for display
-      _activeColorFilter =
-          lowerQuery[0].toUpperCase() + lowerQuery.substring(1);
-    } else {
-      _activeColorFilter = null;
+    String? matchedColor;
+    for (var key in Product.colorKeywords.keys) {
+      if (key.toLowerCase() == lowerQuery) {
+        matchedColor = key;
+        break;
+      }
     }
 
-    try {
-      // Fetch all products using repository
-      final allProducts = await _productRepository.fetchProducts();
+    _activeColorFilter = matchedColor;
 
+    try {
       List<Product> filtered;
+
       if (_activeColorFilter != null) {
-        // Filter by inferred color
-        filtered =
-            allProducts.where((p) => p.color == _activeColorFilter).toList();
+        // Use optimized server-side color search
+        filtered = await _productRepository.searchProductsByColor(_activeColorFilter!);
       } else {
-        // Filter by name
-        filtered = allProducts
-            .where((p) => p.name.toLowerCase().contains(lowerQuery))
-            .toList();
+        // Use optimized server-side text search
+        filtered = await _productRepository.searchProducts(query);
       }
+
+      // Ensure the result is still relevant (in case of race conditions with fast typing,
+      // though debounce helps, network returns might be out of order)
+      if (_searchController.text != query && _searchController.text.isNotEmpty) {
+         // This result is stale, ignore it (or rely on debounce to prevent this)
+         // But strict check is:
+         return;
+      }
+      // Actually, standard debounce logic usually handles this, but async gap requires check if mounted
+      if (!mounted) return;
 
       setState(() {
         _searchResults = filtered;
@@ -76,8 +98,15 @@ class _SearchScreenState extends State<SearchScreen> {
       });
     } catch (e) {
       debugPrint('Search error: $e');
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  void _onSearchChanged(String val) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      _performSearch(val);
+    });
   }
 
   @override
@@ -110,10 +139,7 @@ class _SearchScreenState extends State<SearchScreen> {
             fontWeight: FontWeight.bold,
             color: themeColor,
           ),
-          onChanged: (val) {
-            // Debounce could be added here
-            _performSearch(val);
-          },
+          onChanged: _onSearchChanged,
         ),
       ),
       body: Column(
@@ -123,7 +149,7 @@ class _SearchScreenState extends State<SearchScreen> {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
-              color: themeColor.withOpacity(0.1),
+              color: themeColor.withValues(alpha: 0.1),
               child: Row(
                 children: [
                   Container(
@@ -135,7 +161,8 @@ class _SearchScreenState extends State<SearchScreen> {
                       border: Border.all(color: Colors.white, width: 2),
                       boxShadow: [
                         BoxShadow(
-                            color: themeColor.withOpacity(0.4), blurRadius: 8)
+                            color: themeColor.withValues(alpha: 0.4),
+                            blurRadius: 8)
                       ],
                     ),
                   ),
