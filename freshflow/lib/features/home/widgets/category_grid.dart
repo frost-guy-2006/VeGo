@@ -38,7 +38,7 @@ class _CategoryGridState extends State<CategoryGrid> {
           color: AppColors.surface,
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.05),
+              color: AppColors.primary.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -85,12 +85,12 @@ class _CategoryGridState extends State<CategoryGrid> {
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? categoryColor.withOpacity(0.15)
+                      ? categoryColor.withValues(alpha: 0.15)
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: isSelected
-                        ? categoryColor.withOpacity(0.3)
+                        ? categoryColor.withValues(alpha: 0.3)
                         : Colors.transparent,
                     width: 1.5,
                   ),

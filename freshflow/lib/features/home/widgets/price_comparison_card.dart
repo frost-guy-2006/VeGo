@@ -79,8 +79,8 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
             boxShadow: [
               BoxShadow(
                 color: _isPressed
-                    ? AppColors.primary.withOpacity(0.15)
-                    : Colors.black.withOpacity(0.06),
+                    ? AppColors.primary.withValues(alpha: 0.15)
+                    : Colors.black.withValues(alpha: 0.06),
                 blurRadius: _isPressed ? 24 : 16,
                 offset: Offset(0, _isPressed ? 8 : 4),
                 spreadRadius: _isPressed ? 2 : 0,
@@ -123,7 +123,7 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
                 child: Center(
                   child: Icon(
                     Icons.image_outlined,
-                    color: AppColors.textMuted.withOpacity(0.5),
+                    color: AppColors.textMuted.withValues(alpha: 0.5),
                     size: 40,
                   ),
                 ),
@@ -144,7 +144,7 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.accentWarm.withOpacity(0.4),
+                    color: AppColors.accentWarm.withValues(alpha: 0.4),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -177,11 +177,11 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
                 child: Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -228,7 +228,7 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
               end: Alignment(1.0 + 2 * _shimmerController.value, 0),
               colors: [
                 AppColors.surfaceAlt,
-                AppColors.surfaceAlt.withOpacity(0.5),
+                AppColors.surfaceAlt.withValues(alpha: 0.5),
                 AppColors.surfaceAlt,
               ],
               stops: const [0.0, 0.5, 1.0],
@@ -292,7 +292,7 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
           boxShadow: [
             BoxShadow(
               color:
-                  (inStock ? AppColors.accent : Colors.grey).withOpacity(0.4),
+                  (inStock ? AppColors.accent : Colors.grey).withValues(alpha: 0.4),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -333,7 +333,7 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
               Icon(
                 Icons.schedule_rounded,
                 size: 12,
-                color: AppColors.primary.withOpacity(0.7),
+                color: AppColors.primary.withValues(alpha: 0.7),
               ),
               const SizedBox(width: 4),
               Expanded(
@@ -372,7 +372,7 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
                   fontSize: 12,
                   color: AppColors.textMuted,
                   decoration: TextDecoration.lineThrough,
-                  decorationColor: AppColors.textMuted.withOpacity(0.7),
+                  decorationColor: AppColors.textMuted.withValues(alpha: 0.7),
                 ),
               ),
             ],
