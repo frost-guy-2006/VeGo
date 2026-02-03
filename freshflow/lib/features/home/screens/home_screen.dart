@@ -227,7 +227,9 @@ class _HomeContentState extends State<HomeContent> {
       child: CustomScrollView(
         key: _refreshKey,
         controller: _scrollController,
-        physics: const AlwaysScrollableScrollPhysics(),
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
         slivers: [
           // Sticky Header with 10-min Delivery Badge
           // Header with dynamic address and wishlist button
