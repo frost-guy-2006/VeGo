@@ -720,6 +720,11 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
             controller: controller,
             keyboardType: keyboardType,
             validator: validator,
+            style: GoogleFonts.outfit(
+              fontSize: 14,
+              color: AppColors.textDark,
+            ),
+            cursorColor: AppColors.primary,
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: GoogleFonts.outfit(color: AppColors.textMuted),
@@ -736,7 +741,8 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.primary),
+                borderSide:
+                    const BorderSide(color: AppColors.primary, width: 2),
               ),
               errorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),

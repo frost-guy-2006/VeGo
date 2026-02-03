@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:vego/features/cart/screens/cart_screen.dart';
 import 'package:vego/features/cart/widgets/floating_cart_bar.dart';
 import 'package:vego/features/home/widgets/category_grid.dart';
-import 'package:vego/features/search/screens/search_screen.dart'; // Added import
+import 'package:vego/features/search/screens/search_screen.dart';
 import 'package:vego/features/profile/screens/profile_screen.dart';
+import 'package:vego/features/wishlist/screens/wishlist_screen.dart';
+import 'package:vego/features/address/screens/address_management_screen.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:vego/core/models/product_model.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:vego/core/repositories/product_repository.dart';
+import 'package:vego/core/providers/address_provider.dart';
+import 'package:vego/core/providers/wishlist_provider.dart';
 import 'package:vego/features/home/widgets/flash_price_widget.dart';
 import 'package:vego/features/home/widgets/price_comparison_card.dart';
 import 'package:vego/features/home/widgets/rain_mode_overlay.dart';
@@ -225,79 +230,133 @@ class _HomeContentState extends State<HomeContent> {
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           // Sticky Header with 10-min Delivery Badge
-          SliverAppBar(
-            pinned: true,
-            floating: true,
-            backgroundColor: AppColors.background,
-            elevation: 0,
-            expandedHeight: 90, // Reduced from 120
-            toolbarHeight: 70, // Reduced from 80
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.black, // Zepto-like dark badge
-                        borderRadius: BorderRadius.circular(8),
+          // Header with dynamic address and wishlist button
+          Consumer2<AddressProvider, WishlistProvider>(
+            builder: (context, addressProvider, wishlistProvider, _) {
+              final defaultAddress = addressProvider.defaultAddress;
+              final addressLabel = defaultAddress?.label ?? 'Home';
+              final addressText = defaultAddress != null
+                  ? '${defaultAddress.city}, ${defaultAddress.state}'
+                  : 'Add Address';
+              final wishlistCount = wishlistProvider.itemCount;
+
+              return SliverAppBar(
+                pinned: true,
+                floating: true,
+                backgroundColor: AppColors.background,
+                elevation: 0,
+                expandedHeight: 90,
+                toolbarHeight: 70,
+                title: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const AddressManagementScreen(),
                       ),
-                      child: Row(
+                    );
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
                         children: [
-                          const Icon(Icons.bolt,
-                              color: Colors.yellow, size: 14),
-                          const SizedBox(width: 4),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.black,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.bolt,
+                                    color: Colors.yellow, size: 14),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '10 MINS',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
                           Text(
-                            '10 MINS',
+                            'to $addressLabel',
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 12,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textDark,
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'to Home',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textDark,
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Text(
+                            addressText,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.secondary,
+                            ),
+                          ),
+                          const Icon(Icons.keyboard_arrow_down,
+                              color: AppColors.secondary, size: 18),
+                        ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Text(
-                      'HSR Layout, Sector 2',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.secondary,
+                actions: [
+                  Stack(
+                    children: [
+                      IconButton(
+                        icon: const CircleAvatar(
+                          backgroundColor: Colors.white,
+                          child: Icon(Icons.favorite_outline,
+                              color: AppColors.textDark),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const WishlistScreen(),
+                            ),
+                          );
+                        },
                       ),
-                    ),
-                    const Icon(Icons.keyboard_arrow_down,
-                        color: AppColors.secondary, size: 18),
-                  ],
-                ),
-              ],
-            ),
-            actions: [
-              IconButton(
-                icon: const CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: Icon(Icons.person, color: AppColors.textDark),
-                ),
-                onPressed: () {},
-              ),
-              const SizedBox(width: 16),
-            ],
+                      if (wishlistCount > 0)
+                        Positioned(
+                          right: 8,
+                          top: 8,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Text(
+                              wishlistCount.toString(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(width: 16),
+                ],
+              );
+            },
           ),
 
           // Search Field

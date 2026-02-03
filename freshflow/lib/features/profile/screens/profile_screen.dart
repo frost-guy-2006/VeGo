@@ -56,13 +56,20 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Text(
-                      'VeGo User',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textDark,
-                      ),
+                    Consumer<AddressProvider>(
+                      builder: (context, addressProvider, _) {
+                        final defaultAddress = addressProvider.defaultAddress;
+                        final displayName =
+                            defaultAddress?.fullName ?? 'VeGo User';
+                        return Text(
+                          displayName,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textDark,
+                          ),
+                        );
+                      },
                     ),
                     const SizedBox(height: 32),
 
@@ -79,16 +86,31 @@ class ProfileScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      child: Column(
-                        children: [
-                          _buildProfileRow(
-                              Icons.email_outlined, 'Email', email),
-                          const Divider(height: 32),
-                          _buildProfileRow(Icons.phone_android, 'Phone', phone),
-                          const Divider(height: 32),
-                          _buildProfileRow(Icons.location_on_outlined,
-                              'Address', 'HSR Layout, Sector 2, Bengaluru'),
-                        ],
+                      child: Consumer<AddressProvider>(
+                        builder: (context, addressProvider, _) {
+                          final defaultAddress = addressProvider.defaultAddress;
+                          final addressText =
+                              defaultAddress?.formattedAddress ??
+                                  'Add delivery address';
+                          // Get phone from saved address if user phone is null
+                          final displayPhone =
+                              (user?.phone?.isNotEmpty ?? false)
+                                  ? user!.phone!
+                                  : defaultAddress?.phoneNumber ??
+                                      'Add phone number';
+                          return Column(
+                            children: [
+                              _buildProfileRow(
+                                  Icons.email_outlined, 'Email', email),
+                              const Divider(height: 32),
+                              _buildProfileRow(
+                                  Icons.phone_android, 'Phone', displayPhone),
+                              const Divider(height: 32),
+                              _buildProfileRow(Icons.location_on_outlined,
+                                  'Address', addressText),
+                            ],
+                          );
+                        },
                       ),
                     ),
 
