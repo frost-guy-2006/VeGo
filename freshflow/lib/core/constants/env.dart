@@ -1,5 +1,18 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+/// Environment configuration loaded from .env file.
+/// SECURITY: Never hardcode secrets - use .env file (excluded from git).
 class Env {
-  static const String supabaseUrl = 'https://xstagwqwesafzirsxhjw.supabase.co';
-  static const String supabaseAnonKey =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzdGFnd3F3ZXNhZnppcnN4aGp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkyNDM1NDAsImV4cCI6MjA4NDgxOTU0MH0.-dy7yonmaOf1brijFlzMiS75ve99aeTPiih0CFoxncU';
+  Env._();
+
+  /// Supabase project URL.
+  static String get supabaseUrl => dotenv.env['SUPABASE_URL'] ?? '';
+
+  /// Supabase anonymous (public) key.
+  /// Safe for client-side use - RLS policies restrict access.
+  static String get supabaseAnonKey => dotenv.env['SUPABASE_ANON_KEY'] ?? '';
+
+  /// Check if environment is properly loaded.
+  static bool get isLoaded =>
+      supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;
 }
