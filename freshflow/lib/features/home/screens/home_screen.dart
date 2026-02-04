@@ -6,7 +6,7 @@ import 'package:vego/features/home/widgets/category_grid.dart';
 import 'package:vego/features/search/screens/search_screen.dart';
 import 'package:vego/features/profile/screens/profile_screen.dart';
 import 'package:vego/features/wishlist/screens/wishlist_screen.dart';
-import 'package:vego/features/address/screens/address_management_screen.dart';
+import 'package:vego/features/address/widgets/address_picker_sheet.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:vego/core/models/product_model.dart';
@@ -225,7 +225,7 @@ class _HomeContentState extends State<HomeContent> {
     return RefreshIndicator(
       onRefresh: _onRefresh,
       color: AppColors.primary,
-      backgroundColor: AppColors.surface,
+      backgroundColor: AppColors.background,
       strokeWidth: 3,
       displacement: 60,
       child: CustomScrollView(
@@ -239,10 +239,10 @@ class _HomeContentState extends State<HomeContent> {
           // Header with dynamic address and wishlist button
           Consumer2<AddressProvider, WishlistProvider>(
             builder: (context, addressProvider, wishlistProvider, _) {
-              final defaultAddress = addressProvider.defaultAddress;
-              final addressLabel = defaultAddress?.label ?? 'Home';
-              final addressText = defaultAddress != null
-                  ? '${defaultAddress.city}, ${defaultAddress.state}'
+              final selectedAddress = addressProvider.selectedDeliveryAddress;
+              final addressLabel = selectedAddress?.label ?? 'Home';
+              final addressText = selectedAddress != null
+                  ? '${selectedAddress.city}, ${selectedAddress.state}'
                   : 'Add Address';
               final wishlistCount = wishlistProvider.itemCount;
 
@@ -251,16 +251,12 @@ class _HomeContentState extends State<HomeContent> {
                 floating: true,
                 backgroundColor: AppColors.background,
                 elevation: 0,
-                expandedHeight: 90,
-                toolbarHeight: 70,
+                expandedHeight: 72,
+                toolbarHeight: 64,
                 title: GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const AddressManagementScreen(),
-                      ),
-                    );
+                    // Show address picker sheet instead of full navigation
+                    AddressPickerSheet.show(context);
                   },
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -387,7 +383,8 @@ class _HomeContentState extends State<HomeContent> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
+                    border:
+                        Border.all(color: Colors.black.withValues(alpha: 0.05)),
                   ),
                   child: Row(
                     children: [
@@ -410,31 +407,37 @@ class _HomeContentState extends State<HomeContent> {
 
           // Scrollable Flash Widgets
           SliverToBoxAdapter(
-            child: SizedBox(
-              height: 200,
-              child: FutureBuilder<List<Product>>(
-                future: _flashDealsFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+            child: Container(
+              color: AppColors.background,
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: SizedBox(
+                height: 200,
+                child: FutureBuilder<List<Product>>(
+                  future: _flashDealsFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const SizedBox.shrink();
-                  }
+                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
 
-                  return ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    scrollDirection: Axis.horizontal,
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 16),
-                        child: FlashPriceWidget(product: snapshot.data![index]),
-                      );
-                    },
-                  );
-                },
+                    return ListView.builder(
+                      clipBehavior: Clip.none,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 24),
+                          child:
+                              FlashPriceWidget(product: snapshot.data![index]),
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ),
           ),

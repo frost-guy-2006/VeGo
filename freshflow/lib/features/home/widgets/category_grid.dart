@@ -35,7 +35,7 @@ class _CategoryGridState extends State<CategoryGrid> {
       child: Container(
         height: 120,
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: AppColors.background,
           boxShadow: [
             BoxShadow(
               color: AppColors.primary.withValues(alpha: 0.05),

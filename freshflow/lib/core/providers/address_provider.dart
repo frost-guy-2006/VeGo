@@ -3,21 +3,63 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vego/core/models/address_model.dart';
 import 'dart:convert';
 
-/// Provider for managing user addresses
+/// Provider for managing user addresses with user-specific isolation.
+/// Each user's addresses are stored separately using their user ID.
 class AddressProvider extends ChangeNotifier {
   final List<Address> _addresses = [];
-  static const String _storageKey = 'user_addresses';
+  String? _currentUserId;
+
+  /// Currently selected address for delivery (may differ from default)
+  Address? _selectedDeliveryAddress;
 
   List<Address> get addresses => List.unmodifiable(_addresses);
   int get addressCount => _addresses.length;
 
-  /// Get the default address
+  /// Get the currently selected delivery address (for immediate orders)
+  Address? get selectedDeliveryAddress =>
+      _selectedDeliveryAddress ?? defaultAddress;
+
+  /// Get the default address (saved preference)
   Address? get defaultAddress {
     try {
       return _addresses.firstWhere((a) => a.isDefault);
     } catch (e) {
       return _addresses.isNotEmpty ? _addresses.first : null;
     }
+  }
+
+  /// Get storage key specific to current user
+  String get _storageKey {
+    if (_currentUserId == null) {
+      return 'user_addresses_anonymous';
+    }
+    return 'user_addresses_$_currentUserId';
+  }
+
+  /// Initialize provider with current user's data.
+  /// Call this when user logs in or app starts.
+  Future<void> initForUser(String? userId) async {
+    // Clear previous user's data from memory
+    _addresses.clear();
+    _selectedDeliveryAddress = null;
+    _currentUserId = userId;
+
+    if (userId != null) {
+      await loadFromStorage();
+    }
+    notifyListeners();
+  }
+
+  /// Select a delivery address for current order (without changing default)
+  void selectDeliveryAddress(Address address) {
+    _selectedDeliveryAddress = address;
+    notifyListeners();
+  }
+
+  /// Reset to default address
+  void resetToDefaultAddress() {
+    _selectedDeliveryAddress = null;
+    notifyListeners();
   }
 
   /// Add a new address
@@ -49,11 +91,18 @@ class AddressProvider extends ChangeNotifier {
   /// Delete an address
   Future<void> deleteAddress(String addressId) async {
     final wasDefault = _addresses.any((a) => a.id == addressId && a.isDefault);
+    final wasSelected = _selectedDeliveryAddress?.id == addressId;
+
     _addresses.removeWhere((a) => a.id == addressId);
 
     // If we deleted the default and there are still addresses, make first one default
     if (wasDefault && _addresses.isNotEmpty) {
       _addresses[0] = _addresses[0].copyWith(isDefault: true);
+    }
+
+    // Reset selection if deleted address was selected
+    if (wasSelected) {
+      _selectedDeliveryAddress = null;
     }
 
     await _saveToStorage();
@@ -79,7 +128,7 @@ class AddressProvider extends ChangeNotifier {
     }
   }
 
-  /// Load addresses from persistent storage
+  /// Load addresses from persistent storage (user-specific)
   Future<void> loadFromStorage() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -96,7 +145,7 @@ class AddressProvider extends ChangeNotifier {
     }
   }
 
-  /// Save addresses to persistent storage
+  /// Save addresses to persistent storage (user-specific)
   Future<void> _saveToStorage() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -106,6 +155,14 @@ class AddressProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint('Error saving addresses to storage: $e');
     }
+  }
+
+  /// Clear all addresses for current user (for logout)
+  Future<void> clearForLogout() async {
+    _addresses.clear();
+    _selectedDeliveryAddress = null;
+    _currentUserId = null;
+    notifyListeners();
   }
 
   /// Generate a unique ID for new addresses

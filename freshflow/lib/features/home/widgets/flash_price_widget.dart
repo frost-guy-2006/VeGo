@@ -140,22 +140,28 @@ class _FlashPriceWidgetState extends State<FlashPriceWidget> {
               ),
             ),
 
-            // 3D Effect Image
+            // 3D Effect Image - Contained within card
             Positioned(
-              right: -20,
-              bottom: 10,
+              right: 10,
+              bottom: 20,
               child: Hero(
                 tag: 'flash-product-${product.id}',
-                child: Image.network(
-                  product.imageUrl,
-                  height: 160,
-                  width: 160,
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    width: 160,
-                    height: 160,
-                    color: Colors.grey.withValues(alpha: 0.3),
-                    child: const Icon(Icons.image, color: Colors.white),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    product.imageUrl,
+                    height: 120,
+                    width: 120,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      width: 120,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.image, color: Colors.white),
+                    ),
                   ),
                 ),
               ),
