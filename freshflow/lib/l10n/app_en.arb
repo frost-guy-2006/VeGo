@@ -1,0 +1,226 @@
+{
+  "@@locale": "en",
+  
+  "appTitle": "VeGo",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  
+  "homePageTitle": "Fresh Harvest",
+  "@homePageTitle": {
+    "description": "Title shown on home page product section"
+  },
+  
+  "searchHint": "Search \"Red\" or \"Tomato\"",
+  "@searchHint": {
+    "description": "Hint text in search bar"
+  },
+  
+  "deliveryIn": "10 MINS",
+  "@deliveryIn": {
+    "description": "Delivery time badge text"
+  },
+  
+  "toAddress": "to {address}",
+  "@toAddress": {
+    "description": "Delivery destination label",
+    "placeholders": {
+      "address": {
+        "type": "String",
+        "example": "Home"
+      }
+    }
+  },
+  
+  "addAddress": "Add Address",
+  "@addAddress": {
+    "description": "Prompt to add delivery address"
+  },
+  
+  "addToCart": "Add to Cart",
+  "@addToCart": {
+    "description": "Button text to add item to cart"
+  },
+  
+  "checkout": "Checkout",
+  "@checkout": {
+    "description": "Checkout button text"
+  },
+  
+  "cart": "Cart",
+  "@cart": {
+    "description": "Cart page title"
+  },
+  
+  "profile": "Profile",
+  "@profile": {
+    "description": "Profile page title"
+  },
+  
+  "login": "Login",
+  "@login": {
+    "description": "Login button text"
+  },
+  
+  "signUp": "Sign Up",
+  "@signUp": {
+    "description": "Sign up button text"
+  },
+  
+  "logout": "Log Out",
+  "@logout": {
+    "description": "Logout button text"
+  },
+  
+  "email": "Email",
+  "@email": {
+    "description": "Email label"
+  },
+  
+  "phone": "Phone",
+  "@phone": {
+    "description": "Phone label"
+  },
+  
+  "password": "Password",
+  "@password": {
+    "description": "Password label"
+  },
+  
+  "enterOtp": "Enter OTP",
+  "@enterOtp": {
+    "description": "OTP input prompt"
+  },
+  
+  "verifyOtp": "Verify OTP",
+  "@verifyOtp": {
+    "description": "Verify OTP button"
+  },
+  
+  "resendOtp": "Resend OTP",
+  "@resendOtp": {
+    "description": "Resend OTP button"
+  },
+  
+  "myWishlist": "My Wishlist",
+  "@myWishlist": {
+    "description": "Wishlist page title"
+  },
+  
+  "myOrders": "My Orders",
+  "@myOrders": {
+    "description": "Orders page title"
+  },
+  
+  "myAddresses": "My Addresses",
+  "@myAddresses": {
+    "description": "Addresses page title"
+  },
+  
+  "darkMode": "Dark Mode",
+  "@darkMode": {
+    "description": "Dark mode toggle label"
+  },
+  
+  "noInternetConnection": "No Internet Connection",
+  "@noInternetConnection": {
+    "description": "Offline banner message"
+  },
+  
+  "errorLoadingProducts": "Error loading products",
+  "@errorLoadingProducts": {
+    "description": "Error message when products fail to load"
+  },
+  
+  "noProductsFound": "No products found",
+  "@noProductsFound": {
+    "description": "Empty state message"
+  },
+  
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry button text"
+  },
+  
+  "endOfList": "You've seen all products! 🎉",
+  "@endOfList": {
+    "description": "End of product list message"
+  },
+  
+  "itemAddedToCart": "{productName} added to cart",
+  "@itemAddedToCart": {
+    "description": "Snackbar when item is added to cart",
+    "placeholders": {
+      "productName": {
+        "type": "String",
+        "example": "Tomatoes"
+      }
+    }
+  },
+  
+  "totalPrice": "Total: ₹{price}",
+  "@totalPrice": {
+    "description": "Total price display",
+    "placeholders": {
+      "price": {
+        "type": "String",
+        "example": "199"
+      }
+    }
+  },
+  
+  "discountOff": "{percent}% OFF",
+  "@discountOff": {
+    "description": "Discount badge text",
+    "placeholders": {
+      "percent": {
+        "type": "int",
+        "example": "25"
+      }
+    }
+  },
+  
+  "harvestedAgo": "Harvested {time} ago",
+  "@harvestedAgo": {
+    "description": "Harvest time display",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "2 hours"
+      }
+    }
+  },
+  
+  "categories": "Categories",
+  "@categories": {
+    "description": "Categories section title"
+  },
+  
+  "all": "All",
+  "vegetables": "Vegetables",
+  "fruits": "Fruits",
+  "dairy": "Dairy",
+  "bakery": "Bakery",
+  "teaCoffee": "Tea/Coffee",
+  
+  "flashDeals": "Flash Deals",
+  "@flashDeals": {
+    "description": "Flash deals section title"
+  },
+  
+  "orderPlaced": "Order Placed Successfully!",
+  "@orderPlaced": {
+    "description": "Order success message"
+  },
+  
+  "swapSaved": "Swapped! You saved ₹{amount}.",
+  "@swapSaved": {
+    "description": "Smart swap success message",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "20"
+      }
+    }
+  }
+}

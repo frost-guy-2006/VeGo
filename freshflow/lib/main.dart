@@ -5,12 +5,11 @@ import 'package:vego/core/init/app_providers.dart';
 import 'package:vego/core/providers/auth_provider.dart';
 import 'package:vego/core/providers/theme_provider.dart';
 import 'package:vego/core/theme/app_theme.dart';
-// import 'package:vego/core/widgets/connectivity_overlay.dart';
+import 'package:vego/l10n/app_localizations.dart';
 import 'package:vego/features/auth/screens/login_screen.dart';
 import 'package:vego/features/home/screens/home_screen.dart';
 
 Future<void> main() async {
-  await AppInitializer.initialize();
   await AppInitializer.initialize();
   runApp(const VeGoApp());
 }
@@ -30,9 +29,8 @@ class VeGoApp extends StatelessWidget {
             darkTheme: AppTheme.darkTheme,
             themeMode: themeProvider.themeMode,
             debugShowCheckedModeBanner: false,
-            // builder: (context, child) => ConnectivityOverlay(
-            //   child: child ?? const SizedBox.shrink(),
-            // ),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             home: const _AuthGate(),
           );
         },
