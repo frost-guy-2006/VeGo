@@ -84,17 +84,21 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildNavItem(
       IconData selectedIcon, IconData unselectedIcon, int index) {
     final isSelected = _currentIndex == index;
-    return IconButton(
-      icon: Icon(
-        isSelected ? selectedIcon : unselectedIcon,
-        color: isSelected ? AppColors.primary : AppColors.secondary,
-        size: 28,
+    return SizedBox(
+      width: 48,
+      height: 48,
+      child: IconButton(
+        icon: Icon(
+          isSelected ? selectedIcon : unselectedIcon,
+          color: isSelected ? AppColors.primary : AppColors.secondary,
+          size: 28,
+        ),
+        onPressed: () {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
       ),
-      onPressed: () {
-        setState(() {
-          _currentIndex = index;
-        });
-      },
     );
   }
 }

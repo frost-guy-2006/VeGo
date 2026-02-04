@@ -128,6 +128,7 @@ class ProfileScreen extends StatelessWidget {
                             );
                           },
                           child: Container(
+                            constraints: const BoxConstraints(minHeight: 56),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 20, vertical: 16),
                             decoration: BoxDecoration(
@@ -207,6 +208,7 @@ class ProfileScreen extends StatelessWidget {
                             );
                           },
                           child: Container(
+                            constraints: const BoxConstraints(minHeight: 56),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 20, vertical: 16),
                             decoration: BoxDecoration(
@@ -288,6 +290,7 @@ class ProfileScreen extends StatelessWidget {
                             );
                           },
                           child: Container(
+                            constraints: const BoxConstraints(minHeight: 56),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 20, vertical: 16),
                             decoration: BoxDecoration(
@@ -362,6 +365,7 @@ class ProfileScreen extends StatelessWidget {
                     Consumer<ThemeProvider>(
                       builder: (context, themeProvider, _) {
                         return Container(
+                          constraints: const BoxConstraints(minHeight: 56),
                           padding: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 8),
                           decoration: BoxDecoration(

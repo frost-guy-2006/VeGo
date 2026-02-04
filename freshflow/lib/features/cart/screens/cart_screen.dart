@@ -78,6 +78,7 @@ class CartScreen extends StatelessWidget {
 
                     final item = cart.items[index];
                     return Container(
+                      key: ValueKey(item.product.id),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),

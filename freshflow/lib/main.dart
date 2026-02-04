@@ -1,27 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:vego/core/constants/env.dart';
+import 'package:provider/provider.dart';
+import 'package:vego/core/init/app_initializer.dart';
+import 'package:vego/core/init/app_providers.dart';
 import 'package:vego/core/providers/auth_provider.dart';
 import 'package:vego/core/providers/theme_provider.dart';
-import 'package:vego/core/providers/wishlist_provider.dart';
-import 'package:vego/core/providers/order_provider.dart';
-import 'package:vego/core/providers/address_provider.dart';
-import 'package:vego/core/providers/product_provider.dart';
+import 'package:vego/core/theme/app_theme.dart';
+// import 'package:vego/core/widgets/connectivity_overlay.dart';
 import 'package:vego/features/auth/screens/login_screen.dart';
-import 'package:provider/provider.dart';
-import 'core/theme/app_theme.dart';
-import 'core/providers/cart_provider.dart';
-import 'features/home/screens/home_screen.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:vego/features/home/screens/home_screen.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  await Supabase.initialize(
-    url: Env.supabaseUrl,
-    anonKey: Env.supabaseAnonKey,
-  );
-
+  await AppInitializer.initialize();
+  await AppInitializer.initialize();
   runApp(const VeGoApp());
 }
 
@@ -31,31 +21,7 @@ class VeGoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => CartProvider()),
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) {
-          final wishlistProvider = WishlistProvider();
-          wishlistProvider.loadFromStorage();
-          return wishlistProvider;
-        }),
-        ChangeNotifierProvider(create: (_) {
-          final orderProvider = OrderProvider();
-          orderProvider.loadFromStorage();
-          return orderProvider;
-        }),
-        ChangeNotifierProvider(create: (_) {
-          final addressProvider = AddressProvider();
-          addressProvider.loadFromStorage();
-          return addressProvider;
-        }),
-        ChangeNotifierProvider(create: (_) {
-          final productProvider = ProductProvider();
-          productProvider.initialize();
-          return productProvider;
-        }),
-      ],
+      providers: AppProviders.providers,
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
           return MaterialApp(
@@ -64,57 +30,27 @@ class VeGoApp extends StatelessWidget {
             darkTheme: AppTheme.darkTheme,
             themeMode: themeProvider.themeMode,
             debugShowCheckedModeBanner: false,
-            builder: (context, child) {
-              return Stack(
-                children: [
-                  if (child != null) child,
-                  StreamBuilder<List<ConnectivityResult>>(
-                    stream: Connectivity().onConnectivityChanged,
-                    builder: (context, snapshot) {
-                      final isOffline = snapshot.hasData &&
-                          (snapshot.data!.contains(ConnectivityResult.none) ||
-                              snapshot.data!.isEmpty);
-
-                      if (isOffline) {
-                        return Positioned(
-                          bottom: 0,
-                          left: 0,
-                          right: 0,
-                          child: Material(
-                            color: Colors.red,
-                            child: SafeArea(
-                              top: false,
-                              child: Container(
-                                padding: const EdgeInsets.all(8),
-                                alignment: Alignment.center,
-                                child: const Text(
-                                  'No Internet Connection',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      }
-                      return const SizedBox.shrink();
-                    },
-                  ),
-                ],
-              );
-            },
-            home: Consumer<AuthProvider>(
-              builder: (context, auth, _) {
-                // Check for existing session
-                return auth.isAuthenticated
-                    ? const HomeScreen()
-                    : const LoginScreen();
-              },
-            ),
+            // builder: (context, child) => ConnectivityOverlay(
+            //   child: child ?? const SizedBox.shrink(),
+            // ),
+            home: const _AuthGate(),
           );
         },
       ),
+    );
+  }
+}
+
+/// Decides which screen to show based on auth state.
+class _AuthGate extends StatelessWidget {
+  const _AuthGate();
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<AuthProvider>(
+      builder: (context, auth, _) {
+        return auth.isAuthenticated ? const HomeScreen() : const LoginScreen();
+      },
     );
   }
 }
