@@ -387,7 +387,7 @@ class _HomeContentState extends State<HomeContent> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.black.withOpacity(0.05)),
+                    border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
                   ),
                   child: Row(
                     children: [
