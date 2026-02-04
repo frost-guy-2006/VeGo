@@ -20,7 +20,12 @@ class AppInitializer {
     WidgetsFlutterBinding.ensureInitialized();
 
     // Load environment variables from .env file
-    await dotenv.load(fileName: '.env');
+    try {
+      await dotenv.load(fileName: '.env');
+    } catch (e) {
+      // Ignore error if .env is missing, as we might be using --dart-define
+      debugPrint('Warning: .env file not found or failed to load. Using environment variables if available.');
+    }
 
     await _initSupabase();
 
