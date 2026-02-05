@@ -33,7 +33,8 @@ class _LoginScreenState extends State<LoginScreen> {
     final cleanedPhone = phone.replaceAll(RegExp(r'\s+'), '');
 
     // Validation
-    final phoneRegExp = RegExp(r'^[0-9]{10}$'); // Strict 10 digits
+    // Allow strict 10 digits OR +91 followed by 10 digits
+    final phoneRegExp = RegExp(r'^(\+91)?[0-9]{10}$');
     if (!phoneRegExp.hasMatch(cleanedPhone)) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
