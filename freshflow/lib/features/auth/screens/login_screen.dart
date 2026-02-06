@@ -30,7 +30,12 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _signInPhone() async {
     final phone = _phoneController.text.trim();
     if (phone.isEmpty) return;
-    final cleanedPhone = phone.replaceAll(RegExp(r'\s+'), '');
+    var cleanedPhone = phone.replaceAll(RegExp(r'\s+'), '');
+
+    // Allow +91 prefix
+    if (cleanedPhone.startsWith('+91')) {
+      cleanedPhone = cleanedPhone.substring(3);
+    }
 
     // Validation
     final phoneRegExp = RegExp(r'^[0-9]{10}$'); // Strict 10 digits
@@ -45,8 +50,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
     // Default to +91 if missing
     String formattedPhone = cleanedPhone;
-    if (!cleanedPhone.startsWith('+')) {
-      formattedPhone = '+91$cleanedPhone';
+    if (!formattedPhone.startsWith('+')) {
+      formattedPhone = '+91$formattedPhone';
     }
 
     try {
