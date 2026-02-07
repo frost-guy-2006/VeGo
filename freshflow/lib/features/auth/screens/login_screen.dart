@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vego/core/providers/auth_provider.dart';
+import 'package:vego/core/utils/validators.dart';
 import 'package:vego/features/auth/screens/otp_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -30,24 +31,21 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _signInPhone() async {
     final phone = _phoneController.text.trim();
     if (phone.isEmpty) return;
-    final cleanedPhone = phone.replaceAll(RegExp(r'\s+'), '');
 
     // Validation
-    final phoneRegExp = RegExp(r'^[0-9]{10}$'); // Strict 10 digits
-    if (!phoneRegExp.hasMatch(cleanedPhone)) {
+    final error = Validators.validatePhone(phone);
+    if (error != null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter a valid phone number')),
+          SnackBar(content: Text(error)),
         );
       }
       return;
     }
 
-    // Default to +91 if missing
-    String formattedPhone = cleanedPhone;
-    if (!cleanedPhone.startsWith('+')) {
-      formattedPhone = '+91$cleanedPhone';
-    }
+    // Clean and format
+    final cleanedPhone = Validators.cleanPhone(phone);
+    final formattedPhone = '+91$cleanedPhone';
 
     try {
       await context.read<AuthProvider>().signInWithPhone(formattedPhone);
