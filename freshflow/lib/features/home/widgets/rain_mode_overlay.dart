@@ -57,7 +57,7 @@ class _RainModeOverlayState extends State<RainModeOverlay>
             builder: (context, child) {
               return CustomPaint(
                 painter:
-                    RainPainter(drops: _drops, progress: _controller.value),
+                    RainPainter(drops: _drops, progress: _controller.value, random: _random),
                 size: Size.infinite,
               );
             },
@@ -129,8 +129,9 @@ class RainDrop {
 class RainPainter extends CustomPainter {
   final List<RainDrop> drops;
   final double progress;
+  final Random random;
 
-  RainPainter({required this.drops, required this.progress});
+  RainPainter({required this.drops, required this.progress, required this.random});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -150,7 +151,7 @@ class RainPainter extends CustomPainter {
       drop.y += drop.speed * 0.02; // Move down
       if (drop.y > 1.0) {
         drop.y = -drop.length; // Reset to top
-        drop.x = Random().nextDouble(); // Random new X
+        drop.x = random.nextDouble(); // Random new X
       }
 
       final startX = drop.x * size.width;
