@@ -12,13 +12,23 @@ class Validators {
     return null;
   }
 
+  /// Clean phone number (strip whitespace, +, -) and ensure 10 digits
+  static String cleanPhone(String value) {
+    String cleaned = value.replaceAll(RegExp(r'[\s\-\+]'), '');
+    if (cleaned.startsWith('91') && cleaned.length == 12) {
+      cleaned = cleaned.substring(2);
+    }
+    return cleaned;
+  }
+
   /// Validate phone number (Indian format)
   static String? validatePhone(String? value) {
     if (value == null || value.isEmpty) {
       return 'Phone number is required';
     }
+    final cleaned = cleanPhone(value);
     final phoneRegex = RegExp(r'^[6-9]\d{9}$');
-    if (!phoneRegex.hasMatch(value.replaceAll(RegExp(r'[\s\-\+]'), ''))) {
+    if (!phoneRegex.hasMatch(cleaned)) {
       return 'Enter a valid 10-digit phone number';
     }
     return null;

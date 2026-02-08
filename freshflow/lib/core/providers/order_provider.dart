@@ -4,7 +4,11 @@ import 'package:vego/core/models/order_model.dart';
 import 'package:vego/core/providers/cart_provider.dart';
 import 'dart:convert';
 
-/// Provider for managing order history
+/// Provider for managing order history.
+///
+/// SECURITY WARNING: This provider stores order data (containing PII) in
+/// SharedPreferences which is not encrypted. This implementation is also local-only
+/// and does not sync with the Supabase `orders` table.
 class OrderProvider extends ChangeNotifier {
   final List<Order> _orders = [];
   static const String _storageKey = 'order_history';
