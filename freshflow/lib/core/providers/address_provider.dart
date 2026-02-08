@@ -5,6 +5,10 @@ import 'dart:convert';
 
 /// Provider for managing user addresses with user-specific isolation.
 /// Each user's addresses are stored separately using their user ID.
+///
+/// SECURITY WARNING: This provider stores address data (PII) in SharedPreferences
+/// which is not encrypted. For production apps, use flutter_secure_storage or
+/// similar encrypted storage solutions.
 class AddressProvider extends ChangeNotifier {
   final List<Address> _addresses = [];
   String? _currentUserId;

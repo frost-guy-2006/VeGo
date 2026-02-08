@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vego/core/providers/auth_provider.dart';
+import 'package:vego/core/services/error_service.dart';
+import 'package:vego/core/utils/validators.dart';
 import 'package:vego/features/auth/screens/otp_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -30,24 +32,17 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _signInPhone() async {
     final phone = _phoneController.text.trim();
     if (phone.isEmpty) return;
-    final cleanedPhone = phone.replaceAll(RegExp(r'\s+'), '');
 
-    // Validation
-    final phoneRegExp = RegExp(r'^[0-9]{10}$'); // Strict 10 digits
-    if (!phoneRegExp.hasMatch(cleanedPhone)) {
+    final error = Validators.validatePhone(phone);
+    if (error != null) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter a valid phone number')),
-        );
+        ErrorService.showError(context, error);
       }
       return;
     }
 
-    // Default to +91 if missing
-    String formattedPhone = cleanedPhone;
-    if (!cleanedPhone.startsWith('+')) {
-      formattedPhone = '+91$cleanedPhone';
-    }
+    final cleanedPhone = Validators.cleanPhone(phone);
+    final formattedPhone = '+91$cleanedPhone';
 
     try {
       await context.read<AuthProvider>().signInWithPhone(formattedPhone);
@@ -60,9 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
-        );
+        ErrorService.showError(context, e);
       }
     }
   }
@@ -71,22 +64,22 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
-    if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter email and password')),
-      );
+    final emailError = Validators.validateEmail(email);
+    if (emailError != null) {
+      if (mounted) ErrorService.showError(context, emailError);
+      return;
+    }
+
+    if (password.isEmpty) {
+      if (mounted) ErrorService.showError(context, 'Password is required');
       return;
     }
 
     try {
       await context.read<AuthProvider>().signInWithEmail(email, password);
-      // AuthProvider listens to auth state changes, so navigation might be handled by wrapper
-      // But for explicit feedback/navigation:
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
-        );
+        ErrorService.showError(context, e);
       }
     }
   }
@@ -95,27 +88,28 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
-    if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter email and password')),
-      );
+    final emailError = Validators.validateEmail(email);
+    if (emailError != null) {
+      if (mounted) ErrorService.showError(context, emailError);
+      return;
+    }
+
+    if (password.length < 6) {
+      if (mounted) {
+        ErrorService.showError(context, 'Password must be at least 6 characters');
+      }
       return;
     }
 
     try {
       await context.read<AuthProvider>().signUpWithEmail(email, password);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content:
-                  Text('Sign up successful! Please check your email/login.')),
-        );
+        ErrorService.showSuccess(
+            context, 'Sign up successful! Please check your email/login.');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
-        );
+        ErrorService.showError(context, e);
       }
     }
   }
