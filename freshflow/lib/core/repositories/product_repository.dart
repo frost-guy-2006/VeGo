@@ -92,4 +92,22 @@ class ProductRepository {
 
     return (response as List).map((json) => Product.fromJson(json)).toList();
   }
+
+  /// Search products by inferred color (server-side)
+  Future<List<Product>> searchProductsByColor(String color) async {
+    final keywords = Product.colorKeywords[color] ?? [];
+    if (keywords.isEmpty) return [];
+
+    // Construct OR query for name contains keywords
+    // Supabase syntax: column.ilike.%val%,column.ilike.%val2%
+    final orClause = keywords.map((k) => 'name.ilike.%$k%').join(',');
+
+    final response = await _client
+        .from('products')
+        .select()
+        .or(orClause)
+        .order('name');
+
+    return (response as List).map((json) => Product.fromJson(json)).toList();
+  }
 }
