@@ -19,12 +19,19 @@ class AppInitializer {
 
     WidgetsFlutterBinding.ensureInitialized();
 
-    // Load environment variables from .env file
-    await dotenv.load(fileName: '.env');
+    try {
+      // Load environment variables from .env file
+      await dotenv.load(fileName: '.env');
 
-    await _initSupabase();
+      await _initSupabase();
 
-    _initialized = true;
+      _initialized = true;
+    } catch (e, stackTrace) {
+      debugPrint('Error initializing app: $e');
+      debugPrint(stackTrace.toString());
+      // In a real app, you might want to show an error screen here
+      // or rethrow if initialization is critical.
+    }
   }
 
   static Future<void> _initSupabase() async {
