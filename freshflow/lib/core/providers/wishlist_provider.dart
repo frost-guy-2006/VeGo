@@ -6,10 +6,18 @@ import 'dart:convert';
 /// Provider for managing user's wishlist/favorites
 class WishlistProvider extends ChangeNotifier {
   final List<Product> _wishlist = [];
-  static const String _storageKey = 'user_wishlist';
+  String? _currentUserId;
 
   List<Product> get wishlist => List.unmodifiable(_wishlist);
   int get itemCount => _wishlist.length;
+
+  /// Initialize provider with current user's data.
+  Future<void> initForUser(String? userId) async {
+    _wishlist.clear();
+    _currentUserId = userId;
+    await loadFromStorage();
+    notifyListeners();
+  }
 
   /// Check if a product is in the wishlist
   bool isInWishlist(String productId) {
@@ -17,37 +25,44 @@ class WishlistProvider extends ChangeNotifier {
   }
 
   /// Toggle a product in/out of wishlist
-  void toggleWishlist(Product product) {
+  Future<void> toggleWishlist(Product product) async {
     if (isInWishlist(product.id)) {
       _wishlist.removeWhere((p) => p.id == product.id);
     } else {
       _wishlist.add(product);
     }
-    _saveToStorage();
+    await _saveToStorage();
     notifyListeners();
   }
 
   /// Add a product to wishlist
-  void addToWishlist(Product product) {
+  Future<void> addToWishlist(Product product) async {
     if (!isInWishlist(product.id)) {
       _wishlist.add(product);
-      _saveToStorage();
+      await _saveToStorage();
       notifyListeners();
     }
   }
 
   /// Remove a product from wishlist
-  void removeFromWishlist(String productId) {
+  Future<void> removeFromWishlist(String productId) async {
     _wishlist.removeWhere((p) => p.id == productId);
-    _saveToStorage();
+    await _saveToStorage();
     notifyListeners();
   }
 
   /// Clear entirewishlist
-  void clearWishlist() {
+  Future<void> clearWishlist() async {
     _wishlist.clear();
-    _saveToStorage();
+    await _saveToStorage();
     notifyListeners();
+  }
+
+  String get _storageKey {
+    if (_currentUserId == null) {
+      return 'user_wishlist_anonymous';
+    }
+    return 'user_wishlist_$_currentUserId';
   }
 
   /// Load wishlist from persistent storage
