@@ -20,7 +20,11 @@ class AppInitializer {
     WidgetsFlutterBinding.ensureInitialized();
 
     // Load environment variables from .env file
-    await dotenv.load(fileName: '.env');
+    try {
+      await dotenv.load(fileName: '.env');
+    } catch (e) {
+      debugPrint('Warning: .env file not found or failed to load. Using empty environment variables.');
+    }
 
     await _initSupabase();
 
@@ -28,10 +32,18 @@ class AppInitializer {
   }
 
   static Future<void> _initSupabase() async {
-    await Supabase.initialize(
-      url: Env.supabaseUrl,
-      anonKey: Env.supabaseAnonKey,
-    );
+    try {
+      if (Env.supabaseUrl.isEmpty || Env.supabaseAnonKey.isEmpty) {
+        debugPrint('Warning: Supabase URL or Anon Key is missing. Supabase initialization skipped.');
+        return;
+      }
+      await Supabase.initialize(
+        url: Env.supabaseUrl,
+        anonKey: Env.supabaseAnonKey,
+      );
+    } catch (e) {
+      debugPrint('Error initializing Supabase: $e');
+    }
   }
 }
 
