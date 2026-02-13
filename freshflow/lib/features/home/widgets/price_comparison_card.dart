@@ -108,6 +108,7 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
 
   Widget _buildImageSection(Product product) {
     return Stack(
+      clipBehavior: Clip.none,
       children: [
         // Image with 1:1 aspect ratio
         AspectRatio(
@@ -291,8 +292,8 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color:
-                  (inStock ? AppColors.accent : Colors.grey).withValues(alpha: 0.4),
+              color: (inStock ? AppColors.accent : Colors.grey)
+                  .withValues(alpha: 0.4),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
