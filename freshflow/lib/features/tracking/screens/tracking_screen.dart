@@ -80,7 +80,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
   Future<void> _fetchRoute() async {
     try {
       final url = Uri.parse(
-          'http://router.project-osrm.org/route/v1/driving/${_riderStartLocation.longitude},${_riderStartLocation.latitude};${_userLocation.longitude},${_userLocation.latitude}?overview=full&geometries=geojson');
+          'https://router.project-osrm.org/route/v1/driving/${_riderStartLocation.longitude},${_riderStartLocation.latitude};${_userLocation.longitude},${_userLocation.latitude}?overview=full&geometries=geojson');
 
       final response = await http.get(url);
 
