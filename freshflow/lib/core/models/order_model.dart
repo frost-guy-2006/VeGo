@@ -89,17 +89,25 @@ class Order {
         'deliveryAddress': deliveryAddress,
       };
 
-  factory Order.fromJson(Map<String, dynamic> json) => Order(
-        id: json['id'],
-        items:
-            (json['items'] as List).map((e) => OrderItem.fromJson(e)).toList(),
-        totalAmount: (json['totalAmount'] as num).toDouble(),
-        deliveryFee: (json['deliveryFee'] as num?)?.toDouble() ?? 0.0,
-        status: OrderStatus.values[json['status'] as int],
-        createdAt: DateTime.parse(json['createdAt']),
-        deliveredAt: json['deliveredAt'] != null
-            ? DateTime.parse(json['deliveredAt'])
-            : null,
-        deliveryAddress: json['deliveryAddress'],
-      );
+  factory Order.fromJson(Map<String, dynamic> json) {
+    // Safely handle status enum index
+    final int statusIndex = json['status'] as int? ?? 0;
+    final OrderStatus status =
+        (statusIndex >= 0 && statusIndex < OrderStatus.values.length)
+            ? OrderStatus.values[statusIndex]
+            : OrderStatus.pending; // Default fallback
+
+    return Order(
+      id: json['id'],
+      items: (json['items'] as List).map((e) => OrderItem.fromJson(e)).toList(),
+      totalAmount: (json['totalAmount'] as num).toDouble(),
+      deliveryFee: (json['deliveryFee'] as num?)?.toDouble() ?? 0.0,
+      status: status,
+      createdAt: DateTime.parse(json['createdAt']),
+      deliveredAt: json['deliveredAt'] != null
+          ? DateTime.parse(json['deliveredAt'])
+          : null,
+      deliveryAddress: json['deliveryAddress'],
+    );
+  }
 }
