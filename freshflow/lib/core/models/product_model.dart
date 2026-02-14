@@ -39,7 +39,7 @@ class Product {
   }
 
   factory Product.fromJson(Map<String, dynamic> json) {
-    final name = json['name'] as String;
+    final name = json['name'] as String? ?? 'Unknown Product';
     // Mock Visual Search Tagging logic
     String? inferredColor;
     if (name.toLowerCase().contains('red') ||
