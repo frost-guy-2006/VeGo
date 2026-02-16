@@ -29,7 +29,7 @@ class AddressPickerSheet extends StatelessWidget {
         return Container(
           decoration: BoxDecoration(
             color: context.surfaceColor,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
