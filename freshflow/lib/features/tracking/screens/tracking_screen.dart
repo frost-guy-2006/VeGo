@@ -243,9 +243,9 @@ class _TrackingScreenState extends State<TrackingScreen> {
             top: 50,
             left: 16,
             child: CircleAvatar(
-              backgroundColor: Colors.white,
+              backgroundColor: context.surfaceColor,
               child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
+                icon: Icon(Icons.arrow_back, color: context.textPrimary),
                 onPressed: () {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                   // Don't clear cart if just backing out, but usually tracking implies order placed.

@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vego/features/cart/screens/cart_screen.dart';
@@ -41,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.backgroundColor,
       body: Stack(
         children: [
           IndexedStack(
@@ -63,41 +64,103 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       bottomNavigationBar: Container(
-        height: 80,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildNavItem(Icons.home_rounded, Icons.home_outlined, 0),
-            _buildNavItem(
-                Icons.shopping_bag_rounded, Icons.shopping_bag_outlined, 1),
-            _buildNavItem(Icons.person_rounded, Icons.person_outline, 2),
-          ],
+        margin: const EdgeInsets.fromLTRB(40, 0, 40, 20),
+        height: 64,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(32),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : Colors.white.withValues(alpha: 0.75),
+                borderRadius: BorderRadius.circular(32),
+                border: Border.all(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white.withValues(alpha: 0.12)
+                      : Colors.white.withValues(alpha: 0.5),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 24,
+                    offset: const Offset(0, 8),
+                    spreadRadius: -4,
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildNavItem(
+                      Icons.home_rounded, Icons.home_outlined, 0, 'Home'),
+                  _buildNavItem(Icons.shopping_bag_rounded,
+                      Icons.shopping_bag_outlined, 1, 'Cart'),
+                  _buildNavItem(
+                      Icons.person_rounded, Icons.person_outline, 2, 'Profile'),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
   }
 
   Widget _buildNavItem(
-      IconData selectedIcon, IconData unselectedIcon, int index) {
+      IconData selectedIcon, IconData unselectedIcon, int index, String label) {
     final isSelected = _currentIndex == index;
-    return SizedBox(
-      width: 48,
-      height: 48,
-      child: IconButton(
-        icon: Icon(
-          isSelected ? selectedIcon : unselectedIcon,
-          color: isSelected ? AppColors.primary : AppColors.secondary,
-          size: 28,
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final activeColor = isDark ? AppColors.primaryLight : AppColors.primary;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _currentIndex = index;
+        });
+      },
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOutCubic,
+        padding: EdgeInsets.symmetric(
+          horizontal: isSelected ? 16 : 12,
+          vertical: 8,
         ),
-        onPressed: () {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
+        decoration: BoxDecoration(
+          color: isSelected
+              ? activeColor.withValues(alpha: 0.12)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              isSelected ? selectedIcon : unselectedIcon,
+              color: isSelected ? activeColor : context.textSecondary,
+              size: 24,
+            ),
+            AnimatedSize(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeOutCubic,
+              child: isSelected
+                  ? Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: Text(
+                        label,
+                        style: GoogleFonts.outfit(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: activeColor,
+                        ),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -225,7 +288,7 @@ class _HomeContentState extends State<HomeContent> {
     return RefreshIndicator(
       onRefresh: _onRefresh,
       color: AppColors.primary,
-      backgroundColor: AppColors.background,
+      backgroundColor: context.backgroundColor,
       strokeWidth: 3,
       displacement: 60,
       child: CustomScrollView(
@@ -249,7 +312,7 @@ class _HomeContentState extends State<HomeContent> {
               return SliverAppBar(
                 pinned: true,
                 floating: true,
-                backgroundColor: AppColors.background,
+                backgroundColor: context.backgroundColor,
                 elevation: 0,
                 expandedHeight: 72,
                 toolbarHeight: 64,
@@ -292,7 +355,7 @@ class _HomeContentState extends State<HomeContent> {
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.textDark,
+                              color: context.textPrimary,
                             ),
                           ),
                         ],
@@ -305,11 +368,11 @@ class _HomeContentState extends State<HomeContent> {
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.secondary,
+                              color: context.textSecondary,
                             ),
                           ),
-                          const Icon(Icons.keyboard_arrow_down,
-                              color: AppColors.secondary, size: 18),
+                          Icon(Icons.keyboard_arrow_down,
+                              color: context.textSecondary, size: 18),
                         ],
                       ),
                     ],
@@ -319,10 +382,10 @@ class _HomeContentState extends State<HomeContent> {
                   Stack(
                     children: [
                       IconButton(
-                        icon: const CircleAvatar(
-                          backgroundColor: Colors.white,
+                        icon: CircleAvatar(
+                          backgroundColor: context.surfaceColor,
                           child: Icon(Icons.favorite_outline,
-                              color: AppColors.textDark),
+                              color: context.textPrimary),
                         ),
                         onPressed: () {
                           Navigator.push(
@@ -381,19 +444,18 @@ class _HomeContentState extends State<HomeContent> {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   height: 50,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: context.surfaceColor,
                     borderRadius: BorderRadius.circular(12),
-                    border:
-                        Border.all(color: Colors.black.withValues(alpha: 0.05)),
+                    border: Border.all(color: context.borderColor),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.search, color: AppColors.secondary),
+                      Icon(Icons.search, color: context.textSecondary),
                       const SizedBox(width: 12),
                       Text(
                         'Search "Red" or "Tomato"', // Updated hint for discovery
                         style: GoogleFonts.plusJakartaSans(
-                            color: AppColors.secondary),
+                            color: context.textSecondary),
                       ),
                     ],
                   ),
@@ -408,7 +470,7 @@ class _HomeContentState extends State<HomeContent> {
           // Scrollable Flash Widgets
           SliverToBoxAdapter(
             child: Container(
-              color: AppColors.background,
+              color: context.backgroundColor,
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: SizedBox(
                 height: 200,
@@ -451,7 +513,7 @@ class _HomeContentState extends State<HomeContent> {
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textDark,
+                  color: context.textPrimary,
                 ),
               ),
             ),
@@ -487,7 +549,7 @@ class _HomeContentState extends State<HomeContent> {
                   child: Text(
                     'You\'ve seen all products! 🎉',
                     style: GoogleFonts.plusJakartaSans(
-                      color: AppColors.secondary,
+                      color: context.textSecondary,
                       fontSize: 14,
                     ),
                   ),
@@ -538,12 +600,12 @@ class _HomeContentState extends State<HomeContent> {
                 const SizedBox(height: 16),
                 Text('Error loading products',
                     style: GoogleFonts.plusJakartaSans(
-                        color: AppColors.textDark,
+                        color: context.textPrimary,
                         fontSize: 16,
                         fontWeight: FontWeight.bold)),
                 Text(_errorMessage!,
                     style: GoogleFonts.plusJakartaSans(
-                        color: AppColors.secondary, fontSize: 12)),
+                        color: context.textSecondary, fontSize: 12)),
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
                   onPressed: _loadInitialProducts,
@@ -574,12 +636,12 @@ class _HomeContentState extends State<HomeContent> {
                 const SizedBox(height: 16),
                 Text('No products found',
                     style: GoogleFonts.plusJakartaSans(
-                        color: AppColors.textDark,
+                        color: context.textPrimary,
                         fontSize: 16,
                         fontWeight: FontWeight.bold)),
                 Text('Try running the seed script.',
                     style: GoogleFonts.plusJakartaSans(
-                        color: AppColors.secondary, fontSize: 12)),
+                        color: context.textSecondary, fontSize: 12)),
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
                   onPressed: _seedData,

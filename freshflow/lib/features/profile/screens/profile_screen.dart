@@ -23,16 +23,16 @@ class ProfileScreen extends StatelessWidget {
     final _ = user?.phone ?? '+91 98765 43210';
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.backgroundColor,
       appBar: AppBar(
         title: Text(
           'Profile',
           style: GoogleFonts.plusJakartaSans(
             fontWeight: FontWeight.bold,
-            color: AppColors.textDark,
+            color: context.textPrimary,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: context.surfaceColor,
         elevation: 0,
         centerTitle: true,
       ),
@@ -67,7 +67,7 @@ class ProfileScreen extends StatelessWidget {
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.textDark,
+                            color: context.textPrimary,
                           ),
                         );
                       },
@@ -78,7 +78,7 @@ class ProfileScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: context.surfaceColor,
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
@@ -101,14 +101,17 @@ class ProfileScreen extends StatelessWidget {
                                       'Add phone number';
                           return Column(
                             children: [
+                              _buildProfileRow(context, Icons.email_outlined,
+                                  'Email', email),
+                              Divider(height: 32, color: context.borderColor),
+                              _buildProfileRow(context, Icons.phone_android,
+                                  'Phone', displayPhone),
+                              Divider(height: 32, color: context.borderColor),
                               _buildProfileRow(
-                                  Icons.email_outlined, 'Email', email),
-                              const Divider(height: 32),
-                              _buildProfileRow(
-                                  Icons.phone_android, 'Phone', displayPhone),
-                              const Divider(height: 32),
-                              _buildProfileRow(Icons.location_on_outlined,
-                                  'Address', addressText),
+                                  context,
+                                  Icons.location_on_outlined,
+                                  'Address',
+                                  addressText),
                             ],
                           );
                         },
@@ -120,295 +123,102 @@ class ProfileScreen extends StatelessWidget {
                     // My Wishlist Button
                     Consumer<WishlistProvider>(
                       builder: (context, wishlistProvider, _) {
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => const WishlistScreen()),
-                            );
-                          },
-                          child: Container(
-                            constraints: const BoxConstraints(minHeight: 56),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 16),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.04),
-                                  blurRadius: 10,
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color:
-                                        AppColors.accent.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: const Icon(
-                                    Icons.favorite,
-                                    color: AppColors.accent,
-                                    size: 20,
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Text(
-                                    'My Wishlist',
-                                    style: GoogleFonts.outfit(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.textDark,
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color:
-                                        AppColors.accent.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Text(
-                                    '${wishlistProvider.itemCount}',
-                                    style: GoogleFonts.jetBrainsMono(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.accent,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                const Icon(
-                                  Icons.chevron_right,
-                                  color: AppColors.secondary,
-                                ),
-                              ],
-                            ),
+                        return _buildGlassTile(
+                          context: context,
+                          icon: Icons.favorite,
+                          iconColor: AppColors.accent,
+                          title: 'My Wishlist',
+                          badge: '${wishlistProvider.itemCount}',
+                          badgeColor: AppColors.accent,
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const WishlistScreen()),
                           ),
                         );
                       },
                     ),
 
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 10),
 
                     // My Orders Button
                     Consumer<OrderProvider>(
                       builder: (context, orderProvider, _) {
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => const OrderHistoryScreen()),
-                            );
-                          },
-                          child: Container(
-                            constraints: const BoxConstraints(minHeight: 56),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 16),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.04),
-                                  blurRadius: 10,
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.primary
-                                        .withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: const Icon(
-                                    Icons.receipt_long,
-                                    color: AppColors.primary,
-                                    size: 20,
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Text(
-                                    'My Orders',
-                                    style: GoogleFonts.outfit(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.textDark,
-                                    ),
-                                  ),
-                                ),
-                                if (orderProvider.activeOrders.isNotEmpty)
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.primary
-                                          .withValues(alpha: 0.1),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Text(
-                                      '${orderProvider.activeOrders.length} active',
-                                      style: GoogleFonts.outfit(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.primary,
-                                      ),
-                                    ),
-                                  ),
-                                const SizedBox(width: 8),
-                                const Icon(
-                                  Icons.chevron_right,
-                                  color: AppColors.secondary,
-                                ),
-                              ],
-                            ),
+                        final isDark =
+                            Theme.of(context).brightness == Brightness.dark;
+                        final orderColor =
+                            isDark ? AppColors.primaryLight : AppColors.primary;
+                        return _buildGlassTile(
+                          context: context,
+                          icon: Icons.receipt_long,
+                          iconColor: orderColor,
+                          title: 'My Orders',
+                          badge: orderProvider.activeOrders.isNotEmpty
+                              ? '${orderProvider.activeOrders.length} active'
+                              : null,
+                          badgeColor: orderColor,
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const OrderHistoryScreen()),
                           ),
                         );
                       },
                     ),
 
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 10),
 
                     // My Addresses Button
                     Consumer<AddressProvider>(
                       builder: (context, addressProvider, _) {
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) =>
-                                      const AddressManagementScreen()),
-                            );
-                          },
-                          child: Container(
-                            constraints: const BoxConstraints(minHeight: 56),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 16),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.04),
-                                  blurRadius: 10,
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.accentWarm
-                                        .withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: const Icon(
-                                    Icons.location_on,
-                                    color: AppColors.accentWarm,
-                                    size: 20,
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Text(
-                                    'My Addresses',
-                                    style: GoogleFonts.outfit(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.textDark,
-                                    ),
-                                  ),
-                                ),
-                                if (addressProvider.addressCount > 0)
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.accentWarm
-                                          .withValues(alpha: 0.1),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Text(
-                                      '${addressProvider.addressCount}',
-                                      style: GoogleFonts.jetBrainsMono(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.accentWarm,
-                                      ),
-                                    ),
-                                  ),
-                                const SizedBox(width: 8),
-                                const Icon(
-                                  Icons.chevron_right,
-                                  color: AppColors.secondary,
-                                ),
-                              ],
-                            ),
+                        return _buildGlassTile(
+                          context: context,
+                          icon: Icons.location_on,
+                          iconColor: AppColors.accentWarm,
+                          title: 'My Addresses',
+                          badge: addressProvider.addressCount > 0
+                              ? '${addressProvider.addressCount}'
+                              : null,
+                          badgeColor: AppColors.accentWarm,
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) =>
+                                    const AddressManagementScreen()),
                           ),
                         );
                       },
                     ),
 
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 10),
 
                     // Dark Mode Toggle
                     Consumer<ThemeProvider>(
                       builder: (context, themeProvider, _) {
-                        return Container(
-                          constraints: const BoxConstraints(minHeight: 56),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.04),
-                                blurRadius: 10,
-                              ),
-                            ],
-                          ),
+                        final isDark =
+                            Theme.of(context).brightness == Brightness.dark;
+                        final themeColor =
+                            isDark ? AppColors.primaryLight : AppColors.primary;
+                        return _buildGlassContainer(
+                          context: context,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Row(
                                 children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.background,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Icon(
-                                      themeProvider.isDarkMode
-                                          ? Icons.dark_mode_rounded
-                                          : Icons.light_mode_rounded,
-                                      color: AppColors.primary,
-                                      size: 20,
-                                    ),
+                                  _buildGradientIcon(
+                                    themeProvider.isDarkMode
+                                        ? Icons.dark_mode_rounded
+                                        : Icons.light_mode_rounded,
+                                    themeColor,
                                   ),
-                                  const SizedBox(width: 16),
+                                  const SizedBox(width: 14),
                                   Text(
                                     'Dark Mode',
                                     style: GoogleFonts.outfit(
-                                      fontSize: 16,
+                                      fontSize: 15,
                                       fontWeight: FontWeight.w600,
-                                      color: AppColors.textDark,
+                                      color: context.textPrimary,
                                     ),
                                   ),
                                 ],
@@ -416,7 +226,7 @@ class ProfileScreen extends StatelessWidget {
                               Switch.adaptive(
                                 value: themeProvider.isDarkMode,
                                 onChanged: (_) => themeProvider.toggleTheme(),
-                                activeTrackColor: AppColors.primary,
+                                activeTrackColor: themeColor,
                               ),
                             ],
                           ),
@@ -462,16 +272,21 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileRow(IconData icon, String label, String value) {
+  Widget _buildProfileRow(
+      BuildContext context, IconData icon, String label, String value) {
     return Row(
       children: [
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: AppColors.background,
+            color: context.surfaceAltColor,
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(icon, color: AppColors.primary, size: 20),
+          child: Icon(icon,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.primaryLight
+                  : AppColors.primary,
+              size: 20),
         ),
         const SizedBox(width: 16),
         Expanded(
@@ -482,7 +297,7 @@ class ProfileScreen extends StatelessWidget {
                 label,
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 12,
-                  color: AppColors.secondary,
+                  color: context.textSecondary,
                 ),
               ),
               Text(
@@ -490,7 +305,7 @@ class ProfileScreen extends StatelessWidget {
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textDark,
+                  color: context.textPrimary,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -499,6 +314,107 @@ class ProfileScreen extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildGlassTile({
+    required BuildContext context,
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    String? badge,
+    Color? badgeColor,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: _buildGlassContainer(
+        context: context,
+        child: Row(
+          children: [
+            _buildGradientIcon(icon, iconColor),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(
+                title,
+                style: GoogleFonts.outfit(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: context.textPrimary,
+                ),
+              ),
+            ),
+            if (badge != null) ...[
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: (badgeColor ?? iconColor).withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  badge,
+                  style: GoogleFonts.jetBrainsMono(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: badgeColor ?? iconColor,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+            ],
+            Icon(
+              Icons.chevron_right_rounded,
+              color: context.textSecondary,
+              size: 20,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGlassContainer({
+    required BuildContext context,
+    required Widget child,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      constraints: const BoxConstraints(minHeight: 56),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+      decoration: BoxDecoration(
+        color: isDark
+            ? Colors.white.withValues(alpha: 0.06)
+            : Colors.black.withValues(alpha: 0.03),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : Colors.black.withValues(alpha: 0.05),
+        ),
+      ),
+      child: child,
+    );
+  }
+
+  Widget _buildGradientIcon(IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            color.withValues(alpha: 0.15),
+            color.withValues(alpha: 0.06),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: color.withValues(alpha: 0.1),
+        ),
+      ),
+      child: Icon(icon, color: color, size: 20),
     );
   }
 }

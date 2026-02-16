@@ -170,31 +170,134 @@ class AppTheme {
         surface: AppColors.surfaceDark,
       ),
       textTheme: TextTheme(
+        // Display
         displayLarge: GoogleFonts.spaceGrotesk(
           fontSize: 40,
           fontWeight: FontWeight.w700,
           color: AppColors.textLight,
+          letterSpacing: -1.5,
         ),
         displayMedium: GoogleFonts.spaceGrotesk(
           fontSize: 32,
           fontWeight: FontWeight.w600,
           color: AppColors.textLight,
+          letterSpacing: -1.0,
         ),
+        displaySmall: GoogleFonts.spaceGrotesk(
+          fontSize: 24,
+          fontWeight: FontWeight.w600,
+          color: AppColors.textLight,
+        ),
+        // Headlines
+        headlineLarge: GoogleFonts.spaceGrotesk(
+          fontSize: 22,
+          fontWeight: FontWeight.w700,
+          color: AppColors.textLight,
+        ),
+        headlineMedium: GoogleFonts.spaceGrotesk(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          color: AppColors.textLight,
+        ),
+        headlineSmall: GoogleFonts.spaceGrotesk(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: AppColors.textLight,
+        ),
+        // Body
         bodyLarge: GoogleFonts.outfit(
           fontSize: 16,
+          fontWeight: FontWeight.w400,
           color: AppColors.textLight,
+          height: 1.5,
         ),
         bodyMedium: GoogleFonts.outfit(
           fontSize: 14,
-          color: AppColors.textLight.withValues(alpha: 0.7),
+          fontWeight: FontWeight.w400,
+          color: AppColors.textMutedDark,
+          height: 1.5,
+        ),
+        bodySmall: GoogleFonts.outfit(
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+          color: AppColors.textMutedDark,
+        ),
+        // Labels
+        labelLarge: GoogleFonts.outfit(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: AppColors.textLight,
+          letterSpacing: 0.5,
+        ),
+        labelMedium: GoogleFonts.outfit(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+          color: AppColors.textMutedDark,
+        ),
+        labelSmall: GoogleFonts.outfit(
+          fontSize: 10,
+          fontWeight: FontWeight.w500,
+          color: AppColors.textMutedDark,
+          letterSpacing: 1.0,
         ),
       ),
+      // Elevated buttons
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.accent,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          textStyle: GoogleFonts.spaceGrotesk(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+      // Outlined buttons
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.primaryLight,
+          side: const BorderSide(color: AppColors.primaryLight, width: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+      ),
+      // Cards
       cardTheme: CardThemeData(
         color: AppColors.cardDark,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
+      ),
+      // AppBar
+      appBarTheme: AppBarTheme(
+        backgroundColor: AppColors.backgroundDark,
+        elevation: 0,
+        centerTitle: true,
+        titleTextStyle: GoogleFonts.spaceGrotesk(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: AppColors.textLight,
+        ),
+        iconTheme: const IconThemeData(color: AppColors.textLight),
+      ),
+      // Input decoration
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: AppColors.surfaceAltDark,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       ),
     );
   }

@@ -12,8 +12,8 @@ class CartBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
@@ -40,14 +40,14 @@ class CartBottomSheet extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.shopping_cart_outlined,
-                            size: 64, color: AppColors.secondary),
+                        Icon(Icons.shopping_cart_outlined,
+                            size: 64, color: context.textSecondary),
                         const SizedBox(height: 16),
                         Text(
                           'Your cart is empty',
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 18,
-                            color: AppColors.secondary,
+                            color: context.textSecondary,
                           ),
                         ),
                       ],
@@ -88,13 +88,13 @@ class CartBottomSheet extends StatelessWidget {
                                 style: GoogleFonts.plusJakartaSans(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
-                                  color: AppColors.textDark,
+                                  color: context.textPrimary,
                                 ),
                               ),
                               Text(
                                 '\$${item.product.currentPrice.toStringAsFixed(2)}',
                                 style: GoogleFonts.plusJakartaSans(
-                                  color: AppColors.secondary,
+                                  color: context.textSecondary,
                                   fontSize: 14,
                                 ),
                               ),
@@ -105,7 +105,7 @@ class CartBottomSheet extends StatelessWidget {
                           children: [
                             IconButton(
                               icon: const Icon(Icons.remove_circle_outline),
-                              color: AppColors.secondary,
+                              color: context.textSecondary,
                               onPressed: () =>
                                   cart.decreaseQuantity(item.product.id),
                             ),
@@ -113,7 +113,7 @@ class CartBottomSheet extends StatelessWidget {
                               '${item.quantity}',
                               style: GoogleFonts.plusJakartaSans(
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.textDark,
+                                color: context.textPrimary,
                               ),
                             ),
                             IconButton(
@@ -137,7 +137,7 @@ class CartBottomSheet extends StatelessWidget {
               return Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: context.surfaceColor,
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.05),
@@ -156,7 +156,7 @@ class CartBottomSheet extends StatelessWidget {
                             'Total',
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 18,
-                              color: AppColors.textDark,
+                              color: context.textPrimary,
                             ),
                           ),
                           Text(
@@ -164,7 +164,7 @@ class CartBottomSheet extends StatelessWidget {
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.textDark,
+                              color: context.textPrimary,
                             ),
                           ),
                         ],

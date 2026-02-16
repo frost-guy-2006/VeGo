@@ -17,14 +17,19 @@ class AppColors {
   static const Color textLight = Color(0xFFF7FAFC); // Off White
 
   // 🎨 Background Colors
-  static const Color background = Color(0xFFFFFBF5); // Warm Paper
+  static const Color background = Color(0xFFEDF5F0); // Cool Sage
   static const Color surface = Color(0xFFFFFFFF); // Pure White
-  static const Color surfaceAlt = Color(0xFFF0FDF4); // Mint Whisper
+  static const Color surfaceAlt = Color(0xFFF6FBF8); // Lighter Sage
 
   // 🌙 Dark Mode
-  static const Color backgroundDark = Color(0xFF0D1F17); // Forest Night
-  static const Color surfaceDark = Color(0xFF1A3328); // Dark Leaf
-  static const Color cardDark = Color(0xFF234E3B); // Evergreen
+  static const Color backgroundDark = Color(0xFF0B1A13); // Deep forest night
+  static const Color surfaceDark = Color(0xFF1F4231); // Leaf card surface
+  static const Color cardDark = Color(0xFF2A5740); // Elevated card
+  static const Color surfaceAltDark =
+      Color(0xFF2A5740); // Alt surface (same as card for elevation)
+  static const Color borderDark = Color(0xFF538A72); // Visible dark border
+  static const Color textMutedDark =
+      Color(0xFFB0BEC0); // Lighter muted text for readability
 
   // ⚡ Utility Colors
   static const Color success = Color(0xFF22C55E); // Fresh Green
@@ -34,4 +39,26 @@ class AppColors {
 
   // Legacy aliases for backward compatibility
   static const Color secondary = textMuted;
+}
+
+/// Context-aware color extension. Use these instead of hardcoded AppColors
+/// so dark mode works automatically.
+extension AppColorsX on BuildContext {
+  bool get _isDark => Theme.of(this).brightness == Brightness.dark;
+
+  // Backgrounds
+  Color get backgroundColor =>
+      _isDark ? AppColors.backgroundDark : AppColors.background;
+  Color get surfaceColor => _isDark ? AppColors.surfaceDark : AppColors.surface;
+  Color get surfaceAltColor =>
+      _isDark ? AppColors.surfaceAltDark : AppColors.surfaceAlt;
+  Color get cardColor => _isDark ? AppColors.cardDark : AppColors.surface;
+
+  // Text
+  Color get textPrimary => _isDark ? AppColors.textLight : AppColors.textDark;
+  Color get textSecondary =>
+      _isDark ? AppColors.textMutedDark : AppColors.textMuted;
+
+  // Borders
+  Color get borderColor => _isDark ? AppColors.borderDark : AppColors.border;
 }

@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:vego/core/models/product_model.dart';
 import 'package:vego/core/providers/cart_provider.dart';
@@ -13,37 +14,64 @@ class ProductDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.surfaceColor,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            backgroundColor: AppColors.background,
+            backgroundColor: context.backgroundColor,
             expandedHeight: 300,
             pinned: true,
             leading: IconButton(
-              icon: const CircleAvatar(
-                backgroundColor: Colors.white,
-                child: Icon(Icons.arrow_back, color: AppColors.textDark),
+              icon: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: _buildBackButtonInner(context),
+                ),
               ),
               onPressed: () => Navigator.pop(context),
             ),
             flexibleSpace: FlexibleSpaceBar(
-              background: Hero(
-                tag: 'product-image-${product.id}',
-                child: Image.network(
-                  product.imageUrl,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) =>
-                      Container(color: Colors.grey[200]),
-                ),
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Hero(
+                    tag: 'product-image-${product.id}',
+                    child: Image.network(
+                      product.imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) =>
+                          Container(color: Colors.grey[200]),
+                    ),
+                  ),
+                  // Gradient overlay for smooth blending into content
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: 80,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            context.surfaceColor.withValues(alpha: 0.8),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
           SliverToBoxAdapter(
             child: Container(
               padding: const EdgeInsets.all(24),
-              decoration: const BoxDecoration(
-                color: Colors.white,
+              decoration: BoxDecoration(
+                color: context.surfaceColor,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
               ),
               transform: Matrix4.translationValues(0, -20, 0),
@@ -60,7 +88,7 @@ class ProductDetailScreen extends StatelessWidget {
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.textDark,
+                            color: context.textPrimary,
                           ),
                         ),
                       ),
@@ -68,22 +96,22 @@ class ProductDetailScreen extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: AppColors.background,
+                          color: context.surfaceAltColor,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                               color: AppColors.primary.withValues(alpha: 0.1)),
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.schedule,
-                                size: 14, color: AppColors.secondary),
+                            Icon(Icons.schedule,
+                                size: 14, color: context.textSecondary),
                             const SizedBox(width: 4),
                             Text(
                               'Harvested ${product.harvestTime}',
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.secondary,
+                                color: context.textSecondary,
                               ),
                             ),
                           ],
@@ -99,7 +127,7 @@ class ProductDetailScreen extends StatelessWidget {
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textDark,
+                      color: context.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -108,8 +136,18 @@ class ProductDetailScreen extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppColors.background,
-                      borderRadius: BorderRadius.circular(16),
+                      color: context.surfaceAltColor,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: context.borderColor.withValues(alpha: 0.15),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.04),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -141,7 +179,7 @@ class ProductDetailScreen extends StatelessWidget {
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textDark,
+                      color: context.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -149,7 +187,7 @@ class ProductDetailScreen extends StatelessWidget {
                     'Freshly sourced directly from local farms. These ${product.name.toLowerCase()} are hand-picked at peak ripeness to ensure maximum flavor and nutrition.',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 16,
-                      color: AppColors.secondary,
+                      color: context.textSecondary,
                       height: 1.5,
                     ),
                   ),
@@ -161,85 +199,137 @@ class ProductDetailScreen extends StatelessWidget {
         ],
       ),
 
-      // Bottom Bar
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, -5),
+      // Bottom Bar — Frosted Glass
+      bottomNavigationBar: ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? context.surfaceColor.withValues(alpha: 0.7)
+                  : Colors.white.withValues(alpha: 0.75),
+              border: Border(
+                top: BorderSide(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : Colors.black.withValues(alpha: 0.05),
+                ),
+              ),
             ),
-          ],
-        ),
-        child: SafeArea(
-          child: Row(
-            children: [
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+            child: SafeArea(
+              child: Row(
                 children: [
-                  Text(
-                    'Price',
-                    style:
-                        GoogleFonts.plusJakartaSans(color: AppColors.secondary),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Price',
+                        style: GoogleFonts.plusJakartaSans(
+                            color: context.textSecondary),
+                      ),
+                      Text(
+                        '₹${product.currentPrice.toStringAsFixed(0)}',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: context.textPrimary,
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    '₹${product.currentPrice.toStringAsFixed(0)}',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textDark,
+                  const SizedBox(width: 24),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        context.read<CartProvider>().addToCart(product);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Row(
+                              children: [
+                                const Icon(Icons.check_circle,
+                                    color: Colors.white, size: 18),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    '${product.name} added to cart',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            duration: const Duration(milliseconds: 1500),
+                            behavior: SnackBarBehavior.floating,
+                            backgroundColor: AppColors.primary,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                            margin: const EdgeInsets.all(16),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        height: 56,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              AppColors.primary,
+                              AppColors.primaryLight,
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(28),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withValues(alpha: 0.4),
+                              blurRadius: 16,
+                              offset: const Offset(0, 6),
+                              spreadRadius: -2,
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.shopping_bag_outlined,
+                                color: Colors.white, size: 20),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Add to Cart',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(width: 24),
-              Expanded(
-                child: SizedBox(
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      context.read<CartProvider>().addToCart(product);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('${product.name} added to cart'),
-                          duration: const Duration(milliseconds: 1500),
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(28),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.shopping_bag_outlined),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Add to Cart',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),
+    );
+  }
+
+  static Widget _buildBackButtonInner(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: context.surfaceColor.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: context.borderColor.withValues(alpha: 0.3),
+        ),
+      ),
+      child:
+          Icon(Icons.arrow_back_rounded, color: context.textPrimary, size: 20),
     );
   }
 }
@@ -290,7 +380,7 @@ class _LocalPriceBar extends StatelessWidget {
           '₹${price.toStringAsFixed(0)}',
           style: GoogleFonts.plusJakartaSans(
             fontWeight: FontWeight.bold,
-            color: isSelected ? AppColors.textDark : AppColors.secondary,
+            color: isSelected ? context.textPrimary : context.textSecondary,
           ),
         ),
         const SizedBox(height: 8),
@@ -309,7 +399,7 @@ class _LocalPriceBar extends StatelessWidget {
           label,
           style: GoogleFonts.plusJakartaSans(
             fontSize: 10,
-            color: AppColors.secondary,
+            color: context.textSecondary,
           ),
         ),
       ],

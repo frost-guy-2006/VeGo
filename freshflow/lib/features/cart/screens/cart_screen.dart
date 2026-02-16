@@ -1,11 +1,10 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:vego/core/providers/cart_provider.dart';
-import 'package:vego/core/theme/app_colors.dart';
-import 'package:vego/features/cart/widgets/cart_hero_widgets.dart';
-import 'package:vego/features/tracking/screens/tracking_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:vego/core/providers/cart_provider.dart';
+import 'package:vego/core/theme/app_colors.dart';
+import 'package:vego/features/tracking/screens/tracking_screen.dart';
 import 'package:slide_to_act/slide_to_act.dart';
 
 class CartScreen extends StatelessWidget {
@@ -14,18 +13,23 @@ class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.surfaceAltColor, // Matches the new theme
       appBar: AppBar(
         title: Text(
           'My Cart',
           style: GoogleFonts.plusJakartaSans(
             fontWeight: FontWeight.bold,
-            color: AppColors.textDark,
+            color: context.textPrimary,
           ),
         ),
-        backgroundColor: Colors.white,
-        elevation: 0,
         centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_new_rounded,
+              color: context.textPrimary, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: Consumer<CartProvider>(
         builder: (context, cart, child) {
@@ -34,14 +38,24 @@ class CartScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.shopping_cart_outlined,
-                      size: 64, color: AppColors.secondary),
+                  Icon(Icons.shopping_cart_outlined,
+                      size: 64,
+                      color: context.textSecondary.withValues(alpha: 0.5)),
                   const SizedBox(height: 16),
                   Text(
                     'Your cart is empty',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 18,
-                      color: AppColors.secondary,
+                      fontWeight: FontWeight.w600,
+                      color: context.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Add some fresh goodies!',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 14,
+                      color: context.textSecondary.withValues(alpha: 0.7),
                     ),
                   ),
                 ],
@@ -51,60 +65,44 @@ class CartScreen extends StatelessWidget {
 
           return Column(
             children: [
-              // Hero Feature 1: Gamified Delivery Bar
-              FreeDeliveryProgressBar(currentTotal: cart.totalPrice),
-
               Expanded(
                 child: ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  itemCount:
-                      cart.items.length + 1, // +1 for Swap Widget at the bottom
+                  padding: const EdgeInsets.all(20),
+                  itemCount: cart.items.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 16),
                   itemBuilder: (context, index) {
-                    // Hero Feature 2: Smart Swap at the end of list
-                    if (index == cart.items.length) {
-                      return SmartSwapWidget(onSwap: () {
-                        // Mock Swap Logic: In real app, replace item.
-                        // For now, show a snackbar.
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(const SnackBar(
-                          content: Text('Swapped! You saved ₹20.'),
-                          backgroundColor: Colors.green,
-                          behavior: SnackBarBehavior.floating,
-                          margin: EdgeInsets.all(20),
-                        ));
-                      });
-                    }
-
                     final item = cart.items[index];
                     return Container(
-                      key: ValueKey(item.product.id),
+                      padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
+                        color: context.surfaceColor,
+                        borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.04),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
+                            color: Colors.black.withValues(alpha: 0.03),
+                            blurRadius: 16,
+                            offset: const Offset(0, 4),
                           ),
                         ],
                       ),
-                      padding: const EdgeInsets.all(12),
                       child: Row(
                         children: [
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: CachedNetworkImage(
-                              imageUrl: item.product.imageUrl,
+                            borderRadius: BorderRadius.circular(16),
+                            child: Image.network(
+                              item.product.imageUrl,
                               width: 80,
                               height: 80,
                               fit: BoxFit.cover,
-                              placeholder: (context, url) => Container(
-                                color: Colors.grey[200],
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Container(
+                                width: 80,
+                                height: 80,
+                                color: context.surfaceAltColor,
+                                child: Icon(Icons.image_not_supported_outlined,
+                                    color: context.textSecondary
+                                        .withValues(alpha: 0.5)),
                               ),
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.error),
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -117,43 +115,60 @@ class CartScreen extends StatelessWidget {
                                   style: GoogleFonts.plusJakartaSans(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
-                                    color: AppColors.textDark,
+                                    color: context.textPrimary,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
                                   '₹${item.product.currentPrice.toStringAsFixed(0)}',
                                   style: GoogleFonts.plusJakartaSans(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                                    color: context.textSecondary,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          Row(
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.remove_circle_outline),
-                                color: AppColors.secondary,
-                                onPressed: () =>
-                                    cart.decreaseQuantity(item.product.id),
-                              ),
-                              Text(
-                                '${item.quantity}',
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                  color: AppColors.textDark,
+                          Container(
+                            decoration: BoxDecoration(
+                              color: context.surfaceAltColor,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                  color: context.borderColor
+                                      .withValues(alpha: 0.5)),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.remove_rounded,
+                                      size: 18),
+                                  color: context.textSecondary,
+                                  onPressed: () =>
+                                      cart.decreaseQuantity(item.product.id),
+                                  constraints: const BoxConstraints(
+                                      minWidth: 36, minHeight: 36),
+                                  padding: EdgeInsets.zero,
                                 ),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.add_circle_outline),
-                                color: AppColors.primary,
-                                onPressed: () => cart.addToCart(item.product),
-                              ),
-                            ],
+                                Text(
+                                  '${item.quantity}',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontWeight: FontWeight.bold,
+                                    color: context.textPrimary,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.add_rounded, size: 18),
+                                  color: AppColors.primary,
+                                  onPressed: () => cart.addToCart(item.product),
+                                  constraints: const BoxConstraints(
+                                      minWidth: 36, minHeight: 36),
+                                  padding: EdgeInsets.zero,
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -161,70 +176,101 @@ class CartScreen extends StatelessWidget {
                   },
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(24)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, -5),
+
+              // Glassmorphic Checkout Section
+              ClipRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 16), // Reduced padding
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? context.surfaceColor.withValues(alpha: 0.7)
+                          : Colors.white.withValues(alpha: 0.65),
+                      border: Border(
+                        top: BorderSide(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white.withValues(alpha: 0.08)
+                              : Colors.white.withValues(alpha: 0.6),
+                        ),
+                      ),
                     ),
-                  ],
-                ),
-                child: SafeArea(
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: SafeArea(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            'Total',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 18,
-                              color: AppColors.textDark,
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Total',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 16, // Reduced from 18
+                                  color: context.textSecondary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Text(
+                                '₹${cart.totalPrice.toStringAsFixed(0)}',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 24, // Reduced from 28
+                                  fontWeight: FontWeight.bold,
+                                  color: context.textPrimary,
+                                ),
+                              ),
+                            ],
                           ),
-                          Text(
-                            '₹${cart.totalPrice.toStringAsFixed(0)}',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textDark,
+                          const SizedBox(height: 16), // Reduced gap from 24
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(24),
+                              boxShadow: [
+                                BoxShadow(
+                                  color:
+                                      AppColors.primary.withValues(alpha: 0.25),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: SizedBox(
+                              width: double.infinity,
+                              height: 48, // Compact height
+                              child: SlideAction(
+                                text: "Slide to Pay",
+                                textStyle: GoogleFonts.plusJakartaSans(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  letterSpacing: 0.5,
+                                ),
+                                outerColor: AppColors.primary,
+                                innerColor: Colors.white,
+                                key: const Key('slide_to_pay'),
+                                borderRadius: 24,
+                                sliderButtonIconSize: 14,
+                                sliderButtonIconPadding: 10,
+                                sliderButtonIcon: const Icon(
+                                    Icons.arrow_forward_rounded,
+                                    color: AppColors.primary),
+                                onSubmit: () async {
+                                  if (cart.items.isNotEmpty) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) =>
+                                              const TrackingScreen()),
+                                    );
+                                  }
+                                  return null;
+                                },
+                              ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: SlideAction(
-                          text: "Slide to Pay",
-                          textStyle: GoogleFonts.plusJakartaSans(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                          outerColor: AppColors.primary,
-                          innerColor: Colors.white,
-                          key: const Key('slide_to_pay'),
-                          onSubmit: () async {
-                            if (cart.items.isNotEmpty) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => const TrackingScreen()),
-                              );
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),

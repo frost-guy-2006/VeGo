@@ -45,7 +45,7 @@ class FlashDealsSection extends StatelessWidget {
   }
 }
 
-/// Section title widget.
+/// Section title widget with gradient accent underline.
 class SectionTitle extends StatelessWidget {
   final String title;
 
@@ -53,16 +53,39 @@ class SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Text(
-          title,
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textDark,
-          ),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: context.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Container(
+              width: 36,
+              height: 3,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(2),
+                gradient: LinearGradient(
+                  colors: [
+                    isDark ? AppColors.primaryLight : AppColors.primary,
+                    isDark
+                        ? AppColors.primaryLight.withValues(alpha: 0.3)
+                        : AppColors.primary.withValues(alpha: 0.3),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -102,7 +125,7 @@ class EndOfListMessage extends StatelessWidget {
           child: Text(
             'You\'ve seen all products! 🎉',
             style: GoogleFonts.plusJakartaSans(
-              color: AppColors.secondary,
+              color: context.textSecondary,
               fontSize: 14,
             ),
           ),

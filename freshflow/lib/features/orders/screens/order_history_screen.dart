@@ -12,12 +12,12 @@ class OrderHistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.backgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: context.backgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textDark),
+          icon: Icon(Icons.arrow_back_ios_new, color: context.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         title: Row(
@@ -29,7 +29,7 @@ class OrderHistoryScreen extends StatelessWidget {
               style: GoogleFonts.spaceGrotesk(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textDark,
+                color: context.textPrimary,
               ),
             ),
           ],
@@ -81,7 +81,7 @@ class OrderHistoryScreen extends StatelessWidget {
               style: GoogleFonts.spaceGrotesk(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textDark,
+                color: context.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
@@ -89,7 +89,7 @@ class OrderHistoryScreen extends StatelessWidget {
               'Your order history will appear here',
               style: GoogleFonts.outfit(
                 fontSize: 14,
-                color: AppColors.textMuted,
+                color: context.textSecondary,
               ),
               textAlign: TextAlign.center,
             ),
@@ -127,7 +127,7 @@ class _OrderCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -153,7 +153,7 @@ class _OrderCard extends StatelessWidget {
                       style: GoogleFonts.jetBrainsMono(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textDark,
+                        color: context.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -161,7 +161,7 @@ class _OrderCard extends StatelessWidget {
                       dateFormat.format(order.createdAt),
                       style: GoogleFonts.outfit(
                         fontSize: 12,
-                        color: AppColors.textMuted,
+                        color: context.textSecondary,
                       ),
                     ),
                   ],
@@ -213,7 +213,7 @@ class _OrderCard extends StatelessWidget {
                                   style: GoogleFonts.outfit(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
-                                    color: AppColors.textDark,
+                                    color: context.textPrimary,
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -222,7 +222,7 @@ class _OrderCard extends StatelessWidget {
                                   'Qty: ${item.quantity}',
                                   style: GoogleFonts.outfit(
                                     fontSize: 12,
-                                    color: AppColors.textMuted,
+                                    color: context.textSecondary,
                                   ),
                                 ),
                               ],
@@ -246,7 +246,7 @@ class _OrderCard extends StatelessWidget {
                       '+${order.items.length - 3} more items',
                       style: GoogleFonts.outfit(
                         fontSize: 12,
-                        color: AppColors.secondary,
+                        color: context.textSecondary,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -270,7 +270,7 @@ class _OrderCard extends StatelessWidget {
                       '${order.itemCount} items',
                       style: GoogleFonts.outfit(
                         fontSize: 12,
-                        color: AppColors.textMuted,
+                        color: context.textSecondary,
                       ),
                     ),
                     Text(
@@ -278,7 +278,7 @@ class _OrderCard extends StatelessWidget {
                       style: GoogleFonts.jetBrainsMono(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textDark,
+                        color: context.textPrimary,
                       ),
                     ),
                   ],

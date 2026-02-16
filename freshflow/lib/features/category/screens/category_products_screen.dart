@@ -64,7 +64,7 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.backgroundColor,
       body: CustomScrollView(
         slivers: [
           // Custom App Bar with category styling
@@ -158,7 +158,7 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                       style: GoogleFonts.outfit(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textDark,
+                        color: context.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -179,7 +179,7 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                     Icon(
                       widget.categoryIcon,
                       size: 64,
-                      color: AppColors.textMuted.withValues(alpha: 0.5),
+                      color: context.textSecondary.withValues(alpha: 0.5),
                     ),
                     const SizedBox(height: 16),
                     Text(
@@ -187,7 +187,7 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                       style: GoogleFonts.outfit(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.textMuted,
+                        color: context.textSecondary,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -195,7 +195,7 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                       'Check back later for new arrivals!',
                       style: GoogleFonts.outfit(
                         fontSize: 14,
-                        color: AppColors.textMuted,
+                        color: context.textSecondary,
                       ),
                     ),
                   ],

@@ -33,12 +33,12 @@ class ProductGridSliver extends StatelessWidget {
 
     // Error state
     if (errorMessage != null && products.isEmpty) {
-      return _buildErrorState();
+      return _buildErrorState(context);
     }
 
     // Empty state
     if (products.isEmpty) {
-      return _buildEmptyState();
+      return _buildEmptyState(context);
     }
 
     // Products grid
@@ -80,7 +80,7 @@ class ProductGridSliver extends StatelessWidget {
     );
   }
 
-  Widget _buildErrorState() {
+  Widget _buildErrorState(BuildContext context) {
     return SliverToBoxAdapter(
       child: Center(
         child: Padding(
@@ -92,7 +92,7 @@ class ProductGridSliver extends StatelessWidget {
               Text(
                 'Error loading products',
                 style: GoogleFonts.plusJakartaSans(
-                  color: AppColors.textDark,
+                  color: context.textPrimary,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -100,7 +100,7 @@ class ProductGridSliver extends StatelessWidget {
               Text(
                 errorMessage!,
                 style: GoogleFonts.plusJakartaSans(
-                  color: AppColors.secondary,
+                  color: context.textSecondary,
                   fontSize: 12,
                 ),
               ),
@@ -121,7 +121,7 @@ class ProductGridSliver extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
     return SliverToBoxAdapter(
       child: Center(
         child: Padding(
@@ -134,7 +134,7 @@ class ProductGridSliver extends StatelessWidget {
               Text(
                 'No products found',
                 style: GoogleFonts.plusJakartaSans(
-                  color: AppColors.textDark,
+                  color: context.textPrimary,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -142,7 +142,7 @@ class ProductGridSliver extends StatelessWidget {
               Text(
                 'Try running the seed script.',
                 style: GoogleFonts.plusJakartaSans(
-                  color: AppColors.secondary,
+                  color: context.textSecondary,
                   fontSize: 12,
                 ),
               ),

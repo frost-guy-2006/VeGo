@@ -89,12 +89,12 @@ class _SearchScreenState extends State<SearchScreen> {
     if (_activeColorFilter == 'Blue') themeColor = Colors.blue;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.surfaceColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.surfaceColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: context.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         title: TextField(
@@ -108,7 +108,7 @@ class _SearchScreenState extends State<SearchScreen> {
           style: GoogleFonts.plusJakartaSans(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: themeColor,
+            color: context.textPrimary,
           ),
           onChanged: (val) {
             // Debounce could be added here
@@ -135,7 +135,8 @@ class _SearchScreenState extends State<SearchScreen> {
                       border: Border.all(color: Colors.white, width: 2),
                       boxShadow: [
                         BoxShadow(
-                            color: themeColor.withValues(alpha: 0.4), blurRadius: 8)
+                            color: themeColor.withValues(alpha: 0.4),
+                            blurRadius: 8)
                       ],
                     ),
                   ),
@@ -156,7 +157,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: context.textPrimary,
                         ),
                       ),
                     ],

@@ -12,12 +12,12 @@ class WishlistScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.backgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: context.backgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textDark),
+          icon: Icon(Icons.arrow_back_ios_new, color: context.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         title: Row(
@@ -29,7 +29,7 @@ class WishlistScreen extends StatelessWidget {
               style: GoogleFonts.spaceGrotesk(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textDark,
+                color: context.textPrimary,
               ),
             ),
           ],
@@ -147,7 +147,7 @@ class WishlistScreen extends StatelessWidget {
               style: GoogleFonts.spaceGrotesk(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textDark,
+                color: context.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
@@ -155,7 +155,7 @@ class WishlistScreen extends StatelessWidget {
               'Tap the ♡ on any product to save it here',
               style: GoogleFonts.outfit(
                 fontSize: 14,
-                color: AppColors.textMuted,
+                color: context.textSecondary,
               ),
               textAlign: TextAlign.center,
             ),
@@ -198,7 +198,7 @@ class WishlistScreen extends StatelessWidget {
             onPressed: () => Navigator.pop(context),
             child: Text(
               'Cancel',
-              style: GoogleFonts.outfit(color: AppColors.secondary),
+              style: GoogleFonts.outfit(color: context.textSecondary),
             ),
           ),
           ElevatedButton(

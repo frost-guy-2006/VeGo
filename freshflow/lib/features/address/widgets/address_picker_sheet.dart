@@ -27,8 +27,8 @@ class AddressPickerSheet extends StatelessWidget {
         final selectedAddress = addressProvider.selectedDeliveryAddress;
 
         return Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
+          decoration: BoxDecoration(
+            color: context.surfaceColor,
             borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
           ),
           child: Column(
@@ -56,7 +56,7 @@ class AddressPickerSheet extends StatelessWidget {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textDark,
+                        color: context.textPrimary,
                       ),
                     ),
                     TextButton(
@@ -98,7 +98,7 @@ class AddressPickerSheet extends StatelessWidget {
                         'No saved addresses',
                         style: GoogleFonts.outfit(
                           fontSize: 16,
-                          color: AppColors.textMuted,
+                          color: context.textSecondary,
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -201,7 +201,7 @@ class _AddressTile extends StatelessWidget {
               ),
               child: Icon(
                 _getIcon(),
-                color: isSelected ? AppColors.primary : AppColors.textMuted,
+                color: isSelected ? AppColors.primary : context.textSecondary,
                 size: 22,
               ),
             ),
@@ -220,7 +220,7 @@ class _AddressTile extends StatelessWidget {
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.textDark,
+                          color: context.textPrimary,
                         ),
                       ),
                       if (address.isDefault) ...[
@@ -251,7 +251,7 @@ class _AddressTile extends StatelessWidget {
                     '${address.addressLine1}, ${address.city}',
                     style: GoogleFonts.outfit(
                       fontSize: 13,
-                      color: AppColors.textMuted,
+                      color: context.textSecondary,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

@@ -84,11 +84,11 @@ class _OtpScreenState extends State<OtpScreen> {
     final isLoading = context.watch<AuthProvider>().isLoading;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.backgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const BackButton(color: AppColors.textDark),
+        leading: BackButton(color: context.textPrimary),
       ),
       body: SafeArea(
         child: Padding(
@@ -101,7 +101,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textDark,
+                  color: context.textPrimary,
                 ),
               ),
               const SizedBox(height: 8),
@@ -109,7 +109,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 'Enter the 6-digit code sent to ${widget.phoneNumber}',
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 16,
-                  color: AppColors.secondary,
+                  color: context.textSecondary,
                 ),
               ),
               const SizedBox(height: 48),
@@ -119,9 +119,9 @@ class _OtpScreenState extends State<OtpScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.background,
+                  color: context.surfaceColor,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.black12),
+                  border: Border.all(color: context.borderColor),
                 ),
                 child: TextField(
                   controller: _otpController,
@@ -174,8 +174,9 @@ class _OtpScreenState extends State<OtpScreen> {
                         ? 'Resend Code'
                         : 'Resend Code in 00:${_start.toString().padLeft(2, '0')}',
                     style: GoogleFonts.plusJakartaSans(
-                      color:
-                          _canResend ? AppColors.primary : AppColors.secondary,
+                      color: _canResend
+                          ? AppColors.primary
+                          : context.textSecondary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

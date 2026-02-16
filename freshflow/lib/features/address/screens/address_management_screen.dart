@@ -11,12 +11,12 @@ class AddressManagementScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.backgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: context.backgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textDark),
+          icon: Icon(Icons.arrow_back_ios_new, color: context.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         title: Row(
@@ -28,7 +28,7 @@ class AddressManagementScreen extends StatelessWidget {
               style: GoogleFonts.spaceGrotesk(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textDark,
+                color: context.textPrimary,
               ),
             ),
           ],
@@ -99,7 +99,7 @@ class AddressManagementScreen extends StatelessWidget {
               style: GoogleFonts.spaceGrotesk(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textDark,
+                color: context.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
@@ -107,7 +107,7 @@ class AddressManagementScreen extends StatelessWidget {
               'Add your delivery address for faster checkout',
               style: GoogleFonts.outfit(
                 fontSize: 14,
-                color: AppColors.textMuted,
+                color: context.textSecondary,
               ),
               textAlign: TextAlign.center,
             ),
@@ -164,7 +164,7 @@ class AddressManagementScreen extends StatelessWidget {
             onPressed: () => Navigator.pop(context),
             child: Text(
               'Cancel',
-              style: GoogleFonts.outfit(color: AppColors.secondary),
+              style: GoogleFonts.outfit(color: context.textSecondary),
             ),
           ),
           ElevatedButton(
@@ -210,7 +210,7 @@ class _AddressCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(16),
         border: address.isDefault
             ? Border.all(color: AppColors.primary, width: 2)
@@ -248,7 +248,7 @@ class _AddressCard extends StatelessWidget {
                   style: GoogleFonts.spaceGrotesk(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textDark,
+                    color: context.textPrimary,
                   ),
                 ),
                 if (address.isDefault) ...[
@@ -272,7 +272,7 @@ class _AddressCard extends StatelessWidget {
                 ],
                 const Spacer(),
                 PopupMenuButton<String>(
-                  icon: const Icon(Icons.more_vert, color: AppColors.secondary),
+                  icon: Icon(Icons.more_vert, color: context.textSecondary),
                   onSelected: (value) {
                     switch (value) {
                       case 'edit':
@@ -291,8 +291,8 @@ class _AddressCard extends StatelessWidget {
                       value: 'edit',
                       child: Row(
                         children: [
-                          const Icon(Icons.edit_outlined,
-                              size: 18, color: AppColors.textDark),
+                          Icon(Icons.edit_outlined,
+                              size: 18, color: context.textPrimary),
                           const SizedBox(width: 8),
                           Text('Edit', style: GoogleFonts.outfit()),
                         ],
@@ -342,7 +342,7 @@ class _AddressCard extends StatelessWidget {
                   style: GoogleFonts.outfit(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textDark,
+                    color: context.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -350,21 +350,21 @@ class _AddressCard extends StatelessWidget {
                   address.formattedAddress,
                   style: GoogleFonts.outfit(
                     fontSize: 13,
-                    color: AppColors.textMuted,
+                    color: context.textSecondary,
                     height: 1.4,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Icon(Icons.phone_outlined,
-                        size: 14, color: AppColors.secondary),
+                    Icon(Icons.phone_outlined,
+                        size: 14, color: context.textSecondary),
                     const SizedBox(width: 6),
                     Text(
                       address.phoneNumber,
                       style: GoogleFonts.outfit(
                         fontSize: 13,
-                        color: AppColors.secondary,
+                        color: context.textSecondary,
                       ),
                     ),
                   ],
@@ -455,12 +455,12 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
     final isEditing = widget.address != null;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.backgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: context.backgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textDark),
+          icon: Icon(Icons.arrow_back_ios_new, color: context.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
@@ -468,7 +468,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
           style: GoogleFonts.spaceGrotesk(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: AppColors.textDark,
+            color: context.textPrimary,
           ),
         ),
       ),
@@ -483,7 +483,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
               style: GoogleFonts.outfit(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textDark,
+                color: context.textPrimary,
               ),
             ),
             const SizedBox(height: 12),
@@ -501,11 +501,12 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                       decoration: BoxDecoration(
                         color: isSelected
                             ? AppColors.primary
-                            : AppColors.surfaceAlt,
+                            : context.surfaceAltColor,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color:
-                              isSelected ? AppColors.primary : AppColors.border,
+                          color: isSelected
+                              ? AppColors.primary
+                              : context.borderColor,
                         ),
                       ),
                       child: Text(
@@ -513,7 +514,8 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                         style: GoogleFonts.outfit(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
-                          color: isSelected ? Colors.white : AppColors.textDark,
+                          color:
+                              isSelected ? Colors.white : context.textPrimary,
                         ),
                       ),
                     ),
@@ -623,7 +625,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: context.surfaceColor,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -644,7 +646,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                         'Set as default address',
                         style: GoogleFonts.outfit(
                           fontSize: 14,
-                          color: AppColors.textDark,
+                          color: context.textPrimary,
                         ),
                       ),
                     ),
@@ -712,7 +714,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
             style: GoogleFonts.outfit(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: AppColors.textDark,
+              color: context.textPrimary,
             ),
           ),
           const SizedBox(height: 8),
@@ -722,15 +724,15 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
             validator: validator,
             style: GoogleFonts.outfit(
               fontSize: 14,
-              color: AppColors.textDark,
+              color: context.textPrimary,
             ),
             cursorColor: AppColors.primary,
             decoration: InputDecoration(
               hintText: hint,
-              hintStyle: GoogleFonts.outfit(color: AppColors.textMuted),
-              prefixIcon: Icon(icon, color: AppColors.secondary, size: 20),
+              hintStyle: GoogleFonts.outfit(color: context.textSecondary),
+              prefixIcon: Icon(icon, color: context.textSecondary, size: 20),
               filled: true,
-              fillColor: Colors.white,
+              fillColor: context.surfaceColor,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(color: AppColors.border),

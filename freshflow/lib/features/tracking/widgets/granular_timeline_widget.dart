@@ -42,7 +42,7 @@ class _GranularTimelineWidgetState extends State<GranularTimelineWidget> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -65,14 +65,14 @@ class _GranularTimelineWidgetState extends State<GranularTimelineWidget> {
                   Text(
                     'Arriving in',
                     style: GoogleFonts.plusJakartaSans(
-                      color: AppColors.secondary,
+                      color: context.textSecondary,
                       fontSize: 14,
                     ),
                   ),
                   Text(
                     widget.eta,
                     style: GoogleFonts.plusJakartaSans(
-                      color: AppColors.textDark,
+                      color: context.textPrimary,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
@@ -86,7 +86,7 @@ class _GranularTimelineWidgetState extends State<GranularTimelineWidget> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
-                      color: AppColors.background,
+                      color: context.surfaceAltColor,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -163,8 +163,9 @@ class _GranularTimelineWidgetState extends State<GranularTimelineWidget> {
                 fontWeight: isCompleted || isCurrent
                     ? FontWeight.bold
                     : FontWeight.normal,
-                color:
-                    isCompleted || isCurrent ? AppColors.textDark : Colors.grey,
+                color: isCompleted || isCurrent
+                    ? context.textPrimary
+                    : Colors.grey,
               ),
             ),
             if (subtext != null && (isCompleted || isCurrent))
@@ -172,7 +173,7 @@ class _GranularTimelineWidgetState extends State<GranularTimelineWidget> {
                 subtext,
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 12,
-                  color: AppColors.secondary,
+                  color: context.textSecondary,
                 ),
               ),
           ],

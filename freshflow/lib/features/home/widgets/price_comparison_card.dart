@@ -74,7 +74,7 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 150),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: context.surfaceColor,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
@@ -120,11 +120,11 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
               fit: BoxFit.cover,
               placeholder: (context, url) => _buildShimmerPlaceholder(),
               errorWidget: (context, url, error) => Container(
-                color: AppColors.surfaceAlt,
+                color: context.surfaceAltColor,
                 child: Center(
                   child: Icon(
                     Icons.image_outlined,
-                    color: AppColors.textMuted.withValues(alpha: 0.5),
+                    color: context.textSecondary.withValues(alpha: 0.5),
                     size: 40,
                   ),
                 ),
@@ -198,8 +198,9 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
                       isWishlisted ? Icons.favorite : Icons.favorite_outline,
                       key: ValueKey(isWishlisted),
                       size: 18,
-                      color:
-                          isWishlisted ? AppColors.accent : AppColors.textMuted,
+                      color: isWishlisted
+                          ? AppColors.accent
+                          : context.textSecondary,
                     ),
                   ),
                 ),
@@ -320,7 +321,7 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
             style: GoogleFonts.outfit(
               fontWeight: FontWeight.w600,
               fontSize: 14,
-              color: AppColors.textDark,
+              color: context.textPrimary,
               height: 1.2,
             ),
             maxLines: 1,
@@ -334,7 +335,7 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
               Icon(
                 Icons.schedule_rounded,
                 size: 12,
-                color: AppColors.primary.withValues(alpha: 0.7),
+                color: context.textSecondary,
               ),
               const SizedBox(width: 4),
               Expanded(
@@ -342,7 +343,7 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
                   product.harvestTime,
                   style: GoogleFonts.outfit(
                     fontSize: 11,
-                    color: AppColors.textMuted,
+                    color: context.textSecondary,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -362,7 +363,7 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
                 style: GoogleFonts.outfit(
                   fontWeight: FontWeight.w700,
                   fontSize: 18,
-                  color: AppColors.textDark,
+                  color: context.textPrimary,
                 ),
               ),
               const SizedBox(width: 6),
@@ -371,9 +372,9 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
                 style: GoogleFonts.outfit(
                   fontWeight: FontWeight.w500,
                   fontSize: 12,
-                  color: AppColors.textMuted,
+                  color: context.textSecondary,
                   decoration: TextDecoration.lineThrough,
-                  decorationColor: AppColors.textMuted.withValues(alpha: 0.7),
+                  decorationColor: context.textSecondary.withValues(alpha: 0.7),
                 ),
               ),
             ],

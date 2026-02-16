@@ -125,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final isLoading = context.watch<AuthProvider>().isLoading;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.backgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -139,7 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textDark,
+                    color: context.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -149,7 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       : 'Enter your phone number to get started',
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 16,
-                    color: AppColors.secondary,
+                    color: context.textSecondary,
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -164,10 +164,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         setState(() => _isEmailMode = !selected);
                       },
                       selectedColor: AppColors.primary,
-                      backgroundColor: AppColors.surfaceAlt,
+                      backgroundColor: context.surfaceAltColor,
                       labelStyle: TextStyle(
-                        color:
-                            !_isEmailMode ? Colors.white : AppColors.textMuted,
+                        color: !_isEmailMode
+                            ? Colors.white
+                            : context.textSecondary,
                         fontWeight: FontWeight.bold,
                       ),
                       checkmarkColor: Colors.white,
@@ -184,10 +185,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         setState(() => _isEmailMode = selected);
                       },
                       selectedColor: AppColors.primary,
-                      backgroundColor: AppColors.surfaceAlt,
+                      backgroundColor: context.surfaceAltColor,
                       labelStyle: TextStyle(
                         color:
-                            _isEmailMode ? Colors.white : AppColors.textMuted,
+                            _isEmailMode ? Colors.white : context.textSecondary,
                         fontWeight: FontWeight.bold,
                       ),
                       checkmarkColor: Colors.white,
@@ -206,9 +207,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     decoration: BoxDecoration(
-                      color: AppColors.background,
+                      color: context.surfaceColor,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.black12),
+                      border: Border.all(color: context.borderColor),
                     ),
                     child: TextField(
                       controller: _phoneController,
@@ -216,14 +217,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textDark,
+                        color: context.textPrimary,
                       ),
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: '+91 98765 43210',
-                        hintStyle: TextStyle(color: AppColors.textMuted),
+                        hintStyle: TextStyle(color: context.textSecondary),
                         prefixIcon: Icon(Icons.phone_android,
-                            color: AppColors.secondary),
+                            color: context.textSecondary),
                       ),
                     ),
                   ),
@@ -257,9 +258,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: context.surfaceColor,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.black12),
+                      border: Border.all(color: context.borderColor),
                     ),
                     child: TextField(
                       controller: _emailController,
@@ -267,14 +268,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textDark,
+                        color: context.textPrimary,
                       ),
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: 'john@example.com',
-                        hintStyle: TextStyle(color: AppColors.textMuted),
+                        hintStyle: TextStyle(color: context.textSecondary),
                         prefixIcon: Icon(Icons.email_outlined,
-                            color: AppColors.secondary),
+                            color: context.textSecondary),
                       ),
                     ),
                   ),
@@ -284,9 +285,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: context.surfaceColor,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.black12),
+                      border: Border.all(color: context.borderColor),
                     ),
                     child: TextField(
                       controller: _passwordController,
@@ -294,14 +295,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textDark,
+                        color: context.textPrimary,
                       ),
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: 'Password',
-                        hintStyle: TextStyle(color: AppColors.textMuted),
+                        hintStyle: TextStyle(color: context.textSecondary),
                         prefixIcon: Icon(Icons.lock_outline,
-                            color: AppColors.secondary),
+                            color: context.textSecondary),
                       ),
                     ),
                   ),

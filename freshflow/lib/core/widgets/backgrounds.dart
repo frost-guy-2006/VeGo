@@ -18,7 +18,7 @@ class GradientMeshBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     final gradientColors = colors ??
         [
-          AppColors.background,
+          context.backgroundColor,
           const Color(0xFFF0FDF4), // Mint whisper
           const Color(0xFFFEF3E2), // Peach cream
         ];
@@ -89,7 +89,7 @@ class FrostedGlass extends StatelessWidget {
       child: Container(
         padding: padding ?? const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.7),
+          color: context.surfaceColor.withValues(alpha: 0.7),
           borderRadius: BorderRadius.circular(borderRadius),
           border: Border.all(
             color: Colors.white.withValues(alpha: 0.3),
