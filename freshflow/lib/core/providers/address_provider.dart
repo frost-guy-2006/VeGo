@@ -147,10 +147,12 @@ class AddressProvider extends ChangeNotifier {
 
   /// Save addresses to persistent storage (user-specific)
   Future<void> _saveToStorage() async {
+    // Create a local copy to avoid race conditions
+    final addressesToSave = List<Address>.from(_addresses);
     try {
       final prefs = await SharedPreferences.getInstance();
       final addressesJson =
-          json.encode(_addresses.map((a) => a.toJson()).toList());
+          json.encode(addressesToSave.map((a) => a.toJson()).toList());
       await prefs.setString(_storageKey, addressesJson);
     } catch (e) {
       debugPrint('Error saving addresses to storage: $e');
