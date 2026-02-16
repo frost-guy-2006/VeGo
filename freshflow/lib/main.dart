@@ -4,6 +4,9 @@ import 'package:vego/core/init/app_initializer.dart';
 import 'package:vego/core/init/app_providers.dart';
 import 'package:vego/core/providers/auth_provider.dart';
 import 'package:vego/core/providers/address_provider.dart';
+import 'package:vego/core/providers/cart_provider.dart';
+import 'package:vego/core/providers/order_provider.dart';
+import 'package:vego/core/providers/wishlist_provider.dart';
 import 'package:vego/core/providers/theme_provider.dart';
 import 'package:vego/core/theme/app_theme.dart';
 import 'package:vego/l10n/app_localizations.dart';
@@ -12,7 +15,7 @@ import 'package:vego/features/home/screens/home_screen.dart';
 
 Future<void> main() async {
   await AppInitializer.initialize();
-  runApp(const VeGoApp());
+  GlobalErrorHandler.runAppWithErrorHandling(const VeGoApp());
 }
 
 class VeGoApp extends StatelessWidget {
@@ -59,10 +62,13 @@ class _AuthGateState extends State<_AuthGate> {
         final currentUserId = auth.currentUser?.id;
         if (currentUserId != _lastUserId) {
           _lastUserId = currentUserId;
-          // Schedule address initialization after build
+          // Schedule provider initialization after build
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
               context.read<AddressProvider>().initForUser(currentUserId);
+              context.read<CartProvider>().initForUser(currentUserId);
+              context.read<WishlistProvider>().initForUser(currentUserId);
+              context.read<OrderProvider>().initForUser(currentUserId);
             }
           });
         }
