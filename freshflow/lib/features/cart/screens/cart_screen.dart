@@ -13,7 +13,7 @@ class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.surfaceAltColor, // Matches the new theme
+      backgroundColor: context.backgroundColor, // Matches the new theme
       appBar: AppBar(
         title: Text(
           'My Cart',

@@ -97,7 +97,8 @@ class _FloatingIslandNavigationState extends State<FloatingIslandNavigation> {
         _buildNavItem(Icons.home_rounded, Icons.home_outlined, 0, 'Home'),
         _buildNavItem(
             Icons.shopping_bag_rounded, Icons.shopping_bag_outlined, 1, 'Cart'),
-        _buildNavItem(Icons.person_rounded, Icons.person_outline, 2, 'Profile'),
+        _buildNavItem(
+            Icons.favorite_rounded, Icons.favorite_outline, 2, 'Wishlist'),
       ],
     );
   }
@@ -241,7 +242,9 @@ class _FloatingNavItemState extends State<_FloatingNavItem>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final activeColor = AppColors.primary;
+    final activeColor = Theme.of(context).brightness == Brightness.dark
+        ? Colors.white
+        : AppColors.primary;
 
     return GestureDetector(
       onTap: handleTap,

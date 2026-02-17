@@ -37,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _pages = [
     const HomeContent(),
     const CartScreen(),
-    const ProfileScreen(),
+    const WishlistScreen(),
   ];
 
   @override
@@ -231,14 +231,13 @@ class _HomeContentState extends State<HomeContent> {
         slivers: [
           // Sticky Header with 10-min Delivery Badge
           // Header with dynamic address and wishlist button
-          Consumer2<AddressProvider, WishlistProvider>(
-            builder: (context, addressProvider, wishlistProvider, _) {
+          Consumer<AddressProvider>(
+            builder: (context, addressProvider, _) {
               final selectedAddress = addressProvider.selectedDeliveryAddress;
               final addressLabel = selectedAddress?.label ?? 'Home';
               final addressText = selectedAddress != null
                   ? '${selectedAddress.city}, ${selectedAddress.state}'
                   : 'Add Address';
-              final wishlistCount = wishlistProvider.itemCount;
 
               return SliverAppBar(
                 pinned: true,
@@ -310,44 +309,20 @@ class _HomeContentState extends State<HomeContent> {
                   ),
                 ),
                 actions: [
-                  Stack(
-                    children: [
-                      IconButton(
-                        icon: CircleAvatar(
-                          backgroundColor: context.surfaceColor,
-                          child: Icon(Icons.favorite_outline,
-                              color: context.textPrimary),
+                  IconButton(
+                    icon: CircleAvatar(
+                      backgroundColor: context.surfaceColor,
+                      child: Icon(Icons.person_outline,
+                          color: context.textPrimary),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ProfileScreen(),
                         ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const WishlistScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      if (wishlistCount > 0)
-                        Positioned(
-                          right: 8,
-                          top: 8,
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: const BoxDecoration(
-                              color: Colors.red,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Text(
-                              wishlistCount.toString(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
+                      );
+                    },
                   ),
                   const SizedBox(width: 16),
                 ],
