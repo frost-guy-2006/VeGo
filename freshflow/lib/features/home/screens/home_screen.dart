@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vego/features/cart/screens/cart_screen.dart';
-import 'package:vego/features/cart/widgets/floating_cart_bar.dart';
+
 import 'package:vego/features/home/widgets/category_grid.dart';
 import 'package:vego/features/search/screens/search_screen.dart';
 import 'package:vego/features/profile/screens/profile_screen.dart';
@@ -20,6 +20,7 @@ import 'package:vego/features/home/widgets/price_comparison_card.dart';
 import 'package:vego/features/home/widgets/rain_mode_overlay.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:vego/features/home/widgets/floating_island_navigation.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -44,7 +45,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: context.backgroundColor,
       body: Stack(
+        alignment: Alignment.bottomCenter,
         children: [
+          // Main Content
           IndexedStack(
             index: _currentIndex,
             children: _pages,
@@ -53,115 +56,43 @@ class _HomeScreenState extends State<HomeScreen> {
           // Hero Feature: Rain Mode Overlay
           if (_currentIndex == 0) RainModeOverlay(isEnabled: _isRaining),
 
-          // Show floating cart bar only on Home tab (index 0)
-          if (_currentIndex == 0)
-            const Positioned(
-              bottom: 16,
-              left: 0,
-              right: 0,
-              child: FloatingCartBar(),
-            ),
-        ],
-      ),
-      bottomNavigationBar: Container(
-        margin: const EdgeInsets.fromLTRB(40, 0, 40, 20),
-        height: 64,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(32),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white.withValues(alpha: 0.08)
-                    : Colors.white.withValues(alpha: 0.75),
-                borderRadius: BorderRadius.circular(32),
-                border: Border.all(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white.withValues(alpha: 0.12)
-                      : Colors.white.withValues(alpha: 0.5),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.08),
-                    blurRadius: 24,
-                    offset: const Offset(0, 8),
-                    spreadRadius: -4,
+          // Gradient Overlay at bottom for better visibility of the floating island
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: 120,
+            child: IgnorePointer(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [
+                      context.backgroundColor,
+                      context.backgroundColor.withValues(alpha: 0.0),
+                    ],
                   ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildNavItem(
-                      Icons.home_rounded, Icons.home_outlined, 0, 'Home'),
-                  _buildNavItem(Icons.shopping_bag_rounded,
-                      Icons.shopping_bag_outlined, 1, 'Cart'),
-                  _buildNavItem(
-                      Icons.person_rounded, Icons.person_outline, 2, 'Profile'),
-                ],
+                ),
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
 
-  Widget _buildNavItem(
-      IconData selectedIcon, IconData unselectedIcon, int index, String label) {
-    final isSelected = _currentIndex == index;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final activeColor = isDark ? AppColors.primaryLight : AppColors.primary;
-
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _currentIndex = index;
-        });
-      },
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOutCubic,
-        padding: EdgeInsets.symmetric(
-          horizontal: isSelected ? 16 : 12,
-          vertical: 8,
-        ),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? activeColor.withValues(alpha: 0.12)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              isSelected ? selectedIcon : unselectedIcon,
-              color: isSelected ? activeColor : context.textSecondary,
-              size: 24,
+          // Floating Island Navigation
+          // Positioned at the bottom, centering itself
+          SafeArea(
+            child: FloatingIslandNavigation(
+              selectedIndex: _currentIndex,
+              onIndexChanged: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
             ),
-            AnimatedSize(
-              duration: const Duration(milliseconds: 250),
-              curve: Curves.easeOutCubic,
-              child: isSelected
-                  ? Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: Text(
-                        label,
-                        style: GoogleFonts.outfit(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: activeColor,
-                        ),
-                      ),
-                    )
-                  : const SizedBox.shrink(),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
+      // No standard BottomNavigationBar
     );
   }
 }
