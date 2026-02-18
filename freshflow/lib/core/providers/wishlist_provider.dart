@@ -6,10 +6,28 @@ import 'dart:convert';
 /// Provider for managing user's wishlist/favorites
 class WishlistProvider extends ChangeNotifier {
   final List<Product> _wishlist = [];
-  static const String _storageKey = 'user_wishlist';
+  String? _currentUserId;
+
+  WishlistProvider();
 
   List<Product> get wishlist => List.unmodifiable(_wishlist);
   int get itemCount => _wishlist.length;
+
+  /// Get storage key specific to current user
+  String get _storageKey {
+    if (_currentUserId == null) {
+      return 'user_wishlist_anonymous';
+    }
+    return 'user_wishlist_$_currentUserId';
+  }
+
+  /// Initialize provider with current user's data
+  Future<void> initForUser(String? userId) async {
+    _currentUserId = userId;
+    _wishlist.clear();
+    await loadFromStorage();
+    notifyListeners();
+  }
 
   /// Check if a product is in the wishlist
   bool isInWishlist(String productId) {
@@ -17,37 +35,37 @@ class WishlistProvider extends ChangeNotifier {
   }
 
   /// Toggle a product in/out of wishlist
-  void toggleWishlist(Product product) {
+  Future<void> toggleWishlist(Product product) async {
     if (isInWishlist(product.id)) {
       _wishlist.removeWhere((p) => p.id == product.id);
     } else {
       _wishlist.add(product);
     }
-    _saveToStorage();
     notifyListeners();
+    await _saveToStorage();
   }
 
   /// Add a product to wishlist
-  void addToWishlist(Product product) {
+  Future<void> addToWishlist(Product product) async {
     if (!isInWishlist(product.id)) {
       _wishlist.add(product);
-      _saveToStorage();
       notifyListeners();
+      await _saveToStorage();
     }
   }
 
   /// Remove a product from wishlist
-  void removeFromWishlist(String productId) {
+  Future<void> removeFromWishlist(String productId) async {
     _wishlist.removeWhere((p) => p.id == productId);
-    _saveToStorage();
     notifyListeners();
+    await _saveToStorage();
   }
 
-  /// Clear entirewishlist
-  void clearWishlist() {
+  /// Clear entire wishlist
+  Future<void> clearWishlist() async {
     _wishlist.clear();
-    _saveToStorage();
     notifyListeners();
+    await _saveToStorage();
   }
 
   /// Load wishlist from persistent storage
@@ -60,7 +78,7 @@ class WishlistProvider extends ChangeNotifier {
         final List<dynamic> decoded = json.decode(wishlistJson);
         _wishlist.clear();
         _wishlist.addAll(decoded.map((item) => Product.fromJson(item)));
-        notifyListeners();
+        // notifyListeners(); // Handled by caller
       }
     } catch (e) {
       debugPrint('Error loading wishlist from storage: $e');

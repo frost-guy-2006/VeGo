@@ -20,7 +20,11 @@ class AppInitializer {
     WidgetsFlutterBinding.ensureInitialized();
 
     // Load environment variables from .env file
-    await dotenv.load(fileName: '.env');
+    try {
+      await dotenv.load(fileName: '.env');
+    } catch (e) {
+      debugPrint('Warning: Failed to load .env file: $e');
+    }
 
     await _initSupabase();
 
@@ -28,10 +32,17 @@ class AppInitializer {
   }
 
   static Future<void> _initSupabase() async {
-    await Supabase.initialize(
-      url: Env.supabaseUrl,
-      anonKey: Env.supabaseAnonKey,
-    );
+    try {
+      await Supabase.initialize(
+        url: Env.supabaseUrl,
+        anonKey: Env.supabaseAnonKey,
+      );
+    } catch (e) {
+      // If we are in test mode or CI without env vars, this might fail.
+      // But for a real app run, this is critical.
+      debugPrint('CRITICAL: Supabase initialization failed: $e');
+      rethrow;
+    }
   }
 }
 
