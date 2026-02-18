@@ -24,17 +24,32 @@ class CartItem {
 
 class CartProvider extends ChangeNotifier {
   List<CartItem> _items = [];
+  String? _currentUserId;
 
-  CartProvider() {
-    _loadCart();
-  }
+  CartProvider();
 
   List<CartItem> get items => List.unmodifiable(_items);
 
   double get totalPrice => _items.fold(
       0, (sum, item) => sum + (item.product.currentPrice * item.quantity));
 
-  void addToCart(Product product) {
+  /// Get storage key specific to current user
+  String get _storageKey {
+    if (_currentUserId == null) {
+      return 'cart_items_anonymous';
+    }
+    return 'cart_items_$_currentUserId';
+  }
+
+  /// Initialize provider with current user's data.
+  Future<void> initForUser(String? userId) async {
+    _currentUserId = userId;
+    _items.clear();
+    await _loadCart();
+    notifyListeners();
+  }
+
+  Future<void> addToCart(Product product) async {
     var index = _items.indexWhere((item) => item.product.id == product.id);
     if (index >= 0) {
       _items[index].quantity++;
@@ -42,16 +57,16 @@ class CartProvider extends ChangeNotifier {
       _items.add(CartItem(product: product));
     }
     notifyListeners();
-    _saveCart();
+    await _saveCart();
   }
 
-  void removeFromCart(String productId) {
+  Future<void> removeFromCart(String productId) async {
     _items.removeWhere((item) => item.product.id == productId);
     notifyListeners();
-    _saveCart();
+    await _saveCart();
   }
 
-  void decreaseQuantity(String productId) {
+  Future<void> decreaseQuantity(String productId) async {
     var index = _items.indexWhere((item) => item.product.id == productId);
     if (index >= 0) {
       if (_items[index].quantity > 1) {
@@ -60,30 +75,40 @@ class CartProvider extends ChangeNotifier {
         _items.removeAt(index);
       }
       notifyListeners();
-      _saveCart();
+      await _saveCart();
     }
   }
 
-  void clearCart() {
+  Future<void> clearCart() async {
     _items.clear();
     notifyListeners();
-    _saveCart();
+    await _saveCart();
   }
 
   Future<void> _saveCart() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String encodedData =
-        jsonEncode(_items.map((e) => e.toJson()).toList());
-    await prefs.setString('cart_items', encodedData);
+    try {
+      // Create a copy of the list to avoid concurrent modification issues during async op
+      final itemsToSave = List<CartItem>.from(_items);
+      final prefs = await SharedPreferences.getInstance();
+      final String encodedData =
+          jsonEncode(itemsToSave.map((e) => e.toJson()).toList());
+      await prefs.setString(_storageKey, encodedData);
+    } catch (e) {
+      debugPrint('Error saving cart: $e');
+    }
   }
 
   Future<void> _loadCart() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? encodedData = prefs.getString('cart_items');
-    if (encodedData != null) {
-      final List<dynamic> decodedData = jsonDecode(encodedData);
-      _items = decodedData.map((e) => CartItem.fromJson(e)).toList();
-      notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final String? encodedData = prefs.getString(_storageKey);
+      if (encodedData != null) {
+        final List<dynamic> decodedData = jsonDecode(encodedData);
+        _items = decodedData.map((e) => CartItem.fromJson(e)).toList();
+        // notifyListeners() is called in initForUser after await _loadCart
+      }
+    } catch (e) {
+      debugPrint('Error loading cart: $e');
     }
   }
 }
