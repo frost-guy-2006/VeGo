@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vego/features/cart/screens/cart_screen.dart';
@@ -14,7 +13,6 @@ import 'package:vego/core/models/product_model.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:vego/core/repositories/product_repository.dart';
 import 'package:vego/core/providers/address_provider.dart';
-import 'package:vego/core/providers/wishlist_provider.dart';
 import 'package:vego/features/home/widgets/flash_price_widget.dart';
 import 'package:vego/features/home/widgets/price_comparison_card.dart';
 import 'package:vego/features/home/widgets/rain_mode_overlay.dart';
