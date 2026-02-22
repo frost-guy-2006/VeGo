@@ -43,13 +43,15 @@ class _FloatingIslandNavigationState extends State<FloatingIslandNavigation> {
           margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
           decoration: BoxDecoration(
             color: hasItems
-                ? AppColors.primary
+                ? (Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.primary
+                    : Theme.of(context).cardColor.withValues(alpha: 0.85))
                 : Theme.of(context).cardColor.withValues(alpha: 0.85),
             borderRadius: BorderRadius.circular(36),
             boxShadow: [
               BoxShadow(
                 color: hasItems
-                    ? AppColors.primary.withValues(alpha: 0.4)
+                    ? AppColors.primary.withValues(alpha: 0.3)
                     : Colors.black.withValues(alpha: 0.08),
                 blurRadius: 24,
                 offset: const Offset(0, 8),
@@ -119,64 +121,80 @@ class _FloatingIslandNavigationState extends State<FloatingIslandNavigation> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             // Left: Items Count Badge
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
+            Builder(builder: (context) {
+              final isDark = Theme.of(context).brightness == Brightness.dark;
+              final cartTextColor =
+                  isDark ? Colors.white : AppColors.primaryDark;
+              return Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.2)
+                      : AppColors.primary.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  children: [
+                    Text(
+                      '${cart.items.length}',
+                      style: GoogleFonts.outfit(
+                        color: cartTextColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Icon(Icons.shopping_bag, color: cartTextColor, size: 16),
+                  ],
+                ),
+              );
+            }),
+
+            // Center: Total Price
+            Builder(builder: (context) {
+              final isDark = Theme.of(context).brightness == Brightness.dark;
+              final cartTextColor =
+                  isDark ? Colors.white : AppColors.primaryDark;
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${cart.items.length}',
+                    'Total',
                     style: GoogleFonts.outfit(
-                      color: Colors.white,
+                      color: cartTextColor.withValues(alpha: 0.7),
+                      fontSize: 10,
+                    ),
+                  ),
+                  Text(
+                    '₹${cart.totalPrice.toStringAsFixed(0)}',
+                    style: GoogleFonts.outfit(
+                      color: cartTextColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
                   ),
-                  const SizedBox(width: 4),
-                  const Icon(Icons.shopping_bag, color: Colors.white, size: 16),
                 ],
-              ),
-            ),
-
-            // Center: Total Price
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Total',
-                  style: GoogleFonts.outfit(
-                    color: Colors.white.withValues(alpha: 0.7),
-                    fontSize: 10,
-                  ),
-                ),
-                Text(
-                  '₹${cart.totalPrice.toStringAsFixed(0)}',
-                  style: GoogleFonts.outfit(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-              ],
-            ),
+              );
+            }),
 
             // Right: Checkout Arrow
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.arrow_forward_rounded,
-                color: AppColors.primary,
-                size: 20,
-              ),
-            ),
+            Builder(builder: (context) {
+              final isDark = Theme.of(context).brightness == Brightness.dark;
+              return Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: isDark ? Colors.white : AppColors.primary,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.arrow_forward_rounded,
+                  color: isDark ? AppColors.primary : Colors.white,
+                  size: 20,
+                ),
+              );
+            }),
           ],
         ),
       ),
