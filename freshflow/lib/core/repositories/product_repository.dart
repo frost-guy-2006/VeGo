@@ -92,4 +92,31 @@ class ProductRepository {
 
     return (response as List).map((json) => Product.fromJson(json)).toList();
   }
+
+  /// Search products by color (inferred from name)
+  Future<List<Product>> searchProductsByColor(String color) async {
+    final lowerColor = color.toLowerCase();
+    String query;
+
+    if (lowerColor == 'red') {
+      query =
+          'name.ilike.%red%,name.ilike.%tomato%,name.ilike.%apple%,name.ilike.%strawberry%';
+    } else if (lowerColor == 'green') {
+      query =
+          'name.ilike.%green%,name.ilike.%spinach%,name.ilike.%broccoli%,name.ilike.%cucumber%';
+    } else if (lowerColor == 'orange') {
+      query = 'name.ilike.%orange%,name.ilike.%carrot%,name.ilike.%banana%';
+    } else if (lowerColor == 'blue') {
+      query = 'name.ilike.%blue%';
+    } else {
+      // Fallback or empty if color not supported (like Yellow which is broken in client side too)
+      // or we can try to find items with that color name
+      query = 'name.ilike.%$lowerColor%';
+    }
+
+    final response =
+        await _client.from('products').select().or(query).order('name');
+
+    return (response as List).map((json) => Product.fromJson(json)).toList();
+  }
 }
