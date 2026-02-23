@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vego/core/providers/auth_provider.dart';
+import 'package:vego/core/utils/input_validators.dart';
 import 'package:vego/features/auth/screens/otp_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -32,18 +33,18 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _signInPhone() async {
     final phone = _phoneController.text.trim();
     if (phone.isEmpty) return;
-    final cleanedPhone = phone.replaceAll(RegExp(r'\s+'), '');
 
-    // Validation
-    final phoneRegExp = RegExp(r'^[0-9]{10}$'); // Strict 10 digits
-    if (!phoneRegExp.hasMatch(cleanedPhone)) {
+    final validationError = InputValidators.validatePhone(phone);
+    if (validationError != null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter a valid phone number')),
+          SnackBar(content: Text(validationError)),
         );
       }
       return;
     }
+
+    final cleanedPhone = phone.replaceAll(RegExp(r'\s+'), '');
 
     // Default to +91 if missing
     String formattedPhone = cleanedPhone;
@@ -63,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
+          const SnackBar(content: Text('Login failed. Please check your connection.')),
         );
       }
     }
@@ -87,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
+          const SnackBar(content: Text('Sign in failed. Please check your credentials.')),
         );
       }
     }
@@ -116,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
+          const SnackBar(content: Text('Sign up failed. Please try again later.')),
         );
       }
     }
@@ -259,8 +260,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                               child: isLoading
-                                  ? const CircularProgressIndicator(
-                                      color: Colors.white)
+                                  ? const Center(
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                      ),
+                                    )
                                   : Text(
                                       'Send OTP',
                                       style: GoogleFonts.plusJakartaSans(
@@ -328,7 +332,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 hintStyle: TextStyle(
                                     color: context.textSecondary
                                         .withValues(alpha: 0.5)),
-                                prefixIcon: Icon(Icons.lock_outline,
+                                prefixIcon: const Icon(Icons.lock_outline,
                                     color: Colors.white70),
                               ),
                             ),
@@ -351,7 +355,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                     ),
                                     child: isLoading
-                                        ? const CircularProgressIndicator()
+                                        ? const Center(
+                                            child: CircularProgressIndicator(),
+                                          )
                                         : Text(
                                             'Sign Up',
                                             style: GoogleFonts.plusJakartaSans(
@@ -377,8 +383,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                     ),
                                     child: isLoading
-                                        ? const CircularProgressIndicator(
-                                            color: Colors.white)
+                                        ? const Center(
+                                            child: CircularProgressIndicator(
+                                              color: Colors.white,
+                                            ),
+                                          )
                                         : Text(
                                             'Sign In',
                                             style: GoogleFonts.plusJakartaSans(

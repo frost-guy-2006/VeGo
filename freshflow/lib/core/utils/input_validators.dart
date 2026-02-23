@@ -17,7 +17,7 @@ class InputValidators {
     // Check if it's exactly 10 digits (Indian format without country code)
     if (!RegExp(r'^[0-9]{10}$').hasMatch(cleaned) &&
         !RegExp(r'^\+[0-9]{10,15}$').hasMatch(cleaned)) {
-      return 'Enter a valid 10-digit phone number';
+      return 'Enter a valid phone number';
     }
 
     return null;
