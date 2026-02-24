@@ -92,4 +92,38 @@ class ProductRepository {
 
     return (response as List).map((json) => Product.fromJson(json)).toList();
   }
+
+  /// Search products by inferred color (server-side filtering)
+  Future<List<Product>> searchProductsByColor(String color) async {
+    final colorKey = color.toLowerCase();
+    String filterQuery = '';
+
+    if (colorKey == 'red') {
+      filterQuery =
+          'name.ilike.%red%,name.ilike.%tomato%,name.ilike.%apple%,name.ilike.%strawberry%';
+    } else if (colorKey == 'green') {
+      filterQuery =
+          'name.ilike.%green%,name.ilike.%spinach%,name.ilike.%broccoli%,name.ilike.%cucumber%';
+    } else if (colorKey == 'orange') {
+      filterQuery =
+          'name.ilike.%orange%,name.ilike.%carrot%,name.ilike.%banana%';
+    } else if (colorKey == 'blue') {
+      // "Blue" search finds nothing for now unless we add chips, or map "Berry"
+      filterQuery = 'name.ilike.%blue%,name.ilike.%berry%';
+    } else if (colorKey == 'yellow') {
+      filterQuery =
+          'name.ilike.%yellow%,name.ilike.%banana%,name.ilike.%lemon%';
+    } else {
+      // Fallback to name search if color not recognized
+      return searchProducts(color);
+    }
+
+    final response = await _client
+        .from('products')
+        .select()
+        .or(filterQuery)
+        .order('name');
+
+    return (response as List).map((json) => Product.fromJson(json)).toList();
+  }
 }
