@@ -20,32 +20,13 @@ class AppProviders {
         ChangeNotifierProvider<CartProvider>(create: (_) => CartProvider()),
         ChangeNotifierProvider<ThemeProvider>(create: (_) => ThemeProvider()),
         ChangeNotifierProvider<WishlistProvider>(
-            create: (_) => _createWishlistProvider()),
-        ChangeNotifierProvider<OrderProvider>(
-            create: (_) => _createOrderProvider()),
+            create: (_) => WishlistProvider()),
+        ChangeNotifierProvider<OrderProvider>(create: (_) => OrderProvider()),
         ChangeNotifierProvider<AddressProvider>(
-            create: (_) => _createAddressProvider()),
+            create: (_) => AddressProvider()),
         ChangeNotifierProvider<ProductProvider>(
             create: (_) => _createProductProvider()),
       ];
-
-  static WishlistProvider _createWishlistProvider() {
-    final provider = WishlistProvider();
-    provider.loadFromStorage();
-    return provider;
-  }
-
-  static OrderProvider _createOrderProvider() {
-    final provider = OrderProvider();
-    provider.loadFromStorage();
-    return provider;
-  }
-
-  static AddressProvider _createAddressProvider() {
-    final provider = AddressProvider();
-    provider.loadFromStorage();
-    return provider;
-  }
 
   static ProductProvider _createProductProvider() {
     final provider = ProductProvider();

@@ -44,9 +44,7 @@ class AddressProvider extends ChangeNotifier {
     _selectedDeliveryAddress = null;
     _currentUserId = userId;
 
-    if (userId != null) {
-      await loadFromStorage();
-    }
+    await loadFromStorage();
     notifyListeners();
   }
 

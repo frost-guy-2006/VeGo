@@ -24,15 +24,29 @@ class CartItem {
 
 class CartProvider extends ChangeNotifier {
   List<CartItem> _items = [];
+  String? _currentUserId;
 
-  CartProvider() {
-    _loadCart();
-  }
+  CartProvider();
 
   List<CartItem> get items => List.unmodifiable(_items);
 
   double get totalPrice => _items.fold(
       0, (sum, item) => sum + (item.product.currentPrice * item.quantity));
+
+  String get _storageKey {
+    if (_currentUserId == null) {
+      return 'cart_items_anonymous';
+    }
+    return 'cart_items_$_currentUserId';
+  }
+
+  /// Initialize provider for a specific user
+  Future<void> initForUser(String? userId) async {
+    _items.clear();
+    _currentUserId = userId;
+    await _loadCart();
+    notifyListeners();
+  }
 
   void addToCart(Product product) {
     var index = _items.indexWhere((item) => item.product.id == product.id);
@@ -42,13 +56,13 @@ class CartProvider extends ChangeNotifier {
       _items.add(CartItem(product: product));
     }
     notifyListeners();
-    _saveCart();
+    _saveCart(List.from(_items), _currentUserId);
   }
 
   void removeFromCart(String productId) {
     _items.removeWhere((item) => item.product.id == productId);
     notifyListeners();
-    _saveCart();
+    _saveCart(List.from(_items), _currentUserId);
   }
 
   void decreaseQuantity(String productId) {
@@ -60,26 +74,28 @@ class CartProvider extends ChangeNotifier {
         _items.removeAt(index);
       }
       notifyListeners();
-      _saveCart();
+      _saveCart(List.from(_items), _currentUserId);
     }
   }
 
   void clearCart() {
     _items.clear();
     notifyListeners();
-    _saveCart();
+    _saveCart(List.from(_items), _currentUserId);
   }
 
-  Future<void> _saveCart() async {
+  Future<void> _saveCart(List<CartItem> items, String? userId) async {
     final prefs = await SharedPreferences.getInstance();
     final String encodedData =
-        jsonEncode(_items.map((e) => e.toJson()).toList());
-    await prefs.setString('cart_items', encodedData);
+        jsonEncode(items.map((e) => e.toJson()).toList());
+    final key =
+        userId == null ? 'cart_items_anonymous' : 'cart_items_$userId';
+    await prefs.setString(key, encodedData);
   }
 
   Future<void> _loadCart() async {
     final prefs = await SharedPreferences.getInstance();
-    final String? encodedData = prefs.getString('cart_items');
+    final String? encodedData = prefs.getString(_storageKey);
     if (encodedData != null) {
       final List<dynamic> decodedData = jsonDecode(encodedData);
       _items = decodedData.map((e) => CartItem.fromJson(e)).toList();
