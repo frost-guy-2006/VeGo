@@ -7,7 +7,7 @@ import 'dart:convert';
 /// Provider for managing order history
 class OrderProvider extends ChangeNotifier {
   final List<Order> _orders = [];
-  static const String _storageKey = 'order_history';
+  String? _currentUserId;
 
   List<Order> get orders => List.unmodifiable(_orders);
   int get orderCount => _orders.length;
@@ -89,6 +89,20 @@ class OrderProvider extends ChangeNotifier {
       await _saveToStorage();
       notifyListeners();
     }
+  }
+
+  String get _storageKey {
+    if (_currentUserId == null) {
+      return 'order_history_anonymous';
+    }
+    return 'order_history_$_currentUserId';
+  }
+
+  Future<void> initForUser(String? userId) async {
+    _orders.clear();
+    _currentUserId = userId;
+    await loadFromStorage();
+    notifyListeners();
   }
 
   /// Load orders from persistent storage
