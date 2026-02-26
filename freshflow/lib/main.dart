@@ -4,6 +4,9 @@ import 'package:vego/core/init/app_initializer.dart';
 import 'package:vego/core/init/app_providers.dart';
 import 'package:vego/core/providers/auth_provider.dart';
 import 'package:vego/core/providers/address_provider.dart';
+import 'package:vego/core/providers/cart_provider.dart';
+import 'package:vego/core/providers/wishlist_provider.dart';
+import 'package:vego/core/providers/order_provider.dart';
 import 'package:vego/core/providers/theme_provider.dart';
 import 'package:vego/core/theme/app_theme.dart';
 import 'package:vego/l10n/app_localizations.dart';
@@ -49,20 +52,25 @@ class _AuthGate extends StatefulWidget {
 }
 
 class _AuthGateState extends State<_AuthGate> {
-  String? _lastUserId;
+  // Use a unique sentinel value to ensure initialization runs on first build
+  // even if currentUserId is null (anonymous).
+  String? _lastUserId = '__uninitialized__';
 
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
       builder: (context, auth, _) {
-        // Initialize addresses for current user when auth state changes
+        // Initialize data for current user when auth state changes
         final currentUserId = auth.currentUser?.id;
         if (currentUserId != _lastUserId) {
           _lastUserId = currentUserId;
-          // Schedule address initialization after build
+          // Schedule data initialization after build
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
               context.read<AddressProvider>().initForUser(currentUserId);
+              context.read<CartProvider>().initForUser(currentUserId);
+              context.read<WishlistProvider>().initForUser(currentUserId);
+              context.read<OrderProvider>().initForUser(currentUserId);
             }
           });
         }
