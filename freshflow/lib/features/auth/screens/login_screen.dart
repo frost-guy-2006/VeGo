@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vego/core/providers/auth_provider.dart';
+import 'package:vego/core/utils/input_validators.dart';
 import 'package:vego/features/auth/screens/otp_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -31,19 +32,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _signInPhone() async {
     final phone = _phoneController.text.trim();
-    if (phone.isEmpty) return;
-    final cleanedPhone = phone.replaceAll(RegExp(r'\s+'), '');
 
-    // Validation
-    final phoneRegExp = RegExp(r'^[0-9]{10}$'); // Strict 10 digits
-    if (!phoneRegExp.hasMatch(cleanedPhone)) {
+    final error = InputValidators.validatePhone(phone);
+    if (error != null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter a valid phone number')),
+          SnackBar(content: Text(error)),
         );
       }
       return;
     }
+
+    final cleanedPhone = phone.replaceAll(RegExp(r'\s+'), '');
 
     // Default to +91 if missing
     String formattedPhone = cleanedPhone;
@@ -73,9 +73,18 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
-    if (email.isEmpty || password.isEmpty) {
+    final emailError = InputValidators.validateEmail(email);
+    if (emailError != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter email and password')),
+        SnackBar(content: Text(emailError)),
+      );
+      return;
+    }
+
+    final passwordError = InputValidators.validatePasswordLogin(password);
+    if (passwordError != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(passwordError)),
       );
       return;
     }
@@ -97,9 +106,18 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
-    if (email.isEmpty || password.isEmpty) {
+    final emailError = InputValidators.validateEmail(email);
+    if (emailError != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter email and password')),
+        SnackBar(content: Text(emailError)),
+      );
+      return;
+    }
+
+    final passwordError = InputValidators.validatePassword(password);
+    if (passwordError != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(passwordError)),
       );
       return;
     }

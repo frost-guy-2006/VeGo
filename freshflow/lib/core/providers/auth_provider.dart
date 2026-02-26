@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthProvider extends ChangeNotifier {
   final SupabaseClient _supabase = Supabase.instance.client;
+  StreamSubscription? _authSubscription;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -11,9 +13,15 @@ class AuthProvider extends ChangeNotifier {
   bool get isAuthenticated => currentUser != null;
 
   AuthProvider() {
-    _supabase.auth.onAuthStateChange.listen((data) {
+    _authSubscription = _supabase.auth.onAuthStateChange.listen((data) {
       notifyListeners();
     });
+  }
+
+  @override
+  void dispose() {
+    _authSubscription?.cancel();
+    super.dispose();
   }
 
   Future<void> signInWithPhone(String phoneNumber) async {
