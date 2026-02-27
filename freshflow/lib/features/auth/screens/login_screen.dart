@@ -63,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
+          const SnackBar(content: Text('Sign in failed')),
         );
       }
     }
@@ -87,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
+          const SnackBar(content: Text('Sign in failed')),
         );
       }
     }
@@ -116,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
+          const SnackBar(content: Text('Sign up failed')),
         );
       }
     }
@@ -328,7 +328,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 hintStyle: TextStyle(
                                     color: context.textSecondary
                                         .withValues(alpha: 0.5)),
-                                prefixIcon: Icon(Icons.lock_outline,
+                                prefixIcon: const Icon(Icons.lock_outline,
                                     color: Colors.white70),
                               ),
                             ),
