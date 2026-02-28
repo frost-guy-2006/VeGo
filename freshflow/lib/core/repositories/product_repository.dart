@@ -3,7 +3,11 @@ import 'package:vego/core/models/product_model.dart';
 
 /// Repository for product-related data operations
 class ProductRepository {
-  final SupabaseClient _client = Supabase.instance.client;
+  late final SupabaseClient _client;
+
+  ProductRepository({SupabaseClient? client}) {
+    _client = client ?? Supabase.instance.client;
+  }
 
   /// Default page size for pagination
   static const int defaultPageSize = 10;
@@ -88,6 +92,36 @@ class ProductRepository {
         .from('products')
         .select()
         .ilike('name', '%$query%')
+        .order('name');
+
+    return (response as List).map((json) => Product.fromJson(json)).toList();
+  }
+
+  /// Search products by color
+  Future<List<Product>> searchProductsByColor(String color) async {
+    final lowerColor = color.toLowerCase();
+
+    // Map colors to related keywords for server-side filtering
+    final List<String> keywords = [];
+    if (lowerColor == 'red') {
+      keywords.addAll(['tomato', 'apple', 'strawberry']);
+    } else if (lowerColor == 'green') {
+      keywords.addAll(['spinach', 'broccoli', 'cucumber']);
+    } else if (lowerColor == 'orange') {
+      keywords.addAll(['carrot', 'orange']);
+    } else if (lowerColor == 'yellow') {
+      keywords.addAll(['banana', 'lemon']);
+    } else {
+      // Fallback
+      return searchProducts(color);
+    }
+
+    final orQuery = keywords.map((kw) => 'name.ilike.%$kw%').join(',');
+
+    final response = await _client
+        .from('products')
+        .select()
+        .or(orQuery)
         .order('name');
 
     return (response as List).map((json) => Product.fromJson(json)).toList();
