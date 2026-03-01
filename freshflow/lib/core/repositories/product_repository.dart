@@ -92,4 +92,31 @@ class ProductRepository {
 
     return (response as List).map((json) => Product.fromJson(json)).toList();
   }
+
+  /// Search products by color keywords mapping
+  Future<List<Product>> searchProductsByColor(String color) async {
+    String colorFilter;
+    switch (color.toLowerCase()) {
+      case 'red':
+        colorFilter = 'name.ilike.%tomato%,name.ilike.%apple%,name.ilike.%strawberry%,name.ilike.%red%';
+        break;
+      case 'green':
+        colorFilter = 'name.ilike.%spinach%,name.ilike.%broccoli%,name.ilike.%cucumber%,name.ilike.%green%';
+        break;
+      case 'orange':
+        colorFilter = 'name.ilike.%carrot%,name.ilike.%banana%,name.ilike.%orange%';
+        break;
+      default:
+        // Fallback to searching the generic keyword
+        return searchProducts(color);
+    }
+
+    final response = await _client
+        .from('products')
+        .select()
+        .or(colorFilter)
+        .order('name');
+
+    return (response as List).map((json) => Product.fromJson(json)).toList();
+  }
 }
