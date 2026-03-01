@@ -45,7 +45,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await _supabase.auth.signInWithOtp(phone: phoneNumber);
       state = state.copyWith(isLoading: false);
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      if (e is AuthException) {
+        state = state.copyWith(isLoading: false, error: e.message);
+      } else {
+        state = state.copyWith(isLoading: false, error: 'Sign in failed');
+      }
       rethrow;
     }
   }
@@ -60,7 +64,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
       state = state.copyWith(isLoading: false);
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      if (e is AuthException) {
+        state = state.copyWith(isLoading: false, error: e.message);
+      } else {
+        state = state.copyWith(isLoading: false, error: 'Invalid OTP');
+      }
       rethrow;
     }
   }
@@ -71,7 +79,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await _supabase.auth.signInWithPassword(email: email, password: password);
       state = state.copyWith(isLoading: false);
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      if (e is AuthException) {
+        state = state.copyWith(isLoading: false, error: e.message);
+      } else {
+        state = state.copyWith(isLoading: false, error: 'Sign in failed');
+      }
       rethrow;
     }
   }
@@ -82,7 +94,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await _supabase.auth.signUp(email: email, password: password);
       state = state.copyWith(isLoading: false);
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      if (e is AuthException) {
+        state = state.copyWith(isLoading: false, error: e.message);
+      } else {
+        state = state.copyWith(isLoading: false, error: 'Sign up failed');
+      }
       rethrow;
     }
   }
