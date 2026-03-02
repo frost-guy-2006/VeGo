@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:vego/core/constants/env.dart';
 
@@ -22,9 +23,25 @@ class AppInitializer {
     // Load environment variables from .env file
     await dotenv.load(fileName: '.env');
 
+    if (!Env.isLoaded) {
+      throw Exception('Missing required environment variables. Please check .env file.');
+    }
+
     await _initSupabase();
+    await _initSentry();
 
     _initialized = true;
+  }
+
+  static Future<void> _initSentry() async {
+    if (Env.sentryDsn.isNotEmpty) {
+      await SentryFlutter.init(
+        (options) {
+          options.dsn = Env.sentryDsn;
+          options.tracesSampleRate = 1.0;
+        },
+      );
+    }
   }
 
   static Future<void> _initSupabase() async {
@@ -68,6 +85,11 @@ class GlobalErrorHandler {
       debugPrint('======================');
     }
 
-    // TODO: In production, send to crash reporting service (Firebase Crashlytics, Sentry, etc.)
+    if (!kDebugMode && Env.sentryDsn.isNotEmpty) {
+      Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+      );
+    }
   }
 }
