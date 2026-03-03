@@ -328,7 +328,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 hintStyle: TextStyle(
                                     color: context.textSecondary
                                         .withValues(alpha: 0.5)),
-                                prefixIcon: Icon(Icons.lock_outline,
+                                prefixIcon: const Icon(Icons.lock_outline,
                                     color: Colors.white70),
                               ),
                             ),
@@ -351,7 +351,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                     ),
                                     child: isLoading
-                                        ? const CircularProgressIndicator()
+                                        ? const CircularProgressIndicator(
+                                            color: AppColors.primary,
+                                          )
                                         : Text(
                                             'Sign Up',
                                             style: GoogleFonts.plusJakartaSans(
