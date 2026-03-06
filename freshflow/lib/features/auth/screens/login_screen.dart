@@ -328,7 +328,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 hintStyle: TextStyle(
                                     color: context.textSecondary
                                         .withValues(alpha: 0.5)),
-                                prefixIcon: Icon(Icons.lock_outline,
+                                prefixIcon: const Icon(Icons.lock_outline,
                                     color: Colors.white70),
                               ),
                             ),
