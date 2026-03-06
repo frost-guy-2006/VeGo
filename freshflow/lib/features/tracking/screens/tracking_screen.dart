@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:vego/features/tracking/widgets/granular_timeline_widget.dart';
+import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -9,6 +9,12 @@ import 'package:vego/core/theme/app_colors.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+
+import 'package:vego/features/tracking/widgets/delivery_header_widget.dart';
+import 'package:vego/features/tracking/widgets/rider_info_card.dart';
+import 'package:vego/features/tracking/widgets/tip_section_widget.dart';
+import 'package:vego/features/tracking/widgets/delivery_instructions_card.dart';
+import 'package:vego/features/tracking/widgets/order_details_card.dart';
 
 class TrackingScreen extends StatefulWidget {
   const TrackingScreen({super.key});
@@ -27,6 +33,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
   Timer? _timer;
   int _currentPointIndex = 0;
   String _eta = "Calculating...";
+  int _currentStep = 0;
 
   // Undo Logic
   int _undoSeconds = 60;
@@ -36,20 +43,22 @@ class _TrackingScreenState extends State<TrackingScreen> {
   void initState() {
     super.initState();
     _riderLocation = _riderStartLocation;
-    // Initialize with straight line while fetching
     _routePoints = [_riderStartLocation, _userLocation];
     _fetchRoute();
     _startUndoTimer();
+    _startDemoTimeline();
+  }
 
-    // Auto-clear cart when entering tracking (Order Placed)
-    // Delay slightly to allow Undo to maybe revert it?
-    // Actually, "Slide to Pay" should technically clear cart but we might want to keep it
-    // if we want to support "Undo" restoring it?
-    // Current flow: Slide to Pay -> Pushes Tracking.
-    // Cart is NOT cleared in previous screen. It should be cleared here or on "Undo" pop.
-    // If Undo -> Pop (Cart is still full).
-    // If Timer ends -> Cart cleared.
-    // Let's implement that.
+  void _startDemoTimeline() async {
+    // Simulate steps: 0=Placed, 1=Packing, 2=Assigned, 3=OnWay
+    await Future.delayed(const Duration(seconds: 2));
+    if (mounted) setState(() => _currentStep = 1);
+
+    await Future.delayed(const Duration(seconds: 2));
+    if (mounted) setState(() => _currentStep = 2);
+
+    await Future.delayed(const Duration(seconds: 2));
+    if (mounted) setState(() => _currentStep = 3);
   }
 
   void _startUndoTimer() {
@@ -99,7 +108,6 @@ class _TrackingScreenState extends State<TrackingScreen> {
       }
     } catch (e) {
       debugPrint("Error fetching route: $e");
-      // Fallback to simulation on straight line if fetch fails
       _startSimulation();
     }
   }
@@ -116,12 +124,9 @@ class _TrackingScreenState extends State<TrackingScreen> {
           _currentPointIndex++;
           _riderLocation = _routePoints[_currentPointIndex];
 
-          // Calculate simple OTA
           int remainingPoints = _routePoints.length - _currentPointIndex;
           int minutes = (remainingPoints / 10).ceil();
-          // Assuming each point takes 0.5 sec, roughly estimatation.
-          // Adjust logic for better realistic OTA if needed.
-          _eta = minutes < 1 ? "Arriving" : "$minutes mins";
+          _eta = minutes < 1 ? "Arriving shortly" : "$minutes minutes";
         } else {
           _timer?.cancel();
           _eta = "Arrived";
@@ -176,133 +181,242 @@ class _TrackingScreenState extends State<TrackingScreen> {
     super.dispose();
   }
 
+  String _getStatusSentence() {
+    if (_currentStep == 0) return "Order placed, waiting for confirmation.";
+    if (_currentStep == 1) return "Packing your fresh items.";
+    if (_currentStep == 2) {
+      return "Tapabrata has been assigned as your partner.";
+    }
+    return "I have picked up your order, and I am on the way.";
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: context.backgroundColor,
       body: Stack(
         children: [
-          FlutterMap(
-            options: MapOptions(
-              initialCenter: _userLocation,
-              initialZoom: 15.0,
-            ),
-            children: [
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.vego.app',
+          // Scrollable Content
+          CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              // Spacer for the sticky header
+              SliverToBoxAdapter(
+                child:
+                    SizedBox(height: MediaQuery.of(context).padding.top + 80),
               ),
-              PolylineLayer(
-                polylines: [
-                  Polyline(
-                    points: _routePoints,
-                    strokeWidth: 4.0,
-                    color: AppColors.primary.withValues(alpha: 0.5),
-                  ),
-                  Polyline(
-                    points: _routePoints.sublist(_currentPointIndex),
-                    strokeWidth: 4.0,
-                    color: AppColors.primary, // Active path remaining
-                  ),
-                ],
-              ),
-              MarkerLayer(
-                markers: [
-                  // User Marker
-                  Marker(
-                    point: _userLocation,
-                    width: 40,
-                    height: 40,
-                    child: const Icon(Icons.location_on,
-                        color: AppColors.accent, size: 40),
-                  ),
-                  // Rider Marker
-                  Marker(
-                    point: _riderLocation,
-                    width: 40,
-                    height: 40,
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(blurRadius: 5, color: Colors.black26)
-                        ],
+
+              // Embedded Map Card
+              SliverToBoxAdapter(
+                child: Container(
+                  height: 250,
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 16,
+                        offset: const Offset(0, 4),
                       ),
-                      padding: const EdgeInsets.all(4),
-                      child: const Icon(Icons.delivery_dining,
-                          color: AppColors.primary, size: 24),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: Stack(
+                      children: [
+                        FlutterMap(
+                          options: MapOptions(
+                            initialCenter: _userLocation,
+                            initialZoom: 15.0,
+                            interactionOptions: const InteractionOptions(
+                              flags: InteractiveFlag.none, // Static map snippet
+                            ),
+                          ),
+                          children: [
+                            TileLayer(
+                              urlTemplate: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png'
+                                  : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                              userAgentPackageName: 'com.vego.app',
+                            ),
+                            PolylineLayer(
+                              polylines: [
+                                Polyline(
+                                  points: _routePoints,
+                                  strokeWidth: 4.0,
+                                  color:
+                                      AppColors.primary.withValues(alpha: 0.3),
+                                ),
+                                Polyline(
+                                  points:
+                                      _routePoints.sublist(_currentPointIndex),
+                                  strokeWidth: 4.0,
+                                  color: AppColors.primary,
+                                ),
+                              ],
+                            ),
+                            MarkerLayer(
+                              markers: [
+                                Marker(
+                                  point: _userLocation,
+                                  width: 40,
+                                  height: 40,
+                                  child: const Icon(Icons.location_on,
+                                      color: AppColors.accent, size: 40),
+                                ),
+                                Marker(
+                                  point: _riderLocation,
+                                  width: 40,
+                                  height: 40,
+                                  child: Container(
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                            blurRadius: 5,
+                                            color: Colors.black26)
+                                      ],
+                                    ),
+                                    padding: const EdgeInsets.all(4),
+                                    child: const Icon(Icons.delivery_dining,
+                                        color: AppColors.primary, size: 24),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        // Expand Map Button
+                        Positioned(
+                          top: 12,
+                          right: 12,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color:
+                                  context.surfaceColor.withValues(alpha: 0.9),
+                              shape: BoxShape.circle,
+                            ),
+                            child: IconButton(
+                              icon: Icon(Icons.open_in_full,
+                                  size: 18, color: context.textPrimary),
+                              onPressed: () {
+                                // Expand map modal logic here
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
+
+              // Rider Info Card
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: RiderInfoCard(
+                    riderName: 'Tapabrata',
+                    statusMessage: _getStatusSentence(),
+                    currentStep: _currentStep,
+                    onCall: () {},
+                  ),
+                ),
+              ),
+
+              // Tip Section
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 16),
+                  child: TipSectionWidget(),
+                ),
+              ),
+
+              // Delivery Instructions
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 16),
+                  child: DeliveryInstructionsCard(),
+                ),
+              ),
+
+              // Order Details
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 16),
+                  child: OrderDetailsCard(),
+                ),
+              ),
+
+              // Bottom spacing
+              const SliverToBoxAdapter(child: SizedBox(height: 120)),
             ],
           ),
 
-          // Back Button
+          // Sticky Header
           Positioned(
-            top: 50,
-            left: 16,
-            child: CircleAvatar(
-              backgroundColor: context.surfaceColor,
-              child: IconButton(
-                icon: Icon(Icons.arrow_back, color: context.textPrimary),
-                onPressed: () {
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                  // Don't clear cart if just backing out, but usually tracking implies order placed.
-                  // If backing out without undo, order continues.
-                  // For this demo, let's assume back goes home and keeps order running in background (simulated).
-                  context.read<CartProvider>().clearCart();
-                },
-              ),
+            top: 0,
+            left: 0,
+            right: 0,
+            child: DeliveryHeaderWidget(
+              statusText: 'Order is on the way',
+              eta: _currentStep < 3 ? 'Preparing...' : 'Arriving in $_eta',
+              onBack: () {
+                Navigator.of(context).popUntil((route) => route.isFirst);
+                context.read<CartProvider>().clearCart();
+              },
             ),
           ),
 
-          // Hero Feature 3: Undo Button (60s Timer)
+          // Floating Undo Button (Kept from original)
           if (_undoSeconds > 0)
             Positioned(
-              bottom: 240, // Above status panel
-              left: 0, right: 0,
+              bottom: 40,
+              left: 0,
+              right: 0,
               child: Center(
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
-                  decoration: const BoxDecoration(boxShadow: [
-                    BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 10,
-                        offset: Offset(0, 4))
-                  ]),
-                  child: ElevatedButton.icon(
-                    onPressed: _undoOrder,
-                    icon: const Icon(Icons.undo, color: Colors.white),
-                    label: Text(
-                      'Undo Order ($_undoSeconds s)',
-                      style: GoogleFonts.plusJakartaSans(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: Colors.white),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.redAccent,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 32, vertical: 16),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30)),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(30),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.15),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4))
+                        ],
+                      ),
+                      child: ElevatedButton.icon(
+                        onPressed: _undoOrder,
+                        icon: const Icon(Icons.undo, color: Colors.white),
+                        label: Text(
+                          'Undo Order ($_undoSeconds s)',
+                          style: GoogleFonts.spaceGrotesk(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.white),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Colors.redAccent.withValues(alpha: 0.9),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 32, vertical: 16),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30)),
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-
-          // Status Panel
-          Positioned(
-            bottom: 30,
-            left: 16,
-            right: 16,
-            child: GranularTimelineWidget(
-              eta: _eta,
-              onCallRider: () {},
-            ),
-          ),
         ],
       ),
     );
