@@ -34,8 +34,7 @@ class InputValidators {
 
     // RFC 5322 compliant email regex (simplified)
     final emailRegex = RegExp(
-      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-      caseSensitive: false,
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$',
     );
 
     if (!emailRegex.hasMatch(value)) {
