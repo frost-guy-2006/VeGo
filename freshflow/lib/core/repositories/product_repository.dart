@@ -3,7 +3,10 @@ import 'package:vego/core/models/product_model.dart';
 
 /// Repository for product-related data operations
 class ProductRepository {
-  final SupabaseClient _client = Supabase.instance.client;
+  late final SupabaseClient _client;
+
+  ProductRepository({SupabaseClient? client})
+    : _client = client ?? Supabase.instance.client;
 
   /// Default page size for pagination
   static const int defaultPageSize = 10;
@@ -43,10 +46,7 @@ class ProductRepository {
   }
 
   /// Check if there are more products to load
-  Future<bool> hasMoreProducts({
-    int currentCount = 0,
-    String? category,
-  }) async {
+  Future<bool> hasMoreProducts({int currentCount = 0, String? category}) async {
     var query = _client.from('products').select('id');
 
     if (category != null && category != 'All') {
@@ -75,8 +75,11 @@ class ProductRepository {
 
   /// Fetch a single product by ID
   Future<Product?> fetchProductById(String id) async {
-    final response =
-        await _client.from('products').select().eq('id', id).maybeSingle();
+    final response = await _client
+        .from('products')
+        .select()
+        .eq('id', id)
+        .maybeSingle();
 
     if (response == null) return null;
     return Product.fromJson(response);
@@ -88,6 +91,37 @@ class ProductRepository {
         .from('products')
         .select()
         .ilike('name', '%$query%')
+        .order('name');
+
+    return (response as List).map((json) => Product.fromJson(json)).toList();
+  }
+
+  /// Search products by color keywords (server-side filtering)
+  Future<List<Product>> searchProductsByColor(String color) async {
+    final lowerColor = color.toLowerCase();
+    String orQuery = '';
+
+    switch (lowerColor) {
+      case 'red':
+        orQuery =
+            'name.ilike.%red%,name.ilike.%tomato%,name.ilike.%apple%,name.ilike.%strawberry%';
+        break;
+      case 'green':
+        orQuery =
+            'name.ilike.%green%,name.ilike.%spinach%,name.ilike.%broccoli%,name.ilike.%cucumber%';
+        break;
+      case 'orange':
+        orQuery = 'name.ilike.%orange%,name.ilike.%carrot%,name.ilike.%banana%';
+        break;
+      default:
+        // Fallback to normal search if color is unmapped
+        return searchProducts(color);
+    }
+
+    final response = await _client
+        .from('products')
+        .select()
+        .or(orQuery)
         .order('name');
 
     return (response as List).map((json) => Product.fromJson(json)).toList();
