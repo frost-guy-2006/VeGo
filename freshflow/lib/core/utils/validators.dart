@@ -12,13 +12,25 @@ class Validators {
     return null;
   }
 
+  /// Helper to clean phone number (remove whitespace, strip +91/91)
+  static String cleanPhone(String phone) {
+    String cleaned = phone.replaceAll(RegExp(r'\s+'), '');
+    if (cleaned.startsWith('+91')) {
+      cleaned = cleaned.substring(3);
+    } else if (cleaned.startsWith('91') && cleaned.length == 12) {
+      cleaned = cleaned.substring(2);
+    }
+    return cleaned;
+  }
+
   /// Validate phone number (Indian format)
   static String? validatePhone(String? value) {
     if (value == null || value.isEmpty) {
       return 'Phone number is required';
     }
+    final cleaned = cleanPhone(value);
     final phoneRegex = RegExp(r'^[6-9]\d{9}$');
-    if (!phoneRegex.hasMatch(value.replaceAll(RegExp(r'[\s\-\+]'), ''))) {
+    if (!phoneRegex.hasMatch(cleaned)) {
       return 'Enter a valid 10-digit phone number';
     }
     return null;
