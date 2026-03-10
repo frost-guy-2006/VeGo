@@ -31,19 +31,16 @@ class AppProviders {
 
   static WishlistProvider _createWishlistProvider() {
     final provider = WishlistProvider();
-    provider.loadFromStorage();
     return provider;
   }
 
   static OrderProvider _createOrderProvider() {
     final provider = OrderProvider();
-    provider.loadFromStorage();
     return provider;
   }
 
   static AddressProvider _createAddressProvider() {
     final provider = AddressProvider();
-    provider.loadFromStorage();
     return provider;
   }
 
