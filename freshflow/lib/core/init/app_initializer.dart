@@ -28,6 +28,11 @@ class AppInitializer {
   }
 
   static Future<void> _initSupabase() async {
+    if (!Env.isLoaded) {
+      throw Exception(
+          'Critical Error: Environment variables not loaded. Please create a .env file with SUPABASE_URL and SUPABASE_ANON_KEY.');
+    }
+
     await Supabase.initialize(
       url: Env.supabaseUrl,
       anonKey: Env.supabaseAnonKey,

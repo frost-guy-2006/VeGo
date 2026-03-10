@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:vego/core/providers/auth_provider.dart';
 import 'package:vego/core/theme/app_colors.dart';
+import 'package:vego/core/utils/input_validators.dart';
 import 'package:vego/features/home/screens/home_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -54,7 +55,16 @@ class _OtpScreenState extends State<OtpScreen> {
 
   Future<void> _verify() async {
     final otp = _otpController.text.trim();
-    if (otp.length != 6) return;
+    final otpError = InputValidators.validateOtp(otp);
+
+    if (otpError != null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(otpError)),
+        );
+      }
+      return;
+    }
 
     try {
       await context.read<AuthProvider>().verifyOtp(widget.phoneNumber, otp);
@@ -73,12 +83,22 @@ class _OtpScreenState extends State<OtpScreen> {
     }
   }
 
-  void _resendOtp() {
-    // Mock resend logic or call provider
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('OTP Resent!')),
-    );
-    startTimer();
+  Future<void> _resendOtp() async {
+    try {
+      await context.read<AuthProvider>().signInWithPhone(widget.phoneNumber);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('OTP Resent!')),
+        );
+        startTimer();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error resending OTP: ${e.toString()}')),
+        );
+      }
+    }
   }
 
   @override
