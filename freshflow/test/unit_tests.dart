@@ -9,7 +9,7 @@ void main() {
       final json = {
         'id': '1',
         'name': 'Test Product',
-        'image_url': 'http://example.com/image.jpg',
+        'image_url': 'https://example.com/image.jpg',
         'current_price': 100.0,
         'market_price': 120.0,
         'harvest_time': 'Today',
@@ -18,7 +18,7 @@ void main() {
       final product = Product.fromJson(json);
       expect(product.id, '1');
       expect(product.name, 'Test Product');
-      expect(product.imageUrl, 'http://example.com/image.jpg');
+      expect(product.imageUrl, 'https://example.com/image.jpg');
     });
 
     test('Product.fromJson assigns default image for empty url', () {
