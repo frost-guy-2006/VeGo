@@ -112,19 +112,25 @@ class _FlashPriceWidgetState extends State<FlashPriceWidget> {
                   ),
                   const Spacer(),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.2)),
+                        color: Colors.white.withValues(alpha: 0.2),
+                      ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.timer_outlined,
-                            color: AppColors.accent, size: 16),
+                        const Icon(
+                          Icons.timer_outlined,
+                          color: AppColors.accent,
+                          size: 16,
+                        ),
                         const SizedBox(width: 6),
                         Text(
                           '${_timeLeft.inHours.toString().padLeft(2, '0')}:${(_timeLeft.inMinutes % 60).toString().padLeft(2, '0')}:${(_timeLeft.inSeconds % 60).toString().padLeft(2, '0')}',

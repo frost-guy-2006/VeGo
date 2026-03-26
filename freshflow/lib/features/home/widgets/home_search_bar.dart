@@ -77,8 +77,10 @@ class _HomeSearchBarState extends State<HomeSearchBar>
                           return ShaderMask(
                             shaderCallback: (bounds) {
                               return LinearGradient(
-                                begin:
-                                    Alignment(_shimmerAnimation.value - 1, 0),
+                                begin: Alignment(
+                                  _shimmerAnimation.value - 1,
+                                  0,
+                                ),
                                 end: Alignment(_shimmerAnimation.value, 0),
                                 colors: [
                                   context.textSecondary.withValues(alpha: 0.4),
@@ -126,12 +128,14 @@ class _HomeSearchBarState extends State<HomeSearchBar>
   }
 
   void _navigateToSearch(BuildContext context) {
-    Navigator.of(context).push(PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          const SearchScreen(),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        return FadeTransition(opacity: animation, child: child);
-      },
-    ));
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const SearchScreen(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+      ),
+    );
   }
 }

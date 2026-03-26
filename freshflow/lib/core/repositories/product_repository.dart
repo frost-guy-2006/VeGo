@@ -3,7 +3,10 @@ import 'package:vego/core/models/product_model.dart';
 
 /// Repository for product-related data operations
 class ProductRepository {
-  final SupabaseClient _client = Supabase.instance.client;
+  final SupabaseClient _client;
+
+  ProductRepository({SupabaseClient? client})
+      : _client = client ?? Supabase.instance.client;
 
   /// Default page size for pagination
   static const int defaultPageSize = 10;
@@ -43,10 +46,7 @@ class ProductRepository {
   }
 
   /// Check if there are more products to load
-  Future<bool> hasMoreProducts({
-    int currentCount = 0,
-    String? category,
-  }) async {
+  Future<bool> hasMoreProducts({int currentCount = 0, String? category}) async {
     var query = _client.from('products').select('id');
 
     if (category != null && category != 'All') {
@@ -89,6 +89,22 @@ class ProductRepository {
         .select()
         .ilike('name', '%$query%')
         .order('name');
+
+    return (response as List).map((json) => Product.fromJson(json)).toList();
+  }
+
+  /// Search products by color
+  Future<List<Product>> searchProductsByColor(String color) async {
+    final keywords = Product.colorKeywords[color];
+    if (keywords == null || keywords.isEmpty) {
+      return searchProducts(color);
+    }
+
+    // Build the OR query for ilike
+    final orConditions = keywords.map((k) => 'name.ilike.%$k%').join(',');
+
+    final response =
+        await _client.from('products').select().or(orConditions).order('name');
 
     return (response as List).map((json) => Product.fromJson(json)).toList();
   }

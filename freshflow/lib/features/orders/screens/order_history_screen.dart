@@ -101,8 +101,10 @@ class OrderHistoryScreen extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 14,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -179,66 +181,68 @@ class _OrderCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ...order.items.take(3).map((item) => Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: AppColors.surfaceAlt,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.network(
-                                item.product.imageUrl,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => const Icon(
-                                  Icons.eco,
-                                  color: AppColors.primaryLight,
-                                  size: 20,
+                ...order.items.take(3).map(
+                      (item) => Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: AppColors.surfaceAlt,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.network(
+                                  item.product.imageUrl,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => const Icon(
+                                    Icons.eco,
+                                    color: AppColors.primaryLight,
+                                    size: 20,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  item.product.name,
-                                  style: GoogleFonts.outfit(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: context.textPrimary,
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item.product.name,
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      color: context.textPrimary,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                Text(
-                                  'Qty: ${item.quantity}',
-                                  style: GoogleFonts.outfit(
-                                    fontSize: 12,
-                                    color: context.textSecondary,
+                                  Text(
+                                    'Qty: ${item.quantity}',
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 12,
+                                      color: context.textSecondary,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                          Text(
-                            '₹${item.total.toStringAsFixed(0)}',
-                            style: GoogleFonts.jetBrainsMono(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.primary,
+                            Text(
+                              '₹${item.total.toStringAsFixed(0)}',
+                              style: GoogleFonts.jetBrainsMono(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.primary,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    )),
+                    ),
                 if (order.items.length > 3)
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
@@ -293,7 +297,8 @@ class _OrderCard extends StatelessWidget {
                           content: const Text('Order tracking coming soon!'),
                           behavior: SnackBarBehavior.floating,
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       );
                     },
@@ -314,7 +319,8 @@ class _OrderCard extends StatelessWidget {
                           content: const Text('Reorder coming soon!'),
                           behavior: SnackBarBehavior.floating,
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       );
                     },

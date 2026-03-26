@@ -128,8 +128,11 @@ class ProductGridSliver extends StatelessWidget {
           padding: const EdgeInsets.all(32.0),
           child: Column(
             children: [
-              const Icon(Icons.shopping_basket_outlined,
-                  size: 48, color: Colors.grey),
+              const Icon(
+                Icons.shopping_basket_outlined,
+                size: 48,
+                color: Colors.grey,
+              ),
               const SizedBox(height: 16),
               Text(
                 'No products found',

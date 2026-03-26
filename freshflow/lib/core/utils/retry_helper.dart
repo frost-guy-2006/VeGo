@@ -49,7 +49,8 @@ class RetryHelper {
         // Log retry attempt
         if (kDebugMode) {
           debugPrint(
-              'RetryHelper: Attempt $attempt failed, retrying in ${delay.inMilliseconds}ms...');
+            'RetryHelper: Attempt $attempt failed, retrying in ${delay.inMilliseconds}ms...',
+          );
         }
 
         // Call optional callback
