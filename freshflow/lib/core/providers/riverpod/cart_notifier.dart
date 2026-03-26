@@ -37,7 +37,9 @@ class CartState {
   const CartState({this.items = const []});
 
   double get totalPrice => items.fold(
-      0, (sum, item) => sum + (item.product.currentPrice * item.quantity));
+        0,
+        (sum, item) => sum + (item.product.currentPrice * item.quantity),
+      );
 
   int get itemCount => items.fold(0, (sum, item) => sum + item.quantity);
 
@@ -79,8 +81,9 @@ class CartNotifier extends StateNotifier<CartState> {
 
     if (index >= 0) {
       if (items[index].quantity > 1) {
-        items[index] =
-            items[index].copyWith(quantity: items[index].quantity - 1);
+        items[index] = items[index].copyWith(
+          quantity: items[index].quantity - 1,
+        );
       } else {
         items.removeAt(index);
       }

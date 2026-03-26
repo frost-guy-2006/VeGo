@@ -43,8 +43,11 @@ class WishlistScreen extends StatelessWidget {
               return TextButton.icon(
                 onPressed: () =>
                     _showClearConfirmation(context, wishlistProvider),
-                icon: const Icon(Icons.delete_outline,
-                    color: AppColors.error, size: 20),
+                icon: const Icon(
+                  Icons.delete_outline,
+                  color: AppColors.error,
+                  size: 20,
+                ),
                 label: Text(
                   'Clear',
                   style: GoogleFonts.outfit(
@@ -75,7 +78,9 @@ class WishlistScreen extends StatelessWidget {
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.accent.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(20),
@@ -167,8 +172,10 @@ class WishlistScreen extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 14,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -181,7 +188,9 @@ class WishlistScreen extends StatelessWidget {
   }
 
   void _showClearConfirmation(
-      BuildContext context, WishlistProvider wishlistProvider) {
+    BuildContext context,
+    WishlistProvider wishlistProvider,
+  ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -211,7 +220,8 @@ class WishlistScreen extends StatelessWidget {
                   behavior: SnackBarBehavior.floating,
                   backgroundColor: AppColors.secondary,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               );
             },

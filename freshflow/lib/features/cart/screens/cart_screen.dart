@@ -26,8 +26,11 @@ class CartScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded,
-              color: context.textPrimary, size: 20),
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: context.textPrimary,
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -38,9 +41,11 @@ class CartScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.shopping_cart_outlined,
-                      size: 64,
-                      color: context.textSecondary.withValues(alpha: 0.5)),
+                  Icon(
+                    Icons.shopping_cart_outlined,
+                    size: 64,
+                    color: context.textSecondary.withValues(alpha: 0.5),
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     'Your cart is empty',
@@ -99,9 +104,12 @@ class CartScreen extends StatelessWidget {
                                 width: 80,
                                 height: 80,
                                 color: context.surfaceAltColor,
-                                child: Icon(Icons.image_not_supported_outlined,
-                                    color: context.textSecondary
-                                        .withValues(alpha: 0.5)),
+                                child: Icon(
+                                  Icons.image_not_supported_outlined,
+                                  color: context.textSecondary.withValues(
+                                    alpha: 0.5,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
@@ -135,20 +143,26 @@ class CartScreen extends StatelessWidget {
                               color: context.surfaceAltColor,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                  color: context.borderColor
-                                      .withValues(alpha: 0.5)),
+                                color: context.borderColor.withValues(
+                                  alpha: 0.5,
+                                ),
+                              ),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(
-                                  icon: const Icon(Icons.remove_rounded,
-                                      size: 18),
+                                  icon: const Icon(
+                                    Icons.remove_rounded,
+                                    size: 18,
+                                  ),
                                   color: context.textSecondary,
                                   onPressed: () =>
                                       cart.decreaseQuantity(item.product.id),
                                   constraints: const BoxConstraints(
-                                      minWidth: 36, minHeight: 36),
+                                    minWidth: 36,
+                                    minHeight: 36,
+                                  ),
                                   padding: EdgeInsets.zero,
                                 ),
                                 Text(
@@ -164,7 +178,9 @@ class CartScreen extends StatelessWidget {
                                   color: AppColors.primary,
                                   onPressed: () => cart.addToCart(item.product),
                                   constraints: const BoxConstraints(
-                                      minWidth: 36, minHeight: 36),
+                                    minWidth: 36,
+                                    minHeight: 36,
+                                  ),
                                   padding: EdgeInsets.zero,
                                 ),
                               ],
@@ -183,7 +199,9 @@ class CartScreen extends StatelessWidget {
                   filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 16), // Reduced padding
+                      horizontal: 20,
+                      vertical: 16,
+                    ), // Reduced padding
                     decoration: BoxDecoration(
                       color: Theme.of(context).brightness == Brightness.dark
                           ? context.surfaceColor.withValues(alpha: 0.7)
@@ -227,8 +245,9 @@ class CartScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(24),
                               boxShadow: [
                                 BoxShadow(
-                                  color:
-                                      AppColors.primary.withValues(alpha: 0.25),
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.25,
+                                  ),
                                   blurRadius: 10,
                                   offset: const Offset(0, 4),
                                 ),
@@ -252,15 +271,16 @@ class CartScreen extends StatelessWidget {
                                 sliderButtonIconSize: 14,
                                 sliderButtonIconPadding: 10,
                                 sliderButtonIcon: const Icon(
-                                    Icons.arrow_forward_rounded,
-                                    color: AppColors.primary),
+                                  Icons.arrow_forward_rounded,
+                                  color: AppColors.primary,
+                                ),
                                 onSubmit: () async {
                                   if (cart.items.isNotEmpty) {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (_) =>
-                                              const TrackingScreen()),
+                                        builder: (_) => const TrackingScreen(),
+                                      ),
                                     );
                                   }
                                   return null;

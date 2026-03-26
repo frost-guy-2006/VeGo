@@ -13,11 +13,7 @@ class PriceComparisonCard extends StatefulWidget {
   final Product product;
   final int index;
 
-  const PriceComparisonCard({
-    super.key,
-    required this.product,
-    this.index = 0,
-  });
+  const PriceComparisonCard({super.key, required this.product, this.index = 0});
 
   @override
   State<PriceComparisonCard> createState() => _PriceComparisonCardState();
@@ -64,7 +60,8 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (_) => ProductDetailScreen(product: product)),
+            builder: (_) => ProductDetailScreen(product: product),
+          ),
         );
       },
       child: AnimatedScale(
@@ -190,10 +187,8 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
                   ),
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 200),
-                    transitionBuilder: (child, animation) => ScaleTransition(
-                      scale: animation,
-                      child: child,
-                    ),
+                    transitionBuilder: (child, animation) =>
+                        ScaleTransition(scale: animation, child: child),
                     child: Icon(
                       isWishlisted ? Icons.favorite : Icons.favorite_outline,
                       key: ValueKey(isWishlisted),
@@ -210,11 +205,7 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
         ),
 
         // Add to Cart Button - Bottom right of image
-        Positioned(
-          bottom: -20,
-          right: 10,
-          child: _buildAddButton(product),
-        ),
+        Positioned(bottom: -20, right: 10, child: _buildAddButton(product)),
       ],
     );
   }
@@ -253,8 +244,11 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
                 SnackBar(
                   content: Row(
                     children: [
-                      const Icon(Icons.check_circle,
-                          color: Colors.white, size: 18),
+                      const Icon(
+                        Icons.check_circle,
+                        color: Colors.white,
+                        size: 18,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -269,7 +263,8 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
                   behavior: SnackBarBehavior.floating,
                   backgroundColor: AppColors.primary,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   margin: const EdgeInsets.all(16),
                 ),
               );
@@ -283,28 +278,22 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
               ? LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.accent,
-                    AppColors.accent.withRed(220),
-                  ],
+                  colors: [AppColors.accent, AppColors.accent.withRed(220)],
                 )
               : null,
           color: inStock ? null : Colors.grey.shade400,
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: (inStock ? AppColors.accent : Colors.grey)
-                  .withValues(alpha: 0.4),
+              color: (inStock ? AppColors.accent : Colors.grey).withValues(
+                alpha: 0.4,
+              ),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
           ],
         ),
-        child: const Icon(
-          Icons.add_rounded,
-          color: Colors.white,
-          size: 22,
-        ),
+        child: const Icon(Icons.add_rounded, color: Colors.white, size: 22),
       ),
     );
   }

@@ -26,7 +26,7 @@ class _CategoryGridState extends State<CategoryGrid>
     {
       'name': 'Bakery',
       'icon': Icons.breakfast_dining_rounded,
-      'color': 0xFFA3584E
+      'color': 0xFFA3584E,
     },
     {'name': 'Tea/Coffee', 'icon': Icons.coffee_rounded, 'color': 0xFF6D4C41},
   ];
@@ -94,7 +94,9 @@ class _CategoryGridState extends State<CategoryGrid>
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeOutCubic,
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 10),
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
                       // Glass fill
                       gradient: isSelected
@@ -125,7 +127,8 @@ class _CategoryGridState extends State<CategoryGrid>
                           ? [
                               BoxShadow(
                                 color: categoryColor.withValues(
-                                    alpha: _glowAnimation.value * 0.4),
+                                  alpha: _glowAnimation.value * 0.4,
+                                ),
                                 blurRadius: 16,
                                 offset: const Offset(0, 4),
                                 spreadRadius: -2,

@@ -71,8 +71,9 @@ class WishlistProvider extends ChangeNotifier {
   Future<void> _saveToStorage() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final wishlistJson =
-          json.encode(_wishlist.map((p) => p.toJson()).toList());
+      final wishlistJson = json.encode(
+        _wishlist.map((p) => p.toJson()).toList(),
+      );
       await prefs.setString(_storageKey, wishlistJson);
     } catch (e) {
       debugPrint('Error saving wishlist to storage: $e');
