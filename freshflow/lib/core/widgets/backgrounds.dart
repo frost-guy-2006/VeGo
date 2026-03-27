@@ -16,7 +16,8 @@ class GradientMeshBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final gradientColors = colors ??
+    final gradientColors =
+        colors ??
         [
           context.backgroundColor,
           const Color(0xFFF0FDF4), // Mint whisper

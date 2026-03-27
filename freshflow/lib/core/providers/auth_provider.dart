@@ -21,9 +21,7 @@ class AuthProvider extends ChangeNotifier {
       _isLoading = true;
       notifyListeners();
 
-      await _supabase.auth.signInWithOtp(
-        phone: phoneNumber,
-      );
+      await _supabase.auth.signInWithOtp(phone: phoneNumber);
     } catch (e) {
       rethrow;
     } finally {
@@ -55,10 +53,7 @@ class AuthProvider extends ChangeNotifier {
       _isLoading = true;
       notifyListeners();
 
-      await _supabase.auth.signInWithPassword(
-        email: email,
-        password: password,
-      );
+      await _supabase.auth.signInWithPassword(email: email, password: password);
     } catch (e) {
       rethrow;
     } finally {
@@ -72,10 +67,7 @@ class AuthProvider extends ChangeNotifier {
       _isLoading = true;
       notifyListeners();
 
-      await _supabase.auth.signUp(
-        email: email,
-        password: password,
-      );
+      await _supabase.auth.signUp(email: email, password: password);
     } catch (e) {
       rethrow;
     } finally {

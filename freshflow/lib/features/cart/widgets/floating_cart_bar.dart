@@ -86,7 +86,10 @@ class _FloatingCartBarState extends State<FloatingCartBar>
   }
 
   Widget _buildInnerContent(
-      BuildContext context, bool isDark, CartProvider cart) {
+    BuildContext context,
+    bool isDark,
+    CartProvider cart,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
@@ -155,10 +158,7 @@ class _FloatingCartBarState extends State<FloatingCartBar>
           ),
           // View Cart pill
           Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 14,
-              vertical: 8,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(24),

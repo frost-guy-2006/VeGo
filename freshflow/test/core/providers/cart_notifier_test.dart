@@ -22,9 +22,7 @@ void main() {
         category: 'Test',
       );
 
-      final state = CartState(items: [
-        CartItem(product: product, quantity: 2),
-      ]);
+      final state = CartState(items: [CartItem(product: product, quantity: 2)]);
 
       expect(state.totalPrice, 200);
       expect(state.itemCount, 2);

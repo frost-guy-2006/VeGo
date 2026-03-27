@@ -13,7 +13,7 @@ void main() {
         'current_price': 100.0,
         'market_price': 120.0,
         'harvest_time': 'Today',
-        'stock': 10
+        'stock': 10,
       };
       final product = Product.fromJson(json);
       expect(product.id, '1');
@@ -29,7 +29,7 @@ void main() {
         'current_price': 50.0,
         'market_price': 60.0,
         'harvest_time': 'Yesterday',
-        'stock': 20
+        'stock': 20,
       };
       final product = Product.fromJson(json);
       expect(product.name, 'Fresh Tomato');
@@ -44,13 +44,14 @@ void main() {
 
       final provider = WishlistProvider();
       final product = Product(
-          id: '1',
-          name: 'Test',
-          imageUrl: 'url',
-          currentPrice: 10,
-          marketPrice: 20,
-          harvestTime: 'Now',
-          stock: 5);
+        id: '1',
+        name: 'Test',
+        imageUrl: 'url',
+        currentPrice: 10,
+        marketPrice: 20,
+        harvestTime: 'Now',
+        stock: 5,
+      );
 
       expect(provider.isInWishlist('1'), false);
 

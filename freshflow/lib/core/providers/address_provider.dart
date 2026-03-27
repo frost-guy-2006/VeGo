@@ -149,8 +149,9 @@ class AddressProvider extends ChangeNotifier {
   Future<void> _saveToStorage() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final addressesJson =
-          json.encode(_addresses.map((a) => a.toJson()).toList());
+      final addressesJson = json.encode(
+        _addresses.map((a) => a.toJson()).toList(),
+      );
       await prefs.setString(_storageKey, addressesJson);
     } catch (e) {
       debugPrint('Error saving addresses to storage: $e');

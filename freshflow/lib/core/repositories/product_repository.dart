@@ -43,10 +43,7 @@ class ProductRepository {
   }
 
   /// Check if there are more products to load
-  Future<bool> hasMoreProducts({
-    int currentCount = 0,
-    String? category,
-  }) async {
+  Future<bool> hasMoreProducts({int currentCount = 0, String? category}) async {
     var query = _client.from('products').select('id');
 
     if (category != null && category != 'All') {
@@ -75,8 +72,11 @@ class ProductRepository {
 
   /// Fetch a single product by ID
   Future<Product?> fetchProductById(String id) async {
-    final response =
-        await _client.from('products').select().eq('id', id).maybeSingle();
+    final response = await _client
+        .from('products')
+        .select()
+        .eq('id', id)
+        .maybeSingle();
 
     if (response == null) return null;
     return Product.fromJson(response);
@@ -88,6 +88,27 @@ class ProductRepository {
         .from('products')
         .select()
         .ilike('name', '%$query%')
+        .order('name');
+
+    return (response as List).map((json) => Product.fromJson(json)).toList();
+  }
+
+  /// Search products by associated color keywords
+  Future<List<Product>> searchProductsByColor(String color) async {
+    final keywords = Product.colorKeywords[color];
+
+    // Fallback to regular search if color is not mapped
+    if (keywords == null || keywords.isEmpty) {
+      return searchProducts(color);
+    }
+
+    // Construct OR query with ilike filters for each keyword
+    final orFilters = keywords.map((k) => 'name.ilike.%$k%').join(',');
+
+    final response = await _client
+        .from('products')
+        .select()
+        .or(orFilters)
         .order('name');
 
     return (response as List).map((json) => Product.fromJson(json)).toList();
