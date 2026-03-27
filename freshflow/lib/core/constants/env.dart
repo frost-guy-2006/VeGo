@@ -6,11 +6,17 @@ class Env {
   Env._();
 
   /// Supabase project URL.
-  static String get supabaseUrl => dotenv.env['SUPABASE_URL'] ?? '';
+  static String get supabaseUrl =>
+      const String.fromEnvironment('SUPABASE_URL').isNotEmpty
+          ? const String.fromEnvironment('SUPABASE_URL')
+          : (dotenv.env['SUPABASE_URL'] ?? '');
 
   /// Supabase anonymous (public) key.
   /// Safe for client-side use - RLS policies restrict access.
-  static String get supabaseAnonKey => dotenv.env['SUPABASE_ANON_KEY'] ?? '';
+  static String get supabaseAnonKey =>
+      const String.fromEnvironment('SUPABASE_ANON_KEY').isNotEmpty
+          ? const String.fromEnvironment('SUPABASE_ANON_KEY')
+          : (dotenv.env['SUPABASE_ANON_KEY'] ?? '');
 
   /// Check if environment is properly loaded.
   static bool get isLoaded =>
