@@ -83,16 +83,21 @@ class _GranularTimelineWidgetState extends State<GranularTimelineWidget> {
                 GestureDetector(
                   onTap: widget.onCallRider,
                   child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: context.surfaceAltColor,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.phone,
-                            color: AppColors.primary, size: 20),
+                        const Icon(
+                          Icons.phone,
+                          color: AppColors.primary,
+                          size: 20,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           'Call Rider',
@@ -110,30 +115,48 @@ class _GranularTimelineWidgetState extends State<GranularTimelineWidget> {
           const SizedBox(height: 20),
 
           // Granular Steps
-          _buildStep(0, "Order Placed",
-              isCompleted: _currentStep >= 0, isCurrent: _currentStep == 0),
+          _buildStep(
+            0,
+            "Order Placed",
+            isCompleted: _currentStep >= 0,
+            isCurrent: _currentStep == 0,
+          ),
           const SizedBox(height: 12),
-          _buildStep(1, "Packing items",
-              subtext: "2 mins",
-              isCompleted: _currentStep >= 1,
-              isCurrent: _currentStep == 1),
+          _buildStep(
+            1,
+            "Packing items",
+            subtext: "2 mins",
+            isCompleted: _currentStep >= 1,
+            isCurrent: _currentStep == 1,
+          ),
           const SizedBox(height: 12),
-          _buildStep(2, "Rider Assigned",
-              subtext: "Ramesh Kumar (4.8⭐)",
-              isCompleted: _currentStep >= 2,
-              isCurrent: _currentStep == 2),
+          _buildStep(
+            2,
+            "Rider Assigned",
+            subtext: "Ramesh Kumar (4.8⭐)",
+            isCompleted: _currentStep >= 2,
+            isCurrent: _currentStep == 2,
+          ),
           const SizedBox(height: 12),
-          _buildStep(3, "On the Way",
-              subtext: "Reaching your location",
-              isCompleted: _currentStep >= 3,
-              isCurrent: _currentStep == 3),
+          _buildStep(
+            3,
+            "On the Way",
+            subtext: "Reaching your location",
+            isCompleted: _currentStep >= 3,
+            isCurrent: _currentStep == 3,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildStep(int stepIndex, String title,
-      {String? subtext, required bool isCompleted, required bool isCurrent}) {
+  Widget _buildStep(
+    int stepIndex,
+    String title, {
+    String? subtext,
+    required bool isCompleted,
+    required bool isCurrent,
+  }) {
     Color color = isCompleted ? AppColors.primary : Colors.grey[300]!;
     if (isCurrent && _currentStep < 3) {
       color = Colors.orange; // Highlight active processing step
@@ -177,7 +200,7 @@ class _GranularTimelineWidgetState extends State<GranularTimelineWidget> {
                 ),
               ),
           ],
-        )
+        ),
       ],
     );
   }

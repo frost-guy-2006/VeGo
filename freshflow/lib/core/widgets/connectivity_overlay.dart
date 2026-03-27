@@ -10,12 +10,7 @@ class ConnectivityOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        child,
-        const _OfflineBanner(),
-      ],
-    );
+    return Stack(children: [child, const _OfflineBanner()]);
   }
 }
 
@@ -27,7 +22,8 @@ class _OfflineBanner extends StatelessWidget {
     return StreamBuilder<List<ConnectivityResult>>(
       stream: Connectivity().onConnectivityChanged,
       builder: (context, snapshot) {
-        final isOffline = snapshot.hasData &&
+        final isOffline =
+            snapshot.hasData &&
             (snapshot.data!.contains(ConnectivityResult.none) ||
                 snapshot.data!.isEmpty);
 

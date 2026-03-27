@@ -21,16 +21,20 @@ class OrderProvider extends ChangeNotifier {
 
   /// Get active orders (not delivered or cancelled)
   List<Order> get activeOrders => _orders
-      .where((o) =>
-          o.status != OrderStatus.delivered &&
-          o.status != OrderStatus.cancelled)
+      .where(
+        (o) =>
+            o.status != OrderStatus.delivered &&
+            o.status != OrderStatus.cancelled,
+      )
       .toList();
 
   /// Get past orders (delivered or cancelled)
   List<Order> get pastOrders => _orders
-      .where((o) =>
-          o.status == OrderStatus.delivered ||
-          o.status == OrderStatus.cancelled)
+      .where(
+        (o) =>
+            o.status == OrderStatus.delivered ||
+            o.status == OrderStatus.cancelled,
+      )
       .toList();
 
   /// Create a new order from cart

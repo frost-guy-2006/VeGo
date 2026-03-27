@@ -158,7 +158,8 @@ class _WavePainter extends CustomPainter {
 
     for (double x = 0; x <= size.width; x++) {
       final normalizedX = x / size.width;
-      final y = baseY +
+      final y =
+          baseY +
           sin((normalizedX * 2 * pi) + (phase * 2 * pi * speed)) * waveHeight +
           sin((normalizedX * 4 * pi) + (phase * 2 * pi * speed * 0.6)) *
               (waveHeight * 0.4);
@@ -234,7 +235,8 @@ class _ParticlePainter extends CustomPainter {
       // Particle rises from startY to top, wrapping around
       final yProgress = (progress * p.speed) % 1.0;
       final y = size.height * (p.startY - yProgress * p.startY);
-      final x = size.width * p.startX +
+      final x =
+          size.width * p.startX +
           sin(progress * 2 * pi * p.speed) * size.width * p.drift;
 
       // Fade out as particle reaches top

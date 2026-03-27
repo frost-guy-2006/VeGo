@@ -99,15 +99,12 @@ abstract class MobileDesign {
   // ─────────────────────────────────────────────────────────────
 
   /// Ensures widget meets minimum touch target
-  static BoxConstraints get minTouchConstraints => const BoxConstraints(
-        minWidth: minTouchTarget,
-        minHeight: minTouchTarget,
-      );
+  static BoxConstraints get minTouchConstraints =>
+      const BoxConstraints(minWidth: minTouchTarget, minHeight: minTouchTarget);
 
   /// Preferred constraints for list item rows
-  static BoxConstraints get listItemConstraints => const BoxConstraints(
-        minHeight: minTouchTarget,
-      );
+  static BoxConstraints get listItemConstraints =>
+      const BoxConstraints(minHeight: minTouchTarget);
 }
 
 /// Extension for applying touch-friendly constraints to widgets

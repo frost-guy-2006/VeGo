@@ -16,18 +16,22 @@ class AppProviders {
   /// Returns all providers for the app.
   /// Returns all providers for the app.
   static List<SingleChildWidget> get providers => [
-        ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
-        ChangeNotifierProvider<CartProvider>(create: (_) => CartProvider()),
-        ChangeNotifierProvider<ThemeProvider>(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider<WishlistProvider>(
-            create: (_) => _createWishlistProvider()),
-        ChangeNotifierProvider<OrderProvider>(
-            create: (_) => _createOrderProvider()),
-        ChangeNotifierProvider<AddressProvider>(
-            create: (_) => _createAddressProvider()),
-        ChangeNotifierProvider<ProductProvider>(
-            create: (_) => _createProductProvider()),
-      ];
+    ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
+    ChangeNotifierProvider<CartProvider>(create: (_) => CartProvider()),
+    ChangeNotifierProvider<ThemeProvider>(create: (_) => ThemeProvider()),
+    ChangeNotifierProvider<WishlistProvider>(
+      create: (_) => _createWishlistProvider(),
+    ),
+    ChangeNotifierProvider<OrderProvider>(
+      create: (_) => _createOrderProvider(),
+    ),
+    ChangeNotifierProvider<AddressProvider>(
+      create: (_) => _createAddressProvider(),
+    ),
+    ChangeNotifierProvider<ProductProvider>(
+      create: (_) => _createProductProvider(),
+    ),
+  ];
 
   static WishlistProvider _createWishlistProvider() {
     final provider = WishlistProvider();
