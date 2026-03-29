@@ -6,10 +6,19 @@ import 'dart:convert';
 /// Provider for managing user's wishlist/favorites
 class WishlistProvider extends ChangeNotifier {
   final List<Product> _wishlist = [];
-  static const String _storageKey = 'user_wishlist';
+  String? _userId;
 
   List<Product> get wishlist => List.unmodifiable(_wishlist);
   int get itemCount => _wishlist.length;
+
+  String get _storageKey => 'wishlist_${_userId ?? 'anonymous'}';
+
+  Future<void> initForUser(String? userId) async {
+    _userId = userId;
+    _wishlist.clear();
+    notifyListeners();
+    await loadFromStorage();
+  }
 
   /// Check if a product is in the wishlist
   bool isInWishlist(String productId) {
@@ -69,11 +78,13 @@ class WishlistProvider extends ChangeNotifier {
 
   /// Save wishlist to persistent storage
   Future<void> _saveToStorage() async {
+    final key = _storageKey;
+    final wishlistToSave = List<Product>.from(_wishlist);
     try {
       final prefs = await SharedPreferences.getInstance();
       final wishlistJson =
-          json.encode(_wishlist.map((p) => p.toJson()).toList());
-      await prefs.setString(_storageKey, wishlistJson);
+          json.encode(wishlistToSave.map((p) => p.toJson()).toList());
+      await prefs.setString(key, wishlistJson);
     } catch (e) {
       debugPrint('Error saving wishlist to storage: $e');
     }
