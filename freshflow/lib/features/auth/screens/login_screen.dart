@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vego/core/providers/auth_provider.dart';
+import 'package:vego/core/utils/input_validators.dart';
 import 'package:vego/features/auth/screens/otp_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -32,19 +33,19 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _signInPhone() async {
     final phone = _phoneController.text.trim();
     if (phone.isEmpty) return;
-    final cleanedPhone = phone.replaceAll(RegExp(r'\s+'), '');
 
     // Validation
-    final phoneRegExp = RegExp(r'^[0-9]{10}$'); // Strict 10 digits
-    if (!phoneRegExp.hasMatch(cleanedPhone)) {
+    final validationError = InputValidators.validatePhone(phone);
+    if (validationError != null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter a valid phone number')),
+          SnackBar(content: Text(validationError)),
         );
       }
       return;
     }
 
+    final cleanedPhone = phone.replaceAll(RegExp(r'\s+'), '');
     // Default to +91 if missing
     String formattedPhone = cleanedPhone;
     if (!cleanedPhone.startsWith('+')) {
@@ -63,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
+          const SnackBar(content: Text('Sign in failed. Please try again.')),
         );
       }
     }
@@ -80,6 +81,17 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
+    // Email validation
+    final validationError = InputValidators.validateEmail(email);
+    if (validationError != null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(validationError)),
+        );
+      }
+      return;
+    }
+
     try {
       await context.read<AuthProvider>().signInWithEmail(email, password);
       // AuthProvider listens to auth state changes, so navigation might be handled by wrapper
@@ -87,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
+          const SnackBar(content: Text('Sign in failed. Please try again.')),
         );
       }
     }
@@ -104,6 +116,28 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
+    // Email validation
+    final emailError = InputValidators.validateEmail(email);
+    if (emailError != null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(emailError)),
+        );
+      }
+      return;
+    }
+
+    // Password validation
+    final passwordError = InputValidators.validatePassword(password);
+    if (passwordError != null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(passwordError)),
+        );
+      }
+      return;
+    }
+
     try {
       await context.read<AuthProvider>().signUpWithEmail(email, password);
       if (mounted) {
@@ -116,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
+          const SnackBar(content: Text('Sign up failed. Please try again.')),
         );
       }
     }
@@ -183,8 +217,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               checkmarkColor: Colors.white,
                               side: BorderSide.none,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(20)),
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -204,8 +238,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               checkmarkColor: Colors.white,
                               side: BorderSide.none,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(20)),
                               ),
                             ),
                           ],
@@ -259,8 +293,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                               child: isLoading
-                                  ? const CircularProgressIndicator(
-                                      color: Colors.white)
+                                  ? const Center(
+                                      child: CircularProgressIndicator(
+                                          color: Colors.white))
                                   : Text(
                                       'Send OTP',
                                       style: GoogleFonts.plusJakartaSans(
@@ -351,7 +386,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                     ),
                                     child: isLoading
-                                        ? const CircularProgressIndicator()
+                                        ? const Center(child: CircularProgressIndicator())
                                         : Text(
                                             'Sign Up',
                                             style: GoogleFonts.plusJakartaSans(
@@ -377,8 +412,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                     ),
                                     child: isLoading
-                                        ? const CircularProgressIndicator(
-                                            color: Colors.white)
+                                        ? const Center(
+                                            child: CircularProgressIndicator(
+                                                color: Colors.white,
+                                            ),
+                                          )
                                         : Text(
                                             'Sign In',
                                             style: GoogleFonts.plusJakartaSans(

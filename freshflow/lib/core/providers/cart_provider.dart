@@ -24,9 +24,11 @@ class CartItem {
 
 class CartProvider extends ChangeNotifier {
   List<CartItem> _items = [];
+  String? _currentUserId;
 
   CartProvider() {
-    _loadCart();
+    // No-op constructor to avoid async side effects.
+    // Initialization handled by initForUser.
   }
 
   List<CartItem> get items => List.unmodifiable(_items);
@@ -74,16 +76,30 @@ class CartProvider extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     final String encodedData =
         jsonEncode(_items.map((e) => e.toJson()).toList());
-    await prefs.setString('cart_items', encodedData);
+    await prefs.setString(_storageKey, encodedData);
   }
 
   Future<void> _loadCart() async {
     final prefs = await SharedPreferences.getInstance();
-    final String? encodedData = prefs.getString('cart_items');
+    final String? encodedData = prefs.getString(_storageKey);
     if (encodedData != null) {
       final List<dynamic> decodedData = jsonDecode(encodedData);
       _items = decodedData.map((e) => CartItem.fromJson(e)).toList();
       notifyListeners();
     }
+  }
+
+  String get _storageKey {
+    if (_currentUserId == null) {
+      return 'cart_items_anonymous';
+    }
+    return 'cart_items_$_currentUserId';
+  }
+
+  Future<void> initForUser(String? userId) async {
+    _items.clear();
+    _currentUserId = userId;
+    await _loadCart();
+    notifyListeners();
   }
 }

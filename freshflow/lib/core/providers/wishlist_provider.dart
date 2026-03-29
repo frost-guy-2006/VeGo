@@ -6,7 +6,7 @@ import 'dart:convert';
 /// Provider for managing user's wishlist/favorites
 class WishlistProvider extends ChangeNotifier {
   final List<Product> _wishlist = [];
-  static const String _storageKey = 'user_wishlist';
+  String? _currentUserId;
 
   List<Product> get wishlist => List.unmodifiable(_wishlist);
   int get itemCount => _wishlist.length;
@@ -47,6 +47,20 @@ class WishlistProvider extends ChangeNotifier {
   void clearWishlist() {
     _wishlist.clear();
     _saveToStorage();
+    notifyListeners();
+  }
+
+  String get _storageKey {
+    if (_currentUserId == null) {
+      return 'user_wishlist_anonymous';
+    }
+    return 'user_wishlist_$_currentUserId';
+  }
+
+  Future<void> initForUser(String? userId) async {
+    _wishlist.clear();
+    _currentUserId = userId;
+    await loadFromStorage();
     notifyListeners();
   }
 
