@@ -3,7 +3,11 @@ import 'package:vego/core/models/product_model.dart';
 
 /// Repository for product-related data operations
 class ProductRepository {
-  final SupabaseClient _client = Supabase.instance.client;
+  late final SupabaseClient _client;
+
+  ProductRepository({SupabaseClient? client}) {
+    _client = client ?? Supabase.instance.client;
+  }
 
   /// Default page size for pagination
   static const int defaultPageSize = 10;
@@ -89,6 +93,37 @@ class ProductRepository {
         .select()
         .ilike('name', '%$query%')
         .order('name');
+
+    return (response as List).map((json) => Product.fromJson(json)).toList();
+  }
+
+  /// Search products by color (simulating inferred color logic)
+  Future<List<Product>> searchProductsByColor(String color) async {
+    String filter;
+    switch (color) {
+      case 'Red':
+        filter =
+            'name.ilike.%red%,name.ilike.%tomato%,name.ilike.%apple%,name.ilike.%strawberry%';
+        break;
+      case 'Green':
+        filter =
+            'name.ilike.%green%,name.ilike.%spinach%,name.ilike.%broccoli%,name.ilike.%cucumber%';
+        break;
+      case 'Orange':
+        filter =
+            'name.ilike.%orange%,name.ilike.%carrot%,name.ilike.%banana%';
+        break;
+      case 'Blue':
+        filter = 'name.ilike.%blue%,name.ilike.%berry%';
+        break;
+      case 'Yellow':
+        filter = 'name.ilike.%yellow%,name.ilike.%corn%';
+        break;
+      default:
+        return searchProducts(color);
+    }
+
+    final response = await _client.from('products').select().or(filter);
 
     return (response as List).map((json) => Product.fromJson(json)).toList();
   }
