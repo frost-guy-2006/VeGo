@@ -95,11 +95,18 @@ class Order {
             (json['items'] as List).map((e) => OrderItem.fromJson(e)).toList(),
         totalAmount: (json['totalAmount'] as num).toDouble(),
         deliveryFee: (json['deliveryFee'] as num?)?.toDouble() ?? 0.0,
-        status: OrderStatus.values[json['status'] as int],
+        status: _parseStatus(json['status'] as int),
         createdAt: DateTime.parse(json['createdAt']),
         deliveredAt: json['deliveredAt'] != null
             ? DateTime.parse(json['deliveredAt'])
             : null,
         deliveryAddress: json['deliveryAddress'],
       );
+
+  static OrderStatus _parseStatus(int index) {
+    if (index >= 0 && index < OrderStatus.values.length) {
+      return OrderStatus.values[index];
+    }
+    return OrderStatus.pending;
+  }
 }
