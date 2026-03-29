@@ -3,7 +3,10 @@ import 'package:vego/core/models/product_model.dart';
 
 /// Repository for product-related data operations
 class ProductRepository {
-  final SupabaseClient _client = Supabase.instance.client;
+  final SupabaseClient _client;
+
+  ProductRepository({SupabaseClient? client})
+      : _client = client ?? Supabase.instance.client;
 
   /// Default page size for pagination
   static const int defaultPageSize = 10;
@@ -88,6 +91,37 @@ class ProductRepository {
         .from('products')
         .select()
         .ilike('name', '%$query%')
+        .order('name');
+
+    return (response as List).map((json) => Product.fromJson(json)).toList();
+  }
+
+  /// Search products by inferred color (server-side optimization)
+  Future<List<Product>> searchProductsByColor(String color) async {
+    final lowerColor = color.toLowerCase();
+    List<String> keywords = [];
+
+    // Mapping must match Product.fromJson logic
+    if (lowerColor == 'red') {
+      keywords = ['red', 'tomato', 'apple', 'strawberry'];
+    } else if (lowerColor == 'green') {
+      keywords = ['green', 'spinach', 'broccoli', 'cucumber'];
+    } else if (lowerColor == 'orange') {
+      keywords = ['orange', 'carrot', 'banana'];
+    } else {
+      // Sanitize input for use in OR query construction
+      // Allow only alphanumeric characters and spaces to prevent query injection
+      final sanitized = lowerColor.replaceAll(RegExp(r'[^\w\s]'), '');
+      if (sanitized.isEmpty) return [];
+      keywords = [sanitized];
+    }
+
+    final orQuery = keywords.map((k) => 'name.ilike.%$k%').join(',');
+
+    final response = await _client
+        .from('products')
+        .select()
+        .or(orQuery)
         .order('name');
 
     return (response as List).map((json) => Product.fromJson(json)).toList();
