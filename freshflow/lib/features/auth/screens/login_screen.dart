@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:vego/core/providers/auth_provider.dart';
+import 'package:vego/core/utils/input_validators.dart';
 import 'package:vego/features/auth/screens/otp_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -31,15 +33,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _signInPhone() async {
     final phone = _phoneController.text.trim();
-    if (phone.isEmpty) return;
     final cleanedPhone = phone.replaceAll(RegExp(r'\s+'), '');
 
-    // Validation
-    final phoneRegExp = RegExp(r'^[0-9]{10}$'); // Strict 10 digits
-    if (!phoneRegExp.hasMatch(cleanedPhone)) {
+    final error = InputValidators.validatePhone(cleanedPhone);
+    if (error != null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter a valid phone number')),
+          SnackBar(content: Text(error)),
         );
       }
       return;
@@ -60,10 +60,16 @@ class _LoginScreenState extends State<LoginScreen> {
               builder: (_) => OtpScreen(phoneNumber: formattedPhone)),
         );
       }
+    } on AuthException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message)),
+        );
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
+          const SnackBar(content: Text('Sign in failed')),
         );
       }
     }
@@ -73,10 +79,23 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
-    if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter email and password')),
-      );
+    final emailError = InputValidators.validateEmail(email);
+    if (emailError != null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(emailError)),
+        );
+      }
+      return;
+    }
+
+    final passwordError = InputValidators.validatePasswordLogin(password);
+    if (passwordError != null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(passwordError)),
+        );
+      }
       return;
     }
 
@@ -84,10 +103,16 @@ class _LoginScreenState extends State<LoginScreen> {
       await context.read<AuthProvider>().signInWithEmail(email, password);
       // AuthProvider listens to auth state changes, so navigation might be handled by wrapper
       // But for explicit feedback/navigation:
+    } on AuthException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message)),
+        );
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
+          const SnackBar(content: Text('Sign in failed')),
         );
       }
     }
@@ -97,10 +122,23 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
-    if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter email and password')),
-      );
+    final emailError = InputValidators.validateEmail(email);
+    if (emailError != null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(emailError)),
+        );
+      }
+      return;
+    }
+
+    final passwordError = InputValidators.validatePassword(password);
+    if (passwordError != null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(passwordError)),
+        );
+      }
       return;
     }
 
@@ -113,10 +151,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   Text('Sign up successful! Please check your email/login.')),
         );
       }
+    } on AuthException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message)),
+        );
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
+          const SnackBar(content: Text('Sign up failed')),
         );
       }
     }
