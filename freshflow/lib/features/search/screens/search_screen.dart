@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:vego/core/models/product_model.dart';
 import 'package:vego/core/repositories/product_repository.dart';
@@ -8,7 +9,8 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class SearchScreen extends StatefulWidget {
   final String? initialQuery;
-  const SearchScreen({super.key, this.initialQuery});
+  final ProductRepository? productRepository;
+  const SearchScreen({super.key, this.initialQuery, this.productRepository});
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -16,67 +18,106 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
-  final ProductRepository _productRepository = ProductRepository();
+  late final ProductRepository _productRepository;
   List<Product> _searchResults = [];
   bool _isLoading = false;
   String? _activeColorFilter; // "Red", "Blue", etc.
+  Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
+    _productRepository = widget.productRepository ?? ProductRepository();
     if (widget.initialQuery != null) {
       _searchController.text = widget.initialQuery!;
-      _performSearch(widget.initialQuery!);
+      _performSearch(widget.initialQuery!, debounce: false);
     }
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
   }
 
   // Visual Search Logic:
   // If query matches a color name, switch to "Visual Mode"
-  void _performSearch(String query) async {
-    if (query.isEmpty) {
-      setState(() {
-        _searchResults = [];
-        _activeColorFilter = null;
+  void _performSearch(String query, {bool debounce = true}) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+    if (debounce) {
+      _debounce = Timer(const Duration(milliseconds: 500), () {
+        _executeSearch(query);
       });
+    } else {
+      _executeSearch(query);
+    }
+  }
+
+  void _executeSearch(String query) async {
+    if (query.isEmpty) {
+      if (mounted) {
+        setState(() {
+          _searchResults = [];
+          _activeColorFilter = null;
+        });
+      }
       return;
     }
 
-    setState(() => _isLoading = true);
-
     // Check for color keywords
     final lowerQuery = query.toLowerCase();
-    if (['red', 'blue', 'green', 'orange', 'yellow'].contains(lowerQuery)) {
-      _activeColorFilter = lowerQuery;
-      // Capitalize first letter for display
-      _activeColorFilter =
-          lowerQuery[0].toUpperCase() + lowerQuery.substring(1);
-    } else {
-      _activeColorFilter = null;
+    String? newActiveColorFilter;
+
+    // Dynamically check against supported colors in Product model
+    // This ensures we only trigger visual search for colors we can actually filter by
+    final supportedColors =
+        Product.colorKeywords.keys.map((k) => k.toLowerCase()).toList();
+
+    if (supportedColors.contains(lowerQuery)) {
+      // Match the exact key casing from the map (e.g., 'Red')
+      newActiveColorFilter = Product.colorKeywords.keys.firstWhere(
+        (k) => k.toLowerCase() == lowerQuery,
+      );
+    }
+
+    if (mounted) {
+      setState(() {
+        _isLoading = true;
+        _activeColorFilter = newActiveColorFilter;
+      });
     }
 
     try {
-      // Fetch all products using repository
-      final allProducts = await _productRepository.fetchProducts();
-
-      List<Product> filtered;
-      if (_activeColorFilter != null) {
-        // Filter by inferred color
-        filtered =
-            allProducts.where((p) => p.color == _activeColorFilter).toList();
-      } else {
-        // Filter by name
-        filtered = allProducts
-            .where((p) => p.name.toLowerCase().contains(lowerQuery))
+      List<Product> results;
+      if (newActiveColorFilter != null) {
+        // Optimized: Server-side search by color
+        final fetched = await _productRepository
+            .searchProductsByColor(newActiveColorFilter);
+        // Filter by inferred color client-side for strict consistency
+        results = fetched
+            .where((p) => p.color == newActiveColorFilter)
             .toList();
+      } else {
+        // Optimized: Server-side search by text
+        results = await _productRepository.searchProducts(query);
       }
 
-      setState(() {
-        _searchResults = filtered;
-        _isLoading = false;
-      });
+      // Check if the query is still relevant (optional, but good practice)
+      // Since we updated UI state based on this query before await,
+      // and assuming debounce handles most rapid firing,
+      // we just check mounted.
+
+      if (mounted) {
+        setState(() {
+          _searchResults = results;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
       debugPrint('Search error: $e');
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
