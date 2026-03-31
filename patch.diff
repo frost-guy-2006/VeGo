@@ -1,0 +1,49 @@
+--- freshflow/lib/core/models/product_model.dart
++++ freshflow/lib/core/models/product_model.dart
+@@ -10,6 +10,13 @@
+   final String? color; // inferred from name for demo
+   final String? category; // product category (Fruits, Vegetables, etc.)
+
++  static const Map<String, List<String>> colorKeywords = {
++    'Red': ['red', 'tomato', 'apple', 'strawberry'],
++    'Green': ['green', 'spinach', 'broccoli', 'cucumber'],
++    'Orange': ['orange', 'carrot', 'banana'],
++    'Yellow': ['yellow', 'lemon', 'corn'],
++    'Blue': ['blue', 'blueberry'],
++  };
++
+   Product({
+     required this.id,
+     required this.name,
+@@ -37,21 +44,14 @@
+     final name = json['name'] as String;
+     // Mock Visual Search Tagging logic
+     String? inferredColor;
+-    if (name.toLowerCase().contains('red') ||
+-        name.toLowerCase().contains('tomato') ||
+-        name.toLowerCase().contains('apple') ||
+-        name.toLowerCase().contains('strawberry')) {
+-      inferredColor = 'Red';
+-    } else if (name.toLowerCase().contains('green') ||
+-        name.toLowerCase().contains('spinach') ||
+-        name.toLowerCase().contains('broccoli') ||
+-        name.toLowerCase().contains('cucumber')) {
+-      inferredColor = 'Green';
+-    } else if (name.toLowerCase().contains('orange') ||
+-        name.toLowerCase().contains('carrot') ||
+-        name.toLowerCase().contains('banana')) {
+-      // Banana is yellow/orange-ish in context or we can add Yellow
+-      inferredColor = 'Orange';
++    final lowerName = name.toLowerCase();
++
++    for (final entry in colorKeywords.entries) {
++      for (final keyword in entry.value) {
++        if (lowerName.contains(keyword)) {
++          inferredColor = entry.key;
++          break;
++        }
++      }
++      if (inferredColor != null) break;
+     }
+
+     // For "Blue Packet" demo, let's arbitrarily tag something as Blue if it doesn't match above or if we add specific items later.
