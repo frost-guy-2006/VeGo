@@ -2,9 +2,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:vego/core/providers/auth_provider.dart';
 import 'package:vego/core/theme/app_colors.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:vego/features/home/screens/home_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:vego/core/utils/input_validators.dart';
 import 'package:vego/core/widgets/liquid_wave_background.dart';
 import 'package:vego/core/widgets/backgrounds.dart';
 
@@ -54,7 +56,16 @@ class _OtpScreenState extends State<OtpScreen> {
 
   Future<void> _verify() async {
     final otp = _otpController.text.trim();
-    if (otp.length != 6) return;
+
+    final errorMsg = InputValidators.validateOtp(otp);
+    if (errorMsg != null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMsg)),
+        );
+      }
+      return;
+    }
 
     try {
       await context.read<AuthProvider>().verifyOtp(widget.phoneNumber, otp);
@@ -64,10 +75,16 @@ class _OtpScreenState extends State<OtpScreen> {
           (route) => false,
         );
       }
+    } on AuthException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message)),
+        );
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Invalid OTP: ${e.toString()}')),
+          const SnackBar(content: Text('Sign in failed')),
         );
       }
     }
