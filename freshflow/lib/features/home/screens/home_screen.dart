@@ -581,6 +581,31 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   Future<void> _seedData() async {
+    // Show loading indicator
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text('Seeding database...',
+                  style: GoogleFonts.plusJakartaSans()),
+            ],
+          ),
+          backgroundColor: AppColors.primary,
+          duration: const Duration(seconds: 10),
+        ),
+      );
+    }
+
     try {
       // Data from seed_data.sql with categories
       final data = [
@@ -823,8 +848,35 @@ class _HomeContentState extends State<HomeContent> {
 
       await Supabase.instance.client.from('products').upsert(data);
       debugPrint('Database seeded successfully!');
+
+      // Dismiss loading snackbar and show success
+      if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('✅ Database seeded! Loading products...',
+                style: GoogleFonts.plusJakartaSans()),
+            backgroundColor: Colors.green[700],
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+
+      // Reload products after seeding
+      await _onRefresh();
     } catch (e) {
       debugPrint('Error seeding database: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('❌ Seeding failed: $e',
+                style: GoogleFonts.plusJakartaSans()),
+            backgroundColor: Colors.red[700],
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
     }
   }
 }
