@@ -82,6 +82,33 @@ class ProductRepository {
     return Product.fromJson(response);
   }
 
+  /// Search products by color
+  Future<List<Product>> searchProductsByColor(String color) async {
+    final Map<String, List<String>> colorKeywords = {
+      'red': ['tomato', 'apple', 'strawberry'],
+      'green': ['spinach', 'broccoli', 'cucumber'],
+      'orange': ['carrot', 'banana', 'orange'],
+    };
+
+    final lowerColor = color.toLowerCase();
+
+    // Fallback to regular search if color is not mapped
+    if (!colorKeywords.containsKey(lowerColor)) {
+      return searchProducts(color);
+    }
+
+    final keywords = colorKeywords[lowerColor]!;
+    final orFilter = keywords.map((kw) => 'name.ilike.%$kw%').join(',');
+
+    final response = await _client
+        .from('products')
+        .select()
+        .or(orFilter)
+        .order('name');
+
+    return (response as List).map((json) => Product.fromJson(json)).toList();
+  }
+
   /// Search products by name
   Future<List<Product>> searchProducts(String query) async {
     final response = await _client
