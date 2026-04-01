@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:vego/core/models/product_model.dart';
 import 'package:vego/core/repositories/product_repository.dart';
@@ -8,7 +9,13 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class SearchScreen extends StatefulWidget {
   final String? initialQuery;
-  const SearchScreen({super.key, this.initialQuery});
+  final ProductRepository? productRepository;
+
+  const SearchScreen({
+    super.key,
+    this.initialQuery,
+    this.productRepository,
+  });
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -16,7 +23,9 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
-  final ProductRepository _productRepository = ProductRepository();
+  late final ProductRepository _productRepository;
+  Timer? _debounce;
+
   List<Product> _searchResults = [];
   bool _isLoading = false;
   String? _activeColorFilter; // "Red", "Blue", etc.
@@ -24,15 +33,33 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     super.initState();
+    _productRepository = widget.productRepository ?? ProductRepository();
+
     if (widget.initialQuery != null) {
       _searchController.text = widget.initialQuery!;
-      _performSearch(widget.initialQuery!);
+      _executeSearch(widget.initialQuery!);
     }
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  // Debounced search trigger
+  void _performSearch(String query) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      if (mounted) _executeSearch(query);
+    });
   }
 
   // Visual Search Logic:
   // If query matches a color name, switch to "Visual Mode"
-  void _performSearch(String query) async {
+  Future<void> _executeSearch(String query) async {
     if (query.isEmpty) {
       setState(() {
         _searchResults = [];
@@ -45,38 +72,49 @@ class _SearchScreenState extends State<SearchScreen> {
 
     // Check for color keywords
     final lowerQuery = query.toLowerCase();
-    if (['red', 'blue', 'green', 'orange', 'yellow'].contains(lowerQuery)) {
-      _activeColorFilter = lowerQuery;
+    String? colorFilter;
+
+    if (Product.colorKeywords.keys
+        .map((k) => k.toLowerCase())
+        .contains(lowerQuery)) {
       // Capitalize first letter for display
-      _activeColorFilter =
-          lowerQuery[0].toUpperCase() + lowerQuery.substring(1);
+      colorFilter = lowerQuery[0].toUpperCase() + lowerQuery.substring(1);
     } else {
-      _activeColorFilter = null;
+      // Fallback for hardcoded color checks if any remain outside product model
+      if (['red', 'blue', 'green', 'orange', 'yellow'].contains(lowerQuery)) {
+        colorFilter = lowerQuery[0].toUpperCase() + lowerQuery.substring(1);
+      }
     }
 
-    try {
-      // Fetch all products using repository
-      final allProducts = await _productRepository.fetchProducts();
+    // Update UI for visual search
+    setState(() {
+      _activeColorFilter = colorFilter;
+    });
 
-      List<Product> filtered;
-      if (_activeColorFilter != null) {
-        // Filter by inferred color
-        filtered =
-            allProducts.where((p) => p.color == _activeColorFilter).toList();
+    try {
+      List<Product> results;
+      if (colorFilter != null) {
+        // Server-side filter by color (keywords)
+        results = await _productRepository.searchProductsByColor(colorFilter);
+        // Client-side verification to respect precedence (e.g. Red Spinach -> Red, not Green)
+        results = results.where((p) => p.color == colorFilter).toList();
       } else {
-        // Filter by name
-        filtered = allProducts
-            .where((p) => p.name.toLowerCase().contains(lowerQuery))
-            .toList();
+        // Server-side filter by name
+        results = await _productRepository.searchProducts(query);
       }
 
+      if (!mounted) return;
+
+      // Avoid race conditions: ensure query matches current input
+      if (_searchController.text != query) return;
+
       setState(() {
-        _searchResults = filtered;
+        _searchResults = results;
         _isLoading = false;
       });
     } catch (e) {
       debugPrint('Search error: $e');
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
