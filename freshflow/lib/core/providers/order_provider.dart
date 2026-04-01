@@ -7,10 +7,24 @@ import 'dart:convert';
 /// Provider for managing order history
 class OrderProvider extends ChangeNotifier {
   final List<Order> _orders = [];
-  static const String _storageKey = 'order_history';
+  String? _currentUserId;
 
   List<Order> get orders => List.unmodifiable(_orders);
   int get orderCount => _orders.length;
+
+  String get _storageKey {
+    return _currentUserId == null
+        ? 'order_history_anonymous'
+        : 'order_history_$_currentUserId';
+  }
+
+  /// Initialize provider for a specific user
+  Future<void> initForUser(String? userId) async {
+    _orders.clear();
+    _currentUserId = userId;
+    await loadFromStorage();
+    notifyListeners();
+  }
 
   /// Get orders sorted by most recent first
   List<Order> get recentOrders {
@@ -58,7 +72,7 @@ class OrderProvider extends ChangeNotifier {
     );
 
     _orders.add(order);
-    await _saveToStorage();
+    await _saveToStorage(List.from(_orders), _currentUserId);
     notifyListeners();
 
     return order;
@@ -86,7 +100,7 @@ class OrderProvider extends ChangeNotifier {
         deliveryAddress: oldOrder.deliveryAddress,
       );
       _orders[index] = updatedOrder;
-      await _saveToStorage();
+      await _saveToStorage(List.from(_orders), _currentUserId);
       notifyListeners();
     }
   }
@@ -109,11 +123,14 @@ class OrderProvider extends ChangeNotifier {
   }
 
   /// Save orders to persistent storage
-  Future<void> _saveToStorage() async {
+  Future<void> _saveToStorage(List<Order> orders, String? userId) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final ordersJson = json.encode(_orders.map((o) => o.toJson()).toList());
-      await prefs.setString(_storageKey, ordersJson);
+      final ordersJson = json.encode(orders.map((o) => o.toJson()).toList());
+      final key = userId == null
+          ? 'order_history_anonymous'
+          : 'order_history_$userId';
+      await prefs.setString(key, ordersJson);
     } catch (e) {
       debugPrint('Error saving orders to storage: $e');
     }
@@ -122,7 +139,7 @@ class OrderProvider extends ChangeNotifier {
   /// Clear all order history
   Future<void> clearHistory() async {
     _orders.clear();
-    await _saveToStorage();
+    await _saveToStorage(List.from(_orders), _currentUserId);
     notifyListeners();
   }
 

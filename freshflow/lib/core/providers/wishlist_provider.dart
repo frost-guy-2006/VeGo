@@ -6,10 +6,24 @@ import 'dart:convert';
 /// Provider for managing user's wishlist/favorites
 class WishlistProvider extends ChangeNotifier {
   final List<Product> _wishlist = [];
-  static const String _storageKey = 'user_wishlist';
+  String? _currentUserId;
 
   List<Product> get wishlist => List.unmodifiable(_wishlist);
   int get itemCount => _wishlist.length;
+
+  String get _storageKey {
+    return _currentUserId == null
+        ? 'user_wishlist_anonymous'
+        : 'user_wishlist_$_currentUserId';
+  }
+
+  /// Initialize provider for a specific user
+  Future<void> initForUser(String? userId) async {
+    _wishlist.clear();
+    _currentUserId = userId;
+    await loadFromStorage();
+    notifyListeners();
+  }
 
   /// Check if a product is in the wishlist
   bool isInWishlist(String productId) {
@@ -23,7 +37,7 @@ class WishlistProvider extends ChangeNotifier {
     } else {
       _wishlist.add(product);
     }
-    _saveToStorage();
+    _saveToStorage(List.from(_wishlist), _currentUserId);
     notifyListeners();
   }
 
@@ -31,7 +45,7 @@ class WishlistProvider extends ChangeNotifier {
   void addToWishlist(Product product) {
     if (!isInWishlist(product.id)) {
       _wishlist.add(product);
-      _saveToStorage();
+      _saveToStorage(List.from(_wishlist), _currentUserId);
       notifyListeners();
     }
   }
@@ -39,14 +53,14 @@ class WishlistProvider extends ChangeNotifier {
   /// Remove a product from wishlist
   void removeFromWishlist(String productId) {
     _wishlist.removeWhere((p) => p.id == productId);
-    _saveToStorage();
+    _saveToStorage(List.from(_wishlist), _currentUserId);
     notifyListeners();
   }
 
   /// Clear entirewishlist
   void clearWishlist() {
     _wishlist.clear();
-    _saveToStorage();
+    _saveToStorage(List.from(_wishlist), _currentUserId);
     notifyListeners();
   }
 
@@ -68,12 +82,13 @@ class WishlistProvider extends ChangeNotifier {
   }
 
   /// Save wishlist to persistent storage
-  Future<void> _saveToStorage() async {
+  Future<void> _saveToStorage(List<Product> wishlist, String? userId) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final wishlistJson =
-          json.encode(_wishlist.map((p) => p.toJson()).toList());
-      await prefs.setString(_storageKey, wishlistJson);
+          json.encode(wishlist.map((p) => p.toJson()).toList());
+      final key = userId == null ? 'user_wishlist_anonymous' : 'user_wishlist_$userId';
+      await prefs.setString(key, wishlistJson);
     } catch (e) {
       debugPrint('Error saving wishlist to storage: $e');
     }
