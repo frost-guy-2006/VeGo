@@ -12,6 +12,9 @@ class Env {
   /// Safe for client-side use - RLS policies restrict access.
   static String get supabaseAnonKey => dotenv.env['SUPABASE_ANON_KEY'] ?? '';
 
+  /// Sentry DSN for crash reporting.
+  static String get sentryDsn => dotenv.env['SENTRY_DSN'] ?? '';
+
   /// Check if environment is properly loaded.
   static bool get isLoaded =>
       supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;

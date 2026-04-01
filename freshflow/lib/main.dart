@@ -12,7 +12,7 @@ import 'package:vego/features/home/screens/home_screen.dart';
 
 Future<void> main() async {
   await AppInitializer.initialize();
-  runApp(const VeGoApp());
+  GlobalErrorHandler.runAppWithErrorHandling(const VeGoApp());
 }
 
 class VeGoApp extends StatelessWidget {
