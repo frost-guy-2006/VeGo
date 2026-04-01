@@ -3,7 +3,10 @@ import 'package:vego/core/models/product_model.dart';
 
 /// Repository for product-related data operations
 class ProductRepository {
-  final SupabaseClient _client = Supabase.instance.client;
+  final SupabaseClient _client;
+
+  ProductRepository({SupabaseClient? client})
+      : _client = client ?? Supabase.instance.client;
 
   /// Default page size for pagination
   static const int defaultPageSize = 10;
@@ -89,6 +92,26 @@ class ProductRepository {
         .select()
         .ilike('name', '%$query%')
         .order('name');
+
+    return (response as List).map((json) => Product.fromJson(json)).toList();
+  }
+
+  /// Search products by inferred color keywords
+  Future<List<Product>> searchProductsByColor(String color) async {
+    // Find keywords for the specified color (e.g. "Red" -> ["red", "tomato", ...])
+    final keywords = Product.colorKeywords[color];
+
+    if (keywords == null || keywords.isEmpty) {
+      return searchProducts(
+          color); // Fallback to normal search if color not mapped
+    }
+
+    // Build the OR query for ilike
+    // Format: 'name.ilike.%keyword1%,name.ilike.%keyword2%,...'
+    final orFilters = keywords.map((kw) => 'name.ilike.%$kw%').join(',');
+
+    final response =
+        await _client.from('products').select().or(orFilters).order('name');
 
     return (response as List).map((json) => Product.fromJson(json)).toList();
   }
