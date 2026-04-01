@@ -3,7 +3,10 @@ import 'package:vego/core/models/product_model.dart';
 
 /// Repository for product-related data operations
 class ProductRepository {
-  final SupabaseClient _client = Supabase.instance.client;
+  final SupabaseClient _client;
+
+  ProductRepository({SupabaseClient? client})
+      : _client = client ?? Supabase.instance.client;
 
   /// Default page size for pagination
   static const int defaultPageSize = 10;
@@ -91,5 +94,31 @@ class ProductRepository {
         .order('name');
 
     return (response as List).map((json) => Product.fromJson(json)).toList();
+  }
+
+  /// Search products by color (visual search)
+  Future<List<Product>> searchProductsByColor(String color) async {
+    // Check if the requested color is a known category (case-insensitive)
+    final matchedColorKey = Product.colorKeywords.keys.cast<String?>().firstWhere(
+      (k) => k?.toLowerCase() == color.toLowerCase(),
+      orElse: () => null,
+    );
+
+    if (matchedColorKey != null) {
+      final keywords = Product.colorKeywords[matchedColorKey]!;
+      // Create an OR filter for all keywords associated with this color
+      final orFilter = keywords.map((k) => 'name.ilike.%$k%').join(',');
+
+      final response = await _client
+          .from('products')
+          .select()
+          .or(orFilter)
+          .order('name');
+
+      return (response as List).map((json) => Product.fromJson(json)).toList();
+    } else {
+      // Fallback to regular search if color is not recognized
+      return searchProducts(color);
+    }
   }
 }
