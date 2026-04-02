@@ -1,0 +1,34 @@
+import 'dart:ui';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:vego/features/home/widgets/rain_mode_overlay.dart';
+
+class MockCanvas extends Fake implements Canvas {
+  @override
+  void drawLine(Offset p1, Offset p2, Paint paint) {}
+}
+
+void main() {
+  test('RainPainter benchmark', () {
+    final drops = List.generate(
+      10000, // Make it big enough to measure
+      (index) => RainDrop(x: 0.5, y: 1.1, speed: 1.0, length: 0.1),
+    );
+
+    final painter = RainPainter(drops: drops, progress: 0.5);
+    final canvas = MockCanvas();
+    final size = const Size(100, 100);
+
+    // Warmup
+    for (int i = 0; i < 100; i++) {
+      painter.paint(canvas, size);
+    }
+
+    final stopwatch = Stopwatch()..start();
+    for (int i = 0; i < 1000; i++) {
+      painter.paint(canvas, size);
+    }
+    stopwatch.stop();
+
+    print('RainPainter benchmark: ${stopwatch.elapsedMilliseconds} ms');
+  });
+}
