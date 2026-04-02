@@ -25,7 +25,10 @@ class AuthProvider extends ChangeNotifier {
         phone: phoneNumber,
       );
     } catch (e) {
-      rethrow;
+      if (e is AuthException) {
+        throw Exception(e.message);
+      }
+      throw Exception('Authentication failed');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -43,7 +46,10 @@ class AuthProvider extends ChangeNotifier {
         phone: phoneNumber,
       );
     } catch (e) {
-      rethrow;
+      if (e is AuthException) {
+        throw Exception(e.message);
+      }
+      throw Exception('Verification failed');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -60,7 +66,10 @@ class AuthProvider extends ChangeNotifier {
         password: password,
       );
     } catch (e) {
-      rethrow;
+      if (e is AuthException) {
+        throw Exception(e.message);
+      }
+      throw Exception('Sign in failed');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -77,7 +86,10 @@ class AuthProvider extends ChangeNotifier {
         password: password,
       );
     } catch (e) {
-      rethrow;
+      if (e is AuthException) {
+        throw Exception(e.message);
+      }
+      throw Exception('Sign up failed');
     } finally {
       _isLoading = false;
       notifyListeners();

@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:vego/core/widgets/liquid_wave_background.dart';
 import 'package:vego/core/widgets/backgrounds.dart';
+import 'package:vego/core/utils/input_validators.dart';
 
 class OtpScreen extends StatefulWidget {
   final String phoneNumber;
@@ -54,7 +55,16 @@ class _OtpScreenState extends State<OtpScreen> {
 
   Future<void> _verify() async {
     final otp = _otpController.text.trim();
-    if (otp.length != 6) return;
+
+    final error = InputValidators.validateOtp(otp);
+    if (error != null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error)),
+        );
+      }
+      return;
+    }
 
     try {
       await context.read<AuthProvider>().verifyOtp(widget.phoneNumber, otp);
@@ -67,7 +77,7 @@ class _OtpScreenState extends State<OtpScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Invalid OTP: ${e.toString()}')),
+          SnackBar(content: Text(e.toString().replaceAll('Exception: ', ''))),
         );
       }
     }
