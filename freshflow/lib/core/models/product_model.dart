@@ -1,4 +1,16 @@
 class Product {
+  static const Map<String, List<String>> colorKeywords = {
+    'Red': ['red', 'tomato', 'apple', 'strawberry'],
+    'Green': ['green', 'spinach', 'broccoli', 'cucumber'],
+    'Orange': ['orange', 'carrot', 'banana'],
+    'Yellow': ['yellow', 'lemon'],
+    'Blue': ['blue', 'berry']
+  };
+
+  static final Map<String, List<RegExp>> _colorKeywordRegexes =
+      colorKeywords.map((key, value) => MapEntry(
+          key, value.map((kw) => RegExp(kw, caseSensitive: false)).toList()));
+
   final String id;
   final String name;
   final String imageUrl;
@@ -42,27 +54,12 @@ class Product {
     final name = json['name'] as String;
     // Mock Visual Search Tagging logic
     String? inferredColor;
-    if (name.toLowerCase().contains('red') ||
-        name.toLowerCase().contains('tomato') ||
-        name.toLowerCase().contains('apple') ||
-        name.toLowerCase().contains('strawberry')) {
-      inferredColor = 'Red';
-    } else if (name.toLowerCase().contains('green') ||
-        name.toLowerCase().contains('spinach') ||
-        name.toLowerCase().contains('broccoli') ||
-        name.toLowerCase().contains('cucumber')) {
-      inferredColor = 'Green';
-    } else if (name.toLowerCase().contains('orange') ||
-        name.toLowerCase().contains('carrot') ||
-        name.toLowerCase().contains('banana')) {
-      // Banana is yellow/orange-ish in context or we can add Yellow
-      inferredColor = 'Orange';
+    for (var entry in _colorKeywordRegexes.entries) {
+      if (entry.value.any((regex) => regex.hasMatch(name))) {
+        inferredColor = entry.key;
+        break;
+      }
     }
-
-    // For "Blue Packet" demo, let's arbitrarily tag something as Blue if it doesn't match above or if we add specific items later.
-    // Let's say "Blue" search finds nothing for now unless we add chips, OR we can map "Cauliflower" to "Blue" just to show the feature working if user searches "Blue".
-    // Better yet, let's map 'Berry' or generic items.
-    // Actually, let's just leave it natural. If I search "Red" I should see Red items.
 
     return Product(
       id: json['id'],
