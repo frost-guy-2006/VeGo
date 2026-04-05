@@ -92,4 +92,23 @@ class ProductRepository {
 
     return (response as List).map((json) => Product.fromJson(json)).toList();
   }
+
+  /// Search products by color keywords
+  Future<List<Product>> searchProductsByColor(String color) async {
+    final keywords = Product.colorKeywords[color];
+
+    if (keywords != null && keywords.isNotEmpty) {
+      final orFilter = keywords.map((kw) => 'name.ilike.%$kw%').join(',');
+      final response = await _client
+          .from('products')
+          .select()
+          .or(orFilter)
+          .order('name');
+
+      return (response as List).map((json) => Product.fromJson(json)).toList();
+    }
+
+    // Fallback to searching by color name directly if no keywords mapped
+    return searchProducts(color);
+  }
 }
