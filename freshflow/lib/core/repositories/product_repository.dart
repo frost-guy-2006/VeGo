@@ -3,7 +3,11 @@ import 'package:vego/core/models/product_model.dart';
 
 /// Repository for product-related data operations
 class ProductRepository {
-  final SupabaseClient _client = Supabase.instance.client;
+  late final SupabaseClient _client;
+
+  ProductRepository({SupabaseClient? client}) {
+    _client = client ?? Supabase.instance.client;
+  }
 
   /// Default page size for pagination
   static const int defaultPageSize = 10;
@@ -88,6 +92,31 @@ class ProductRepository {
         .from('products')
         .select()
         .ilike('name', '%$query%')
+        .order('name');
+
+    return (response as List).map((json) => Product.fromJson(json)).toList();
+  }
+
+  /// Search products by visual color tag
+  Future<List<Product>> searchProductsByColor(String color) async {
+    // Map colors to related keywords as defined in Product.fromJson
+    final keywords = <String, List<String>>{
+      'Red': ['red', 'tomato', 'apple', 'strawberry'],
+      'Green': ['green', 'spinach', 'broccoli', 'cucumber'],
+      'Orange': ['orange', 'carrot', 'banana'],
+      'Blue': ['blue'], // No specific items mapped yet
+    };
+
+    final targetKeywords = keywords[color] ?? [color.toLowerCase()];
+
+    // Construct OR query for name matching any keyword
+    final orClause =
+        targetKeywords.map((k) => 'name.ilike.%$k%').join(',');
+
+    final response = await _client
+        .from('products')
+        .select()
+        .or(orClause)
         .order('name');
 
     return (response as List).map((json) => Product.fromJson(json)).toList();
