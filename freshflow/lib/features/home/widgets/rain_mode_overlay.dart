@@ -132,6 +132,8 @@ class RainPainter extends CustomPainter {
 
   RainPainter({required this.drops, required this.progress});
 
+  static final Random _random = Random();
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
@@ -150,7 +152,7 @@ class RainPainter extends CustomPainter {
       drop.y += drop.speed * 0.02; // Move down
       if (drop.y > 1.0) {
         drop.y = -drop.length; // Reset to top
-        drop.x = Random().nextDouble(); // Random new X
+        drop.x = _random.nextDouble(); // Random new X
       }
 
       final startX = drop.x * size.width;
