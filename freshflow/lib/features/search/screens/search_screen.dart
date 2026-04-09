@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:vego/core/models/product_model.dart';
 import 'package:vego/core/repositories/product_repository.dart';
@@ -20,19 +21,38 @@ class _SearchScreenState extends State<SearchScreen> {
   List<Product> _searchResults = [];
   bool _isLoading = false;
   String? _activeColorFilter; // "Red", "Blue", etc.
+  Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
+    // Use post frame callback to avoid setState during build if called synchronously?
+    // Actually, initial query should probably be debounced or run immediately.
+    // Usually initial query is passed from another screen, so we want results immediately.
     if (widget.initialQuery != null) {
       _searchController.text = widget.initialQuery!;
+      // No debounce for initial query
       _performSearch(widget.initialQuery!);
     }
   }
 
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      _performSearch(query);
+    });
+  }
+
   // Visual Search Logic:
   // If query matches a color name, switch to "Visual Mode"
-  void _performSearch(String query) async {
+  Future<void> _performSearch(String query) async {
     if (query.isEmpty) {
       setState(() {
         _searchResults = [];
@@ -45,30 +65,36 @@ class _SearchScreenState extends State<SearchScreen> {
 
     // Check for color keywords
     final lowerQuery = query.toLowerCase();
-    if (['red', 'blue', 'green', 'orange', 'yellow'].contains(lowerQuery)) {
-      _activeColorFilter = lowerQuery;
-      // Capitalize first letter for display
-      _activeColorFilter =
-          lowerQuery[0].toUpperCase() + lowerQuery.substring(1);
+    String? matchedColor;
+
+    // Iterate over keys to find a match
+    for (var key in Product.colorKeywords.keys) {
+      if (key.toLowerCase() == lowerQuery) {
+        matchedColor = key;
+        break;
+      }
+    }
+
+    if (matchedColor != null) {
+      _activeColorFilter = matchedColor;
     } else {
       _activeColorFilter = null;
     }
 
     try {
-      // Fetch all products using repository
-      final allProducts = await _productRepository.fetchProducts();
-
       List<Product> filtered;
       if (_activeColorFilter != null) {
-        // Filter by inferred color
-        filtered =
-            allProducts.where((p) => p.color == _activeColorFilter).toList();
+        // Filter by inferred color using server-side search
+        filtered = await _productRepository.searchProductsByColor(_activeColorFilter!);
       } else {
-        // Filter by name
-        filtered = allProducts
-            .where((p) => p.name.toLowerCase().contains(lowerQuery))
-            .toList();
+        // Filter by name using server-side search
+        filtered = await _productRepository.searchProducts(query);
       }
+
+      if (!mounted) return;
+
+      // Check if the query has changed while we were awaiting
+      if (_searchController.text != query) return;
 
       setState(() {
         _searchResults = filtered;
@@ -76,7 +102,9 @@ class _SearchScreenState extends State<SearchScreen> {
       });
     } catch (e) {
       debugPrint('Search error: $e');
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -110,10 +138,7 @@ class _SearchScreenState extends State<SearchScreen> {
             fontWeight: FontWeight.bold,
             color: context.textPrimary,
           ),
-          onChanged: (val) {
-            // Debounce could be added here
-            _performSearch(val);
-          },
+          onChanged: _onSearchChanged,
         ),
       ),
       body: Column(

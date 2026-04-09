@@ -11,6 +11,17 @@ class Product {
   final String? color; // inferred from name for demo
   final String? category; // product category (Fruits, Vegetables, etc.)
 
+  static const List<String> redKeywords = ['red', 'tomato', 'apple', 'strawberry'];
+  static const List<String> greenKeywords = ['green', 'spinach', 'broccoli', 'cucumber'];
+  static const List<String> orangeKeywords = ['orange', 'carrot', 'banana'];
+  static const Map<String, List<String>> colorKeywords = {
+    'Red': redKeywords,
+    'Green': greenKeywords,
+    'Orange': orangeKeywords,
+    'Blue': [],
+    'Yellow': [],
+  };
+
   Product({
     required this.id,
     required this.name,
@@ -42,19 +53,13 @@ class Product {
     final name = json['name'] as String;
     // Mock Visual Search Tagging logic
     String? inferredColor;
-    if (name.toLowerCase().contains('red') ||
-        name.toLowerCase().contains('tomato') ||
-        name.toLowerCase().contains('apple') ||
-        name.toLowerCase().contains('strawberry')) {
+    final lowerName = name.toLowerCase();
+
+    if (redKeywords.any((k) => lowerName.contains(k))) {
       inferredColor = 'Red';
-    } else if (name.toLowerCase().contains('green') ||
-        name.toLowerCase().contains('spinach') ||
-        name.toLowerCase().contains('broccoli') ||
-        name.toLowerCase().contains('cucumber')) {
+    } else if (greenKeywords.any((k) => lowerName.contains(k))) {
       inferredColor = 'Green';
-    } else if (name.toLowerCase().contains('orange') ||
-        name.toLowerCase().contains('carrot') ||
-        name.toLowerCase().contains('banana')) {
+    } else if (orangeKeywords.any((k) => lowerName.contains(k))) {
       // Banana is yellow/orange-ish in context or we can add Yellow
       inferredColor = 'Orange';
     }
