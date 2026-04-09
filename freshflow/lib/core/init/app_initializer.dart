@@ -20,9 +20,17 @@ class AppInitializer {
     WidgetsFlutterBinding.ensureInitialized();
 
     // Load environment variables from .env file
-    await dotenv.load(fileName: '.env');
+    try {
+      await dotenv.load(fileName: '.env');
+    } catch (e) {
+      debugPrint('Error loading .env file: $e');
+    }
 
-    await _initSupabase();
+    try {
+      await _initSupabase();
+    } catch (e) {
+      debugPrint('Error initializing Supabase: $e');
+    }
 
     _initialized = true;
   }
