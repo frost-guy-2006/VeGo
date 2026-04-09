@@ -24,10 +24,22 @@ class CartItem {
 
 class CartProvider extends ChangeNotifier {
   List<CartItem> _items = [];
+  String? _currentUserId;
 
-  CartProvider() {
-    _loadCart();
+  CartProvider();
+
+  /// Initialize provider with current user's data.
+  Future<void> initForUser(String? userId) async {
+    _currentUserId = userId;
+    // Clear items before loading new user's data to prevent leakage
+    _items = [];
+    notifyListeners();
+    await _loadCart();
   }
+
+  String get _storageKey => _currentUserId != null
+      ? 'cart_items_$_currentUserId'
+      : 'cart_items_anonymous';
 
   List<CartItem> get items => List.unmodifiable(_items);
 
@@ -71,15 +83,16 @@ class CartProvider extends ChangeNotifier {
   }
 
   Future<void> _saveCart() async {
-    final prefs = await SharedPreferences.getInstance();
+    // Create copy/encode synchronously to avoid race conditions
     final String encodedData =
         jsonEncode(_items.map((e) => e.toJson()).toList());
-    await prefs.setString('cart_items', encodedData);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_storageKey, encodedData);
   }
 
   Future<void> _loadCart() async {
     final prefs = await SharedPreferences.getInstance();
-    final String? encodedData = prefs.getString('cart_items');
+    final String? encodedData = prefs.getString(_storageKey);
     if (encodedData != null) {
       final List<dynamic> decodedData = jsonDecode(encodedData);
       _items = decodedData.map((e) => CartItem.fromJson(e)).toList();
