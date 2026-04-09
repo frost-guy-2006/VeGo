@@ -22,6 +22,14 @@ class AppInitializer {
     // Load environment variables from .env file
     await dotenv.load(fileName: '.env');
 
+    // Fail fast if critical config is missing
+    if (!Env.isLoaded) {
+      throw Exception(
+        'Critical Error: Environment variables not loaded. '
+        'Ensure .env file exists and contains SUPABASE_URL and SUPABASE_ANON_KEY.',
+      );
+    }
+
     await _initSupabase();
 
     _initialized = true;
