@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:vego/core/widgets/liquid_wave_background.dart';
 import 'package:vego/core/widgets/backgrounds.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -60,10 +61,16 @@ class _LoginScreenState extends State<LoginScreen> {
               builder: (_) => OtpScreen(phoneNumber: formattedPhone)),
         );
       }
+    } on AuthException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message)),
+        );
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
+          const SnackBar(content: Text('Sign in failed')),
         );
       }
     }
@@ -84,10 +91,16 @@ class _LoginScreenState extends State<LoginScreen> {
       await context.read<AuthProvider>().signInWithEmail(email, password);
       // AuthProvider listens to auth state changes, so navigation might be handled by wrapper
       // But for explicit feedback/navigation:
+    } on AuthException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message)),
+        );
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
+          const SnackBar(content: Text('Sign in failed')),
         );
       }
     }
@@ -113,10 +126,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   Text('Sign up successful! Please check your email/login.')),
         );
       }
+    } on AuthException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message)),
+        );
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
+          const SnackBar(content: Text('Sign up failed')),
         );
       }
     }
