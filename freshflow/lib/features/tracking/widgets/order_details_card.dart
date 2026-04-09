@@ -130,7 +130,9 @@ class OrderDetailsCard extends StatelessWidget {
 
               return Column(
                 children: [
-                  ...items.take(4).map(
+                  ...items
+                      .take(4)
+                      .map(
                         (item) => Padding(
                           padding: const EdgeInsets.only(bottom: 10),
                           child: Row(

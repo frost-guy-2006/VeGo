@@ -59,9 +59,7 @@ class _AddressSection extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (_) => const AddressManagementScreen(),
-          ),
+          MaterialPageRoute(builder: (_) => const AddressManagementScreen()),
         );
       },
       child: Column(
@@ -92,8 +90,11 @@ class _AddressSection extends StatelessWidget {
                   color: context.textSecondary,
                 ),
               ),
-              Icon(Icons.keyboard_arrow_down,
-                  color: context.textSecondary, size: 20),
+              Icon(
+                Icons.keyboard_arrow_down,
+                color: context.textSecondary,
+                size: 20,
+              ),
             ],
           ),
         ],
@@ -143,16 +144,14 @@ class _DeliveryBadgeState extends State<_DeliveryBadge>
             gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                AppColors.primary,
-                AppColors.primaryLight,
-              ],
+              colors: [AppColors.primary, AppColors.primaryLight],
             ),
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primaryLight
-                    .withValues(alpha: 0.2 + (_pulseAnimation.value * 0.2)),
+                color: AppColors.primaryLight.withValues(
+                  alpha: 0.2 + (_pulseAnimation.value * 0.2),
+                ),
                 blurRadius: 8 + (_pulseAnimation.value * 4),
                 offset: const Offset(0, 2),
                 spreadRadius: -2,
@@ -210,10 +209,11 @@ class _WishlistButton extends StatelessWidget {
                         : Colors.white.withValues(alpha: 0.5),
                   ),
                 ),
-                child: Icon(Icons.favorite_outline,
-                    color:
-                        isDark ? AppColors.primaryLight : context.textPrimary,
-                    size: 20),
+                child: Icon(
+                  Icons.favorite_outline,
+                  color: isDark ? AppColors.primaryLight : context.textPrimary,
+                  size: 20,
+                ),
               ),
             ),
           ),

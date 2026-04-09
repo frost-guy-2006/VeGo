@@ -57,14 +57,15 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (_) => OtpScreen(phoneNumber: formattedPhone)),
+            builder: (_) => OtpScreen(phoneNumber: formattedPhone),
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
       }
     }
   }
@@ -86,9 +87,9 @@ class _LoginScreenState extends State<LoginScreen> {
       // But for explicit feedback/navigation:
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
       }
     }
   }
@@ -109,15 +110,15 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-              content:
-                  Text('Sign up successful! Please check your email/login.')),
+            content: Text('Sign up successful! Please check your email/login.'),
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
       }
     }
   }
@@ -216,7 +217,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           // Phone Input
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 4),
+                              horizontal: 16,
+                              vertical: 4,
+                            ),
                             clipBehavior: Clip.antiAlias,
                             decoration: BoxDecoration(
                               color: context.surfaceColor,
@@ -235,13 +238,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                 border: InputBorder.none,
                                 hintText: '+91 98765 43210',
                                 hintStyle: TextStyle(
-                                    color: context.textSecondary
-                                        .withValues(alpha: 0.5)),
-                                prefixIcon: Icon(Icons.phone_android,
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors.white70
-                                        : context.textSecondary),
+                                  color: context.textSecondary.withValues(
+                                    alpha: 0.5,
+                                  ),
+                                ),
+                                prefixIcon: Icon(
+                                  Icons.phone_android,
+                                  color:
+                                      Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white70
+                                      : context.textSecondary,
+                                ),
                               ),
                             ),
                           ),
@@ -260,7 +268,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               child: isLoading
                                   ? const CircularProgressIndicator(
-                                      color: Colors.white)
+                                      color: Colors.white,
+                                    )
                                   : Text(
                                       'Send OTP',
                                       style: GoogleFonts.plusJakartaSans(
@@ -274,7 +283,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           // Email Input
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 4),
+                              horizontal: 16,
+                              vertical: 4,
+                            ),
                             clipBehavior: Clip.antiAlias,
                             decoration: BoxDecoration(
                               color: context.surfaceColor,
@@ -293,13 +304,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                 border: InputBorder.none,
                                 hintText: 'john@example.com',
                                 hintStyle: TextStyle(
-                                    color: context.textSecondary
-                                        .withValues(alpha: 0.5)),
-                                prefixIcon: Icon(Icons.email_outlined,
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors.white70
-                                        : context.textSecondary),
+                                  color: context.textSecondary.withValues(
+                                    alpha: 0.5,
+                                  ),
+                                ),
+                                prefixIcon: Icon(
+                                  Icons.email_outlined,
+                                  color:
+                                      Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white70
+                                      : context.textSecondary,
+                                ),
                               ),
                             ),
                           ),
@@ -307,7 +323,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           // Password Input
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 4),
+                              horizontal: 16,
+                              vertical: 4,
+                            ),
                             clipBehavior: Clip.antiAlias,
                             decoration: BoxDecoration(
                               color: context.surfaceColor,
@@ -326,10 +344,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                 border: InputBorder.none,
                                 hintText: 'Password',
                                 hintStyle: TextStyle(
-                                    color: context.textSecondary
-                                        .withValues(alpha: 0.5)),
-                                prefixIcon: const Icon(Icons.lock_outline,
-                                    color: Colors.white70),
+                                  color: context.textSecondary.withValues(
+                                    alpha: 0.5,
+                                  ),
+                                ),
+                                prefixIcon: const Icon(
+                                  Icons.lock_outline,
+                                  color: Colors.white70,
+                                ),
                               ),
                             ),
                           ),
@@ -343,8 +365,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                     onPressed: isLoading ? null : _signUpEmail,
                                     style: OutlinedButton.styleFrom(
                                       side: BorderSide(
-                                          color: context.textPrimary
-                                              .withValues(alpha: 0.6)),
+                                        color: context.textPrimary.withValues(
+                                          alpha: 0.6,
+                                        ),
+                                      ),
                                       foregroundColor: context.textPrimary,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),
@@ -378,7 +402,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                     child: isLoading
                                         ? const CircularProgressIndicator(
-                                            color: Colors.white)
+                                            color: Colors.white,
+                                          )
                                         : Text(
                                             'Sign In',
                                             style: GoogleFonts.plusJakartaSans(

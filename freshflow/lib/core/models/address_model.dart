@@ -41,32 +41,32 @@ class Address {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'label': label,
-        'fullName': fullName,
-        'phoneNumber': phoneNumber,
-        'addressLine1': addressLine1,
-        'addressLine2': addressLine2,
-        'city': city,
-        'state': state,
-        'pincode': pincode,
-        'landmark': landmark,
-        'isDefault': isDefault,
-      };
+    'id': id,
+    'label': label,
+    'fullName': fullName,
+    'phoneNumber': phoneNumber,
+    'addressLine1': addressLine1,
+    'addressLine2': addressLine2,
+    'city': city,
+    'state': state,
+    'pincode': pincode,
+    'landmark': landmark,
+    'isDefault': isDefault,
+  };
 
   factory Address.fromJson(Map<String, dynamic> json) => Address(
-        id: json['id'],
-        label: json['label'],
-        fullName: json['fullName'],
-        phoneNumber: json['phoneNumber'],
-        addressLine1: json['addressLine1'],
-        addressLine2: json['addressLine2'],
-        city: json['city'],
-        state: json['state'],
-        pincode: json['pincode'],
-        landmark: json['landmark'],
-        isDefault: json['isDefault'] ?? false,
-      );
+    id: json['id'],
+    label: json['label'],
+    fullName: json['fullName'],
+    phoneNumber: json['phoneNumber'],
+    addressLine1: json['addressLine1'],
+    addressLine2: json['addressLine2'],
+    city: json['city'],
+    state: json['state'],
+    pincode: json['pincode'],
+    landmark: json['landmark'],
+    isDefault: json['isDefault'] ?? false,
+  );
 
   Address copyWith({
     String? id,

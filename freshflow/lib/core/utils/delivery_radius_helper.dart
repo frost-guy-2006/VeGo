@@ -14,8 +14,10 @@ class DeliveryRadiusHelper {
 
   /// Store/warehouse location (example: central hub).
   /// In production, this would come from backend configuration.
-  static const LatLng defaultHubLocation =
-      LatLng(12.9716, 77.5946); // Bangalore
+  static const LatLng defaultHubLocation = LatLng(
+    12.9716,
+    77.5946,
+  ); // Bangalore
 
   /// Calculate distance between two points using Haversine formula.
   /// Returns distance in kilometers.
@@ -91,7 +93,8 @@ class DeliveryRadiusHelper {
     final lat2 = _toRadians(to.latitude);
 
     final y = math.sin(dLon) * math.cos(lat2);
-    final x = math.cos(lat1) * math.sin(lat2) -
+    final x =
+        math.cos(lat1) * math.sin(lat2) -
         math.sin(lat1) * math.cos(lat2) * math.cos(dLon);
 
     return (_toDegrees(math.atan2(y, x)) + 360) % 360;
@@ -123,8 +126,10 @@ class DeliveryCheckResult {
     double maxRadiusKm = DeliveryRadiusHelper.defaultRadiusKm,
   }) {
     final hub = hubLocation ?? DeliveryRadiusHelper.defaultHubLocation;
-    final distanceKm =
-        DeliveryRadiusHelper.calculateDistanceKm(hub, customerLocation);
+    final distanceKm = DeliveryRadiusHelper.calculateDistanceKm(
+      hub,
+      customerLocation,
+    );
     final isEligible = distanceKm <= maxRadiusKm;
 
     return DeliveryCheckResult(
