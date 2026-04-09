@@ -3,7 +3,11 @@ import 'package:vego/core/models/product_model.dart';
 
 /// Repository for product-related data operations
 class ProductRepository {
-  final SupabaseClient _client = Supabase.instance.client;
+  late final SupabaseClient _client;
+
+  ProductRepository({SupabaseClient? client}) {
+    _client = client ?? Supabase.instance.client;
+  }
 
   /// Default page size for pagination
   static const int defaultPageSize = 10;
@@ -91,5 +95,34 @@ class ProductRepository {
         .order('name');
 
     return (response as List).map((json) => Product.fromJson(json)).toList();
+  }
+
+  /// Search products by color keywords (simulating visual search)
+  Future<List<Product>> searchProductsByColor(String color) async {
+    final lowerColor = color.toLowerCase();
+
+    // Define color mappings based on Product.fromJson logic
+    final Map<String, List<String>> colorKeywords = {
+      'red': ['red', 'tomato', 'apple', 'strawberry'],
+      'green': ['green', 'spinach', 'broccoli', 'cucumber'],
+      'orange': ['orange', 'carrot', 'banana'],
+    };
+
+    if (colorKeywords.containsKey(lowerColor)) {
+      final keywords = colorKeywords[lowerColor]!;
+      // Construct OR query: name.ilike.%red%,name.ilike.%tomato%,...
+      final orQuery = keywords.map((k) => 'name.ilike.%$k%').join(',');
+
+      final response = await _client
+          .from('products')
+          .select()
+          .or(orQuery)
+          .order('name');
+
+      return (response as List).map((json) => Product.fromJson(json)).toList();
+    } else {
+      // Fallback for unmapped colors (e.g., Blue, Yellow)
+      return searchProducts(color);
+    }
   }
 }
