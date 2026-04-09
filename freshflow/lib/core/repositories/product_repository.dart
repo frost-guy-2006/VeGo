@@ -92,4 +92,29 @@ class ProductRepository {
 
     return (response as List).map((json) => Product.fromJson(json)).toList();
   }
+
+  /// Search products by visual color keyword
+  Future<List<Product>> searchProductsByColor(String color) async {
+    final colorLower = color.toLowerCase();
+    String orQuery;
+
+    if (colorLower == 'red') {
+      orQuery = 'name.ilike.%red%,name.ilike.%tomato%,name.ilike.%apple%,name.ilike.%strawberry%';
+    } else if (colorLower == 'green') {
+      orQuery = 'name.ilike.%green%,name.ilike.%spinach%,name.ilike.%broccoli%,name.ilike.%cucumber%';
+    } else if (colorLower == 'orange') {
+      orQuery = 'name.ilike.%orange%,name.ilike.%carrot%,name.ilike.%banana%';
+    } else {
+      // Fallback if the color isn't strictly mapped
+      return searchProducts(color);
+    }
+
+    final response = await _client
+        .from('products')
+        .select()
+        .or(orQuery)
+        .order('name');
+
+    return (response as List).map((json) => Product.fromJson(json)).toList();
+  }
 }
