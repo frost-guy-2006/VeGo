@@ -7,10 +7,19 @@ import 'dart:convert';
 /// Provider for managing order history
 class OrderProvider extends ChangeNotifier {
   final List<Order> _orders = [];
-  static const String _storageKey = 'order_history';
+  String? _userId;
 
   List<Order> get orders => List.unmodifiable(_orders);
   int get orderCount => _orders.length;
+
+  String get _storageKey => 'orders_${_userId ?? 'anonymous'}';
+
+  Future<void> initForUser(String? userId) async {
+    _userId = userId;
+    _orders.clear();
+    notifyListeners();
+    await loadFromStorage();
+  }
 
   /// Get orders sorted by most recent first
   List<Order> get recentOrders {
@@ -110,10 +119,12 @@ class OrderProvider extends ChangeNotifier {
 
   /// Save orders to persistent storage
   Future<void> _saveToStorage() async {
+    final key = _storageKey;
+    final ordersToSave = List<Order>.from(_orders);
     try {
       final prefs = await SharedPreferences.getInstance();
-      final ordersJson = json.encode(_orders.map((o) => o.toJson()).toList());
-      await prefs.setString(_storageKey, ordersJson);
+      final ordersJson = json.encode(ordersToSave.map((o) => o.toJson()).toList());
+      await prefs.setString(key, ordersJson);
     } catch (e) {
       debugPrint('Error saving orders to storage: $e');
     }
