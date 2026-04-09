@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:vego/core/models/product_model.dart';
 import 'package:vego/core/repositories/product_repository.dart';
@@ -20,6 +22,14 @@ class _SearchScreenState extends State<SearchScreen> {
   List<Product> _searchResults = [];
   bool _isLoading = false;
   String? _activeColorFilter; // "Red", "Blue", etc.
+  Timer? _debounceTimer;
+
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -55,28 +65,32 @@ class _SearchScreenState extends State<SearchScreen> {
     }
 
     try {
-      // Fetch all products using repository
-      final allProducts = await _productRepository.fetchProducts();
-
-      List<Product> filtered;
+      List<Product> results;
       if (_activeColorFilter != null) {
-        // Filter by inferred color
-        filtered =
-            allProducts.where((p) => p.color == _activeColorFilter).toList();
+        // Filter by inferred color using repository DB query
+        results =
+            await _productRepository.searchProductsByColor(_activeColorFilter!);
       } else {
-        // Filter by name
-        filtered = allProducts
-            .where((p) => p.name.toLowerCase().contains(lowerQuery))
-            .toList();
+        // Filter by name using repository DB query
+        results = await _productRepository.searchProducts(lowerQuery);
+      }
+
+      if (!mounted) return;
+
+      // Ensure we don't display stale data if user typed more while fetching
+      if (_searchController.text.trim().toLowerCase() != lowerQuery) {
+        return;
       }
 
       setState(() {
-        _searchResults = filtered;
+        _searchResults = results;
         _isLoading = false;
       });
     } catch (e) {
       debugPrint('Search error: $e');
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -111,8 +125,10 @@ class _SearchScreenState extends State<SearchScreen> {
             color: context.textPrimary,
           ),
           onChanged: (val) {
-            // Debounce could be added here
-            _performSearch(val);
+            _debounceTimer?.cancel();
+            _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+              _performSearch(val.trim());
+            });
           },
         ),
       ),
