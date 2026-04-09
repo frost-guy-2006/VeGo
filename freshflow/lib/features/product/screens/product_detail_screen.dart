@@ -72,8 +72,9 @@ class ProductDetailScreen extends StatelessWidget {
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 color: context.surfaceColor,
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(30)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(30),
+                ),
               ),
               transform: Matrix4.translationValues(0, -20, 0),
               child: Column(
@@ -95,17 +96,23 @@ class ProductDetailScreen extends StatelessWidget {
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: context.surfaceAltColor,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                              color: AppColors.primary.withValues(alpha: 0.1)),
+                            color: AppColors.primary.withValues(alpha: 0.1),
+                          ),
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.schedule,
-                                size: 14, color: context.textSecondary),
+                            Icon(
+                              Icons.schedule,
+                              size: 14,
+                              color: context.textSecondary,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               'Harvested ${product.harvestTime}',
@@ -155,21 +162,24 @@ class ProductDetailScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         _LocalPriceBar(
-                            label: 'Supermarket',
-                            price: product.marketPrice,
-                            color: AppColors.secondary.withValues(alpha: 0.3),
-                            isHigh: true),
+                          label: 'Supermarket',
+                          price: product.marketPrice,
+                          color: AppColors.secondary.withValues(alpha: 0.3),
+                          isHigh: true,
+                        ),
                         _LocalPriceBar(
-                            label: 'Local Vendor',
-                            price: product.marketPrice * 0.9,
-                            color: AppColors.secondary.withValues(alpha: 0.3),
-                            isHigh: false),
+                          label: 'Local Vendor',
+                          price: product.marketPrice * 0.9,
+                          color: AppColors.secondary.withValues(alpha: 0.3),
+                          isHigh: false,
+                        ),
                         _LocalPriceBar(
-                            label: 'VeGo',
-                            price: product.currentPrice,
-                            color: AppColors.accent,
-                            isHigh: false,
-                            isSelected: true),
+                          label: 'VeGo',
+                          price: product.currentPrice,
+                          color: AppColors.accent,
+                          isHigh: false,
+                          isSelected: true,
+                        ),
                       ],
                     ),
                   ),
@@ -228,7 +238,8 @@ class ProductDetailScreen extends StatelessWidget {
                       Text(
                         'Price',
                         style: GoogleFonts.plusJakartaSans(
-                            color: context.textSecondary),
+                          color: context.textSecondary,
+                        ),
                       ),
                       Text(
                         '₹${product.currentPrice.toStringAsFixed(0)}',
@@ -249,8 +260,11 @@ class ProductDetailScreen extends StatelessWidget {
                           SnackBar(
                             content: Row(
                               children: [
-                                const Icon(Icons.check_circle,
-                                    color: Colors.white, size: 18),
+                                const Icon(
+                                  Icons.check_circle,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
@@ -265,7 +279,8 @@ class ProductDetailScreen extends StatelessWidget {
                             behavior: SnackBarBehavior.floating,
                             backgroundColor: AppColors.primary,
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12)),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                             margin: const EdgeInsets.all(16),
                           ),
                         );
@@ -276,10 +291,7 @@ class ProductDetailScreen extends StatelessWidget {
                           gradient: const LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
-                            colors: [
-                              AppColors.primary,
-                              AppColors.primaryLight,
-                            ],
+                            colors: [AppColors.primary, AppColors.primaryLight],
                           ),
                           borderRadius: BorderRadius.circular(28),
                           boxShadow: [
@@ -294,8 +306,11 @@ class ProductDetailScreen extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.shopping_bag_outlined,
-                                color: Colors.white, size: 20),
+                            const Icon(
+                              Icons.shopping_bag_outlined,
+                              color: Colors.white,
+                              size: 20,
+                            ),
                             const SizedBox(width: 8),
                             Text(
                               'Add to Cart',
@@ -325,12 +340,13 @@ class ProductDetailScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.surfaceColor.withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: context.borderColor.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: context.borderColor.withValues(alpha: 0.3)),
       ),
-      child:
-          Icon(Icons.arrow_back_rounded, color: context.textPrimary, size: 20),
+      child: Icon(
+        Icons.arrow_back_rounded,
+        color: context.textPrimary,
+        size: 20,
+      ),
     );
   }
 }
@@ -367,14 +383,16 @@ class _LocalPriceBar extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             margin: const EdgeInsets.only(bottom: 4),
             decoration: BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: BorderRadius.circular(8)),
+              color: AppColors.primary,
+              borderRadius: BorderRadius.circular(8),
+            ),
             child: Text(
               'Best Price',
               style: GoogleFonts.plusJakartaSans(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold),
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         Text(

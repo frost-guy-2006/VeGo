@@ -80,16 +80,19 @@ class _TrackingScreenState extends State<TrackingScreen> {
   void _undoOrder() {
     _undoTimer?.cancel();
     Navigator.pop(context); // Go back to Cart
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text('Order Cancelled'),
-      backgroundColor: Colors.red,
-    ));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Order Cancelled'),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
 
   Future<void> _fetchRoute() async {
     try {
       final url = Uri.parse(
-          'http://router.project-osrm.org/route/v1/driving/${_riderStartLocation.longitude},${_riderStartLocation.latitude};${_userLocation.longitude},${_userLocation.latitude}?overview=full&geometries=geojson');
+        'http://router.project-osrm.org/route/v1/driving/${_riderStartLocation.longitude},${_riderStartLocation.latitude};${_userLocation.longitude},${_userLocation.latitude}?overview=full&geometries=geojson',
+      );
 
       final response = await http.get(url);
 
@@ -166,7 +169,9 @@ class _TrackingScreenState extends State<TrackingScreen> {
             child: Text(
               'Back to Home',
               style: GoogleFonts.plusJakartaSans(
-                  fontWeight: FontWeight.bold, color: AppColors.primary),
+                fontWeight: FontWeight.bold,
+                color: AppColors.primary,
+              ),
             ),
           ),
         ],
@@ -202,16 +207,19 @@ class _TrackingScreenState extends State<TrackingScreen> {
             slivers: [
               // Spacer for the sticky header
               SliverToBoxAdapter(
-                child:
-                    SizedBox(height: MediaQuery.of(context).padding.top + 80),
+                child: SizedBox(
+                  height: MediaQuery.of(context).padding.top + 80,
+                ),
               ),
 
               // Embedded Map Card
               SliverToBoxAdapter(
                 child: Container(
                   height: 250,
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
@@ -247,12 +255,14 @@ class _TrackingScreenState extends State<TrackingScreen> {
                                 Polyline(
                                   points: _routePoints,
                                   strokeWidth: 4.0,
-                                  color:
-                                      AppColors.primary.withValues(alpha: 0.3),
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.3,
+                                  ),
                                 ),
                                 Polyline(
-                                  points:
-                                      _routePoints.sublist(_currentPointIndex),
+                                  points: _routePoints.sublist(
+                                    _currentPointIndex,
+                                  ),
                                   strokeWidth: 4.0,
                                   color: AppColors.primary,
                                 ),
@@ -264,8 +274,11 @@ class _TrackingScreenState extends State<TrackingScreen> {
                                   point: _userLocation,
                                   width: 40,
                                   height: 40,
-                                  child: const Icon(Icons.location_on,
-                                      color: AppColors.accent, size: 40),
+                                  child: const Icon(
+                                    Icons.location_on,
+                                    color: AppColors.accent,
+                                    size: 40,
+                                  ),
                                 ),
                                 Marker(
                                   point: _riderLocation,
@@ -277,13 +290,17 @@ class _TrackingScreenState extends State<TrackingScreen> {
                                       shape: BoxShape.circle,
                                       boxShadow: [
                                         BoxShadow(
-                                            blurRadius: 5,
-                                            color: Colors.black26)
+                                          blurRadius: 5,
+                                          color: Colors.black26,
+                                        ),
                                       ],
                                     ),
                                     padding: const EdgeInsets.all(4),
-                                    child: const Icon(Icons.delivery_dining,
-                                        color: AppColors.primary, size: 24),
+                                    child: const Icon(
+                                      Icons.delivery_dining,
+                                      color: AppColors.primary,
+                                      size: 24,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -296,13 +313,17 @@ class _TrackingScreenState extends State<TrackingScreen> {
                           right: 12,
                           child: Container(
                             decoration: BoxDecoration(
-                              color:
-                                  context.surfaceColor.withValues(alpha: 0.9),
+                              color: context.surfaceColor.withValues(
+                                alpha: 0.9,
+                              ),
                               shape: BoxShape.circle,
                             ),
                             child: IconButton(
-                              icon: Icon(Icons.open_in_full,
-                                  size: 18, color: context.textPrimary),
+                              icon: Icon(
+                                Icons.open_in_full,
+                                size: 18,
+                                color: context.textPrimary,
+                              ),
                               onPressed: () {
                                 // Expand map modal logic here
                               },
@@ -388,9 +409,10 @@ class _TrackingScreenState extends State<TrackingScreen> {
                       decoration: BoxDecoration(
                         boxShadow: [
                           BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.15),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4))
+                            color: Colors.black.withValues(alpha: 0.15),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
                         ],
                       ),
                       child: ElevatedButton.icon(
@@ -399,17 +421,22 @@ class _TrackingScreenState extends State<TrackingScreen> {
                         label: Text(
                           'Undo Order ($_undoSeconds s)',
                           style: GoogleFonts.spaceGrotesk(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: Colors.white),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              Colors.redAccent.withValues(alpha: 0.9),
+                          backgroundColor: Colors.redAccent.withValues(
+                            alpha: 0.9,
+                          ),
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 32, vertical: 16),
+                            horizontal: 32,
+                            vertical: 16,
+                          ),
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30)),
+                            borderRadius: BorderRadius.circular(30),
+                          ),
                         ),
                       ),
                     ),

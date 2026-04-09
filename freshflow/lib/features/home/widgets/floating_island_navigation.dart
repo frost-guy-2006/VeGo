@@ -74,10 +74,7 @@ class _FloatingIslandNavigationState extends State<FloatingIslandNavigation> {
                 transitionBuilder: (child, animation) {
                   return FadeTransition(
                     opacity: animation,
-                    child: ScaleTransition(
-                      scale: animation,
-                      child: child,
-                    ),
+                    child: ScaleTransition(scale: animation, child: child),
                   );
                 },
                 child: hasItems
@@ -98,9 +95,17 @@ class _FloatingIslandNavigationState extends State<FloatingIslandNavigation> {
       children: [
         _buildNavItem(Icons.home_rounded, Icons.home_outlined, 0, 'Home'),
         _buildNavItem(
-            Icons.shopping_bag_rounded, Icons.shopping_bag_outlined, 1, 'Cart'),
+          Icons.shopping_bag_rounded,
+          Icons.shopping_bag_outlined,
+          1,
+          'Cart',
+        ),
         _buildNavItem(
-            Icons.favorite_rounded, Icons.favorite_outline, 2, 'Wishlist'),
+          Icons.favorite_rounded,
+          Icons.favorite_outline,
+          2,
+          'Wishlist',
+        ),
       ],
     );
   }
@@ -121,80 +126,88 @@ class _FloatingIslandNavigationState extends State<FloatingIslandNavigation> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             // Left: Items Count Badge
-            Builder(builder: (context) {
-              final isDark = Theme.of(context).brightness == Brightness.dark;
-              final cartTextColor =
-                  isDark ? Colors.white : AppColors.primaryDark;
-              return Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.2)
-                      : AppColors.primary.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
+            Builder(
+              builder: (context) {
+                final isDark = Theme.of(context).brightness == Brightness.dark;
+                final cartTextColor =
+                    isDark ? Colors.white : AppColors.primaryDark;
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.2)
+                        : AppColors.primary.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        '${cart.items.length}',
+                        style: GoogleFonts.outfit(
+                          color: cartTextColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(Icons.shopping_bag, color: cartTextColor, size: 16),
+                    ],
+                  ),
+                );
+              },
+            ),
+
+            // Center: Total Price
+            Builder(
+              builder: (context) {
+                final isDark = Theme.of(context).brightness == Brightness.dark;
+                final cartTextColor =
+                    isDark ? Colors.white : AppColors.primaryDark;
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${cart.items.length}',
+                      'Total',
+                      style: GoogleFonts.outfit(
+                        color: cartTextColor.withValues(alpha: 0.7),
+                        fontSize: 10,
+                      ),
+                    ),
+                    Text(
+                      '₹${cart.totalPrice.toStringAsFixed(0)}',
                       style: GoogleFonts.outfit(
                         color: cartTextColor,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
                     ),
-                    const SizedBox(width: 4),
-                    Icon(Icons.shopping_bag, color: cartTextColor, size: 16),
                   ],
-                ),
-              );
-            }),
-
-            // Center: Total Price
-            Builder(builder: (context) {
-              final isDark = Theme.of(context).brightness == Brightness.dark;
-              final cartTextColor =
-                  isDark ? Colors.white : AppColors.primaryDark;
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Total',
-                    style: GoogleFonts.outfit(
-                      color: cartTextColor.withValues(alpha: 0.7),
-                      fontSize: 10,
-                    ),
-                  ),
-                  Text(
-                    '₹${cart.totalPrice.toStringAsFixed(0)}',
-                    style: GoogleFonts.outfit(
-                      color: cartTextColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              );
-            }),
+                );
+              },
+            ),
 
             // Right: Checkout Arrow
-            Builder(builder: (context) {
-              final isDark = Theme.of(context).brightness == Brightness.dark;
-              return Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: isDark ? Colors.white : AppColors.primary,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.arrow_forward_rounded,
-                  color: isDark ? AppColors.primary : Colors.white,
-                  size: 20,
-                ),
-              );
-            }),
+            Builder(
+              builder: (context) {
+                final isDark = Theme.of(context).brightness == Brightness.dark;
+                return Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.white : AppColors.primary,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.arrow_forward_rounded,
+                    color: isDark ? AppColors.primary : Colors.white,
+                    size: 20,
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),
@@ -202,7 +215,11 @@ class _FloatingIslandNavigationState extends State<FloatingIslandNavigation> {
   }
 
   Widget _buildNavItem(
-      IconData selectedIcon, IconData unselectedIcon, int index, String label) {
+    IconData selectedIcon,
+    IconData unselectedIcon,
+    int index,
+    String label,
+  ) {
     return _FloatingNavItem(
       selectedIcon: selectedIcon,
       unselectedIcon: unselectedIcon,
@@ -241,9 +258,10 @@ class _FloatingNavItemState extends State<_FloatingNavItem>
       vsync: this,
       duration: const Duration(milliseconds: 150), // Snappier
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.9,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   void handleTap() {

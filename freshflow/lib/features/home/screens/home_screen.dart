@@ -46,10 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
         alignment: Alignment.bottomCenter,
         children: [
           // Main Content
-          IndexedStack(
-            index: _currentIndex,
-            children: _pages,
-          ),
+          IndexedStack(index: _currentIndex, children: _pages),
 
           // Hero Feature: Rain Mode Overlay
           if (_currentIndex == 0) RainModeOverlay(isEnabled: _isRaining),
@@ -256,15 +253,20 @@ class _HomeContentState extends State<HomeContent> {
                         children: [
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.black,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.bolt,
-                                    color: Colors.yellow, size: 14),
+                                const Icon(
+                                  Icons.bolt,
+                                  color: Colors.yellow,
+                                  size: 14,
+                                ),
                                 const SizedBox(width: 4),
                                 Text(
                                   '10 MINS',
@@ -299,8 +301,11 @@ class _HomeContentState extends State<HomeContent> {
                               color: context.textSecondary,
                             ),
                           ),
-                          Icon(Icons.keyboard_arrow_down,
-                              color: context.textSecondary, size: 18),
+                          Icon(
+                            Icons.keyboard_arrow_down,
+                            color: context.textSecondary,
+                            size: 18,
+                          ),
                         ],
                       ),
                     ],
@@ -310,8 +315,10 @@ class _HomeContentState extends State<HomeContent> {
                   IconButton(
                     icon: CircleAvatar(
                       backgroundColor: context.surfaceColor,
-                      child: Icon(Icons.person_outline,
-                          color: context.textPrimary),
+                      child: Icon(
+                        Icons.person_outline,
+                        color: context.textPrimary,
+                      ),
                     ),
                     onPressed: () {
                       Navigator.push(
@@ -332,17 +339,23 @@ class _HomeContentState extends State<HomeContent> {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(
-                  horizontal: 16), // Removed vertical padding
+                horizontal: 16,
+              ), // Removed vertical padding
               child: GestureDetector(
                 onTap: () {
-                  Navigator.of(context).push(PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) =>
-                        const SearchScreen(),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      return FadeTransition(opacity: animation, child: child);
-                    },
-                  ));
+                  Navigator.of(context).push(
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          const SearchScreen(),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        return FadeTransition(
+                          opacity: animation,
+                          child: child,
+                        );
+                      },
+                    ),
+                  );
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -359,7 +372,8 @@ class _HomeContentState extends State<HomeContent> {
                       Text(
                         'Search "Red" or "Tomato"', // Updated hint for discovery
                         style: GoogleFonts.plusJakartaSans(
-                            color: context.textSecondary),
+                          color: context.textSecondary,
+                        ),
                       ),
                     ],
                   ),
@@ -397,8 +411,9 @@ class _HomeContentState extends State<HomeContent> {
                       itemBuilder: (context, index) {
                         return Padding(
                           padding: const EdgeInsets.only(right: 24),
-                          child:
-                              FlashPriceWidget(product: snapshot.data![index]),
+                          child: FlashPriceWidget(
+                            product: snapshot.data![index],
+                          ),
                         );
                       },
                     );
@@ -437,8 +452,9 @@ class _HomeContentState extends State<HomeContent> {
                 child: Center(
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    valueColor:
-                        AlwaysStoppedAnimation<Color>(AppColors.primary),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.primary,
+                    ),
                   ),
                 ),
               ),
@@ -502,14 +518,21 @@ class _HomeContentState extends State<HomeContent> {
               children: [
                 const Icon(Icons.error_outline, size: 48, color: Colors.red),
                 const SizedBox(height: 16),
-                Text('Error loading products',
-                    style: GoogleFonts.plusJakartaSans(
-                        color: context.textPrimary,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold)),
-                Text(_errorMessage!,
-                    style: GoogleFonts.plusJakartaSans(
-                        color: context.textSecondary, fontSize: 12)),
+                Text(
+                  'Error loading products',
+                  style: GoogleFonts.plusJakartaSans(
+                    color: context.textPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  _errorMessage!,
+                  style: GoogleFonts.plusJakartaSans(
+                    color: context.textSecondary,
+                    fontSize: 12,
+                  ),
+                ),
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
                   onPressed: _loadInitialProducts,
@@ -535,17 +558,27 @@ class _HomeContentState extends State<HomeContent> {
             padding: const EdgeInsets.all(32.0),
             child: Column(
               children: [
-                const Icon(Icons.shopping_basket_outlined,
-                    size: 48, color: Colors.grey),
+                const Icon(
+                  Icons.shopping_basket_outlined,
+                  size: 48,
+                  color: Colors.grey,
+                ),
                 const SizedBox(height: 16),
-                Text('No products found',
-                    style: GoogleFonts.plusJakartaSans(
-                        color: context.textPrimary,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold)),
-                Text('Try running the seed script.',
-                    style: GoogleFonts.plusJakartaSans(
-                        color: context.textSecondary, fontSize: 12)),
+                Text(
+                  'No products found',
+                  style: GoogleFonts.plusJakartaSans(
+                    color: context.textPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'Try running the seed script.',
+                  style: GoogleFonts.plusJakartaSans(
+                    color: context.textSecondary,
+                    fontSize: 12,
+                  ),
+                ),
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
                   onPressed: _seedData,
@@ -571,10 +604,7 @@ class _HomeContentState extends State<HomeContent> {
       childCount: _products.length,
       itemBuilder: (context, index) {
         return SizedBox(
-          child: PriceComparisonCard(
-            product: _products[index],
-            index: index,
-          ),
+          child: PriceComparisonCard(product: _products[index], index: index),
         );
       },
     );
@@ -618,7 +648,7 @@ class _HomeContentState extends State<HomeContent> {
           'market_price': 60,
           'harvest_time': 'Harvested 2 hours ago',
           'stock': 100,
-          'category': 'Vegetables'
+          'category': 'Vegetables',
         },
         {
           'name': 'Organic Carrots',
@@ -628,7 +658,7 @@ class _HomeContentState extends State<HomeContent> {
           'market_price': 85,
           'harvest_time': 'Harvested today morning',
           'stock': 50,
-          'category': 'Vegetables'
+          'category': 'Vegetables',
         },
         {
           'name': 'Green Spinach',
@@ -638,7 +668,7 @@ class _HomeContentState extends State<HomeContent> {
           'market_price': 45,
           'harvest_time': 'Harvested 4 hours ago',
           'stock': 30,
-          'category': 'Vegetables'
+          'category': 'Vegetables',
         },
         {
           'name': 'Red Bell Pepper',
@@ -648,7 +678,7 @@ class _HomeContentState extends State<HomeContent> {
           'market_price': 160,
           'harvest_time': 'Harvested yesterday',
           'stock': 40,
-          'category': 'Vegetables'
+          'category': 'Vegetables',
         },
         {
           'name': 'Fresh Broccoli',
@@ -658,7 +688,7 @@ class _HomeContentState extends State<HomeContent> {
           'market_price': 120,
           'harvest_time': 'Harvested today',
           'stock': 60,
-          'category': 'Vegetables'
+          'category': 'Vegetables',
         },
         {
           'name': 'Cucumber',
@@ -668,7 +698,7 @@ class _HomeContentState extends State<HomeContent> {
           'market_price': 35,
           'harvest_time': 'Harvested 5 hours ago',
           'stock': 45,
-          'category': 'Vegetables'
+          'category': 'Vegetables',
         },
         // Fruits
         {
@@ -679,7 +709,7 @@ class _HomeContentState extends State<HomeContent> {
           'market_price': 220,
           'harvest_time': 'Fresh from Shimla',
           'stock': 80,
-          'category': 'Fruits'
+          'category': 'Fruits',
         },
         {
           'name': 'Bananas',
@@ -689,7 +719,7 @@ class _HomeContentState extends State<HomeContent> {
           'market_price': 80,
           'harvest_time': 'Organic',
           'stock': 70,
-          'category': 'Fruits'
+          'category': 'Fruits',
         },
         {
           'name': 'Strawberries',
@@ -699,7 +729,7 @@ class _HomeContentState extends State<HomeContent> {
           'market_price': 300,
           'harvest_time': 'Freshly picked',
           'stock': 25,
-          'category': 'Fruits'
+          'category': 'Fruits',
         },
         {
           'name': 'Oranges',
@@ -709,7 +739,7 @@ class _HomeContentState extends State<HomeContent> {
           'market_price': 140,
           'harvest_time': 'Juicy & Sweet',
           'stock': 60,
-          'category': 'Fruits'
+          'category': 'Fruits',
         },
         {
           'name': 'Mangoes',
@@ -719,7 +749,7 @@ class _HomeContentState extends State<HomeContent> {
           'market_price': 280,
           'harvest_time': 'Alphonso variety',
           'stock': 40,
-          'category': 'Fruits'
+          'category': 'Fruits',
         },
         // Dairy
         {
@@ -730,7 +760,7 @@ class _HomeContentState extends State<HomeContent> {
           'market_price': 70,
           'harvest_time': 'Farm fresh daily',
           'stock': 100,
-          'category': 'Dairy'
+          'category': 'Dairy',
         },
         {
           'name': 'Greek Yogurt',
@@ -740,7 +770,7 @@ class _HomeContentState extends State<HomeContent> {
           'market_price': 150,
           'harvest_time': 'High protein',
           'stock': 50,
-          'category': 'Dairy'
+          'category': 'Dairy',
         },
         {
           'name': 'Cottage Cheese',
@@ -750,7 +780,7 @@ class _HomeContentState extends State<HomeContent> {
           'market_price': 220,
           'harvest_time': 'Fresh paneer',
           'stock': 35,
-          'category': 'Dairy'
+          'category': 'Dairy',
         },
         {
           'name': 'Butter',
@@ -760,7 +790,7 @@ class _HomeContentState extends State<HomeContent> {
           'market_price': 280,
           'harvest_time': 'Unsalted premium',
           'stock': 45,
-          'category': 'Dairy'
+          'category': 'Dairy',
         },
         // Bakery
         {
@@ -771,7 +801,7 @@ class _HomeContentState extends State<HomeContent> {
           'market_price': 55,
           'harvest_time': 'Baked fresh today',
           'stock': 80,
-          'category': 'Bakery'
+          'category': 'Bakery',
         },
         {
           'name': 'Croissants',
@@ -781,7 +811,7 @@ class _HomeContentState extends State<HomeContent> {
           'market_price': 150,
           'harvest_time': 'Buttery & flaky',
           'stock': 30,
-          'category': 'Bakery'
+          'category': 'Bakery',
         },
         {
           'name': 'Chocolate Muffin',
@@ -791,7 +821,7 @@ class _HomeContentState extends State<HomeContent> {
           'market_price': 100,
           'harvest_time': 'Double chocolate',
           'stock': 40,
-          'category': 'Bakery'
+          'category': 'Bakery',
         },
         {
           'name': 'Bagels',
@@ -801,7 +831,7 @@ class _HomeContentState extends State<HomeContent> {
           'market_price': 80,
           'harvest_time': 'Plain & sesame',
           'stock': 50,
-          'category': 'Bakery'
+          'category': 'Bakery',
         },
         // Tea/Coffee
         {
@@ -812,7 +842,7 @@ class _HomeContentState extends State<HomeContent> {
           'market_price': 220,
           'harvest_time': 'Premium CTC',
           'stock': 60,
-          'category': 'Tea/Coffee'
+          'category': 'Tea/Coffee',
         },
         {
           'name': 'Green Tea',
@@ -822,7 +852,7 @@ class _HomeContentState extends State<HomeContent> {
           'market_price': 300,
           'harvest_time': 'Japanese Sencha',
           'stock': 35,
-          'category': 'Tea/Coffee'
+          'category': 'Tea/Coffee',
         },
         {
           'name': 'Arabica Coffee',
@@ -832,7 +862,7 @@ class _HomeContentState extends State<HomeContent> {
           'market_price': 550,
           'harvest_time': 'Single origin',
           'stock': 25,
-          'category': 'Tea/Coffee'
+          'category': 'Tea/Coffee',
         },
         {
           'name': 'Earl Grey Tea',
@@ -842,7 +872,7 @@ class _HomeContentState extends State<HomeContent> {
           'market_price': 250,
           'harvest_time': 'Bergamot flavored',
           'stock': 40,
-          'category': 'Tea/Coffee'
+          'category': 'Tea/Coffee',
         },
       ];
 

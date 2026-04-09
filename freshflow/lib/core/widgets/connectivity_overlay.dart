@@ -10,12 +10,7 @@ class ConnectivityOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        child,
-        const _OfflineBanner(),
-      ],
-    );
+    return Stack(children: [child, const _OfflineBanner()]);
   }
 }
 

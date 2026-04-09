@@ -32,7 +32,9 @@ class CartProvider extends ChangeNotifier {
   List<CartItem> get items => List.unmodifiable(_items);
 
   double get totalPrice => _items.fold(
-      0, (sum, item) => sum + (item.product.currentPrice * item.quantity));
+        0,
+        (sum, item) => sum + (item.product.currentPrice * item.quantity),
+      );
 
   void addToCart(Product product) {
     var index = _items.indexWhere((item) => item.product.id == product.id);
@@ -72,8 +74,9 @@ class CartProvider extends ChangeNotifier {
 
   Future<void> _saveCart() async {
     final prefs = await SharedPreferences.getInstance();
-    final String encodedData =
-        jsonEncode(_items.map((e) => e.toJson()).toList());
+    final String encodedData = jsonEncode(
+      _items.map((e) => e.toJson()).toList(),
+    );
     await prefs.setString('cart_items', encodedData);
   }
 

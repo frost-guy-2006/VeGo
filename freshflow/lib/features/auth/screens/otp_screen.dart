@@ -66,18 +66,18 @@ class _OtpScreenState extends State<OtpScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Invalid OTP: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Invalid OTP: ${e.toString()}')));
       }
     }
   }
 
   void _resendOtp() {
     // Mock resend logic or call provider
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('OTP Resent!')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('OTP Resent!')));
     startTimer();
   }
 
@@ -127,7 +127,9 @@ class _OtpScreenState extends State<OtpScreen> {
                       // OTP Input
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 4),
+                          horizontal: 16,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: context.surfaceColor,
                           borderRadius: BorderRadius.circular(12),
@@ -165,7 +167,8 @@ class _OtpScreenState extends State<OtpScreen> {
                           ),
                           child: isLoading
                               ? const CircularProgressIndicator(
-                                  color: Colors.white)
+                                  color: Colors.white,
+                                )
                               : Text(
                                   'Confirm',
                                   style: GoogleFonts.plusJakartaSans(
