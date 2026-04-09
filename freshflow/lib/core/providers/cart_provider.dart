@@ -24,6 +24,7 @@ class CartItem {
 
 class CartProvider extends ChangeNotifier {
   List<CartItem> _items = [];
+  String? _currentUserId;
 
   CartProvider() {
     _loadCart();
@@ -33,6 +34,24 @@ class CartProvider extends ChangeNotifier {
 
   double get totalPrice => _items.fold(
       0, (sum, item) => sum + (item.product.currentPrice * item.quantity));
+
+  String get _storageKey {
+    if (_currentUserId == null) {
+      return 'cart_items';
+    }
+    return 'cart_items_$_currentUserId';
+  }
+
+  /// Initialize provider with current user's data.
+  Future<void> initForUser(String? userId) async {
+    // Only reload if the user has changed to avoid unnecessary reloads
+    if (_currentUserId != userId) {
+      _items.clear();
+      _currentUserId = userId;
+      await _loadCart();
+      notifyListeners();
+    }
+  }
 
   void addToCart(Product product) {
     var index = _items.indexWhere((item) => item.product.id == product.id);
@@ -71,15 +90,18 @@ class CartProvider extends ChangeNotifier {
   }
 
   Future<void> _saveCart() async {
-    final prefs = await SharedPreferences.getInstance();
+    // Capture state synchronously to avoid race conditions
+    final key = _storageKey;
     final String encodedData =
         jsonEncode(_items.map((e) => e.toJson()).toList());
-    await prefs.setString('cart_items', encodedData);
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(key, encodedData);
   }
 
   Future<void> _loadCart() async {
     final prefs = await SharedPreferences.getInstance();
-    final String? encodedData = prefs.getString('cart_items');
+    final String? encodedData = prefs.getString(_storageKey);
     if (encodedData != null) {
       final List<dynamic> decodedData = jsonDecode(encodedData);
       _items = decodedData.map((e) => CartItem.fromJson(e)).toList();
