@@ -7,10 +7,25 @@ import 'dart:convert';
 /// Provider for managing order history
 class OrderProvider extends ChangeNotifier {
   final List<Order> _orders = [];
-  static const String _storageKey = 'order_history';
+  String? _userId;
 
   List<Order> get orders => List.unmodifiable(_orders);
   int get orderCount => _orders.length;
+
+  String get _storageKey {
+    if (_userId == null) {
+      return 'order_history_anonymous';
+    }
+    return 'order_history_$_userId';
+  }
+
+  /// Initialize provider with current user's data
+  Future<void> initForUser(String? userId) async {
+    _userId = userId;
+    _orders.clear();
+    await loadFromStorage();
+    notifyListeners();
+  }
 
   /// Get orders sorted by most recent first
   List<Order> get recentOrders {
@@ -58,8 +73,8 @@ class OrderProvider extends ChangeNotifier {
     );
 
     _orders.add(order);
-    await _saveToStorage();
     notifyListeners();
+    await _saveToStorage();
 
     return order;
   }
@@ -86,8 +101,8 @@ class OrderProvider extends ChangeNotifier {
         deliveryAddress: oldOrder.deliveryAddress,
       );
       _orders[index] = updatedOrder;
-      await _saveToStorage();
       notifyListeners();
+      await _saveToStorage();
     }
   }
 
@@ -110,9 +125,12 @@ class OrderProvider extends ChangeNotifier {
 
   /// Save orders to persistent storage
   Future<void> _saveToStorage() async {
+    // Create a local copy to avoid race conditions
+    final ordersToSave = List<Order>.from(_orders);
     try {
       final prefs = await SharedPreferences.getInstance();
-      final ordersJson = json.encode(_orders.map((o) => o.toJson()).toList());
+      final ordersJson =
+          json.encode(ordersToSave.map((o) => o.toJson()).toList());
       await prefs.setString(_storageKey, ordersJson);
     } catch (e) {
       debugPrint('Error saving orders to storage: $e');
