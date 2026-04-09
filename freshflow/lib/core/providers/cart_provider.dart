@@ -25,6 +25,7 @@ class CartItem {
 class CartProvider extends ChangeNotifier {
   List<CartItem> _items = [];
 
+  // SECURITY NOTE: Cart data is stored in plain text SharedPreferences.
   CartProvider() {
     _loadCart();
   }

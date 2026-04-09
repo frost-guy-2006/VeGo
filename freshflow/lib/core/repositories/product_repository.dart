@@ -3,17 +3,21 @@ import 'package:vego/core/models/product_model.dart';
 
 /// Repository for product-related data operations
 class ProductRepository {
-  final SupabaseClient _client = Supabase.instance.client;
+  final SupabaseClient _client;
+
+  ProductRepository({SupabaseClient? client})
+      : _client = client ?? Supabase.instance.client;
 
   /// Default page size for pagination
   static const int defaultPageSize = 10;
 
-  /// Fetch all products from database
+  /// Fetch all products from database (Limited to 100 for safety)
   Future<List<Product>> fetchProducts() async {
     final response = await _client
         .from('products')
         .select()
-        .order('created_at', ascending: false);
+        .order('created_at', ascending: false)
+        .limit(100);
 
     return (response as List).map((json) => Product.fromJson(json)).toList();
   }
@@ -42,33 +46,34 @@ class ProductRepository {
     return (response as List).map((json) => Product.fromJson(json)).toList();
   }
 
-  /// Check if there are more products to load
+  /// Check if there are more products to load using efficient count query
   Future<bool> hasMoreProducts({
     int currentCount = 0,
     String? category,
   }) async {
-    var query = _client.from('products').select('id');
+    var query = _client.from('products').count(CountOption.exact);
 
     if (category != null && category != 'All') {
       query = query.eq('category', category);
     }
 
-    final response = await query;
-    final totalCount = (response as List).length;
+    final totalCount = await query;
     return currentCount < totalCount;
   }
 
   /// Fetch products by category
   Future<List<Product>> fetchProductsByCategory(String category) async {
     if (category == 'All') {
-      return fetchProducts();
+      // Redirect to paginated or limited fetch to avoid full table scan
+      return fetchProductsPaginated(pageSize: 100);
     }
 
     final response = await _client
         .from('products')
         .select()
         .eq('category', category)
-        .order('created_at', ascending: false);
+        .order('created_at', ascending: false)
+        .limit(100);
 
     return (response as List).map((json) => Product.fromJson(json)).toList();
   }
@@ -82,13 +87,34 @@ class ProductRepository {
     return Product.fromJson(response);
   }
 
-  /// Search products by name
+  /// Search products by name (Server-side)
   Future<List<Product>> searchProducts(String query) async {
     final response = await _client
         .from('products')
         .select()
         .ilike('name', '%$query%')
-        .order('name');
+        .order('name')
+        .limit(50);
+
+    return (response as List).map((json) => Product.fromJson(json)).toList();
+  }
+
+  /// Search products by color (Server-side OR query)
+  Future<List<Product>> searchProductsByColor(String color) async {
+    final keywords = Product.colorKeywords[color];
+    if (keywords == null || keywords.isEmpty) {
+      return [];
+    }
+
+    // Construct OR filter: name.ilike.%red%,name.ilike.%tomato%,...
+    final orFilter = keywords.map((k) => 'name.ilike.%$k%').join(',');
+
+    final response = await _client
+        .from('products')
+        .select()
+        .or(orFilter)
+        .order('name')
+        .limit(50);
 
     return (response as List).map((json) => Product.fromJson(json)).toList();
   }
