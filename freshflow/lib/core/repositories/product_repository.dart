@@ -92,4 +92,26 @@ class ProductRepository {
 
     return (response as List).map((json) => Product.fromJson(json)).toList();
   }
+
+  /// Search products by color matching keywords mapped from model
+  Future<List<Product>> searchProductsByColor(String color) async {
+    var query = _client.from('products').select();
+    final c = color.toLowerCase();
+
+    if (c == 'red') {
+      query = query.or(
+          'name.ilike.%red%,name.ilike.%tomato%,name.ilike.%apple%,name.ilike.%strawberry%');
+    } else if (c == 'green') {
+      query = query.or(
+          'name.ilike.%green%,name.ilike.%spinach%,name.ilike.%broccoli%,name.ilike.%cucumber%');
+    } else if (c == 'orange') {
+      query = query
+          .or('name.ilike.%orange%,name.ilike.%carrot%,name.ilike.%banana%');
+    } else {
+      return searchProducts(color);
+    }
+
+    final response = await query.order('name');
+    return (response as List).map((json) => Product.fromJson(json)).toList();
+  }
 }
