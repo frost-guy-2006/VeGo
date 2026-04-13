@@ -24,8 +24,10 @@ class AuthProvider extends ChangeNotifier {
       await _supabase.auth.signInWithOtp(
         phone: phoneNumber,
       );
-    } catch (e) {
+    } on AuthException catch (_) {
       rethrow;
+    } catch (e) {
+      throw Exception('Sign in failed');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -42,8 +44,10 @@ class AuthProvider extends ChangeNotifier {
         token: otp,
         phone: phoneNumber,
       );
-    } catch (e) {
+    } on AuthException catch (_) {
       rethrow;
+    } catch (e) {
+      throw Exception('OTP verification failed');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -59,8 +63,10 @@ class AuthProvider extends ChangeNotifier {
         email: email,
         password: password,
       );
-    } catch (e) {
+    } on AuthException catch (_) {
       rethrow;
+    } catch (e) {
+      throw Exception('Sign in failed');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -76,8 +82,10 @@ class AuthProvider extends ChangeNotifier {
         email: email,
         password: password,
       );
-    } catch (e) {
+    } on AuthException catch (_) {
       rethrow;
+    } catch (e) {
+      throw Exception('Sign up failed');
     } finally {
       _isLoading = false;
       notifyListeners();
