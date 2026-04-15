@@ -127,6 +127,7 @@ class RainDrop {
 }
 
 class RainPainter extends CustomPainter {
+  static final Random _random = Random();
   final List<RainDrop> drops;
   final double progress;
 
@@ -150,7 +151,7 @@ class RainPainter extends CustomPainter {
       drop.y += drop.speed * 0.02; // Move down
       if (drop.y > 1.0) {
         drop.y = -drop.length; // Reset to top
-        drop.x = Random().nextDouble(); // Random new X
+        drop.x = _random.nextDouble(); // Random new X
       }
 
       final startX = drop.x * size.width;
