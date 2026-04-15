@@ -92,4 +92,23 @@ class ProductRepository {
 
     return (response as List).map((json) => Product.fromJson(json)).toList();
   }
+
+  /// Search products by color
+  Future<List<Product>> searchProductsByColor(String color) async {
+    // Get keywords for the color, fallback to an empty list
+    final keywords = Product.colorKeywords[color] ?? [];
+
+    if (keywords.isEmpty) {
+      return searchProducts(color); // Fallback to normal search if no keywords
+    }
+
+    // Dynamically build the 'or' filter string for Supabase
+    // e.g., 'name.ilike.%red%,name.ilike.%tomato%,...'
+    final orFilter = keywords.map((kw) => 'name.ilike.%$kw%').join(',');
+
+    final response =
+        await _client.from('products').select().or(orFilter).order('name');
+
+    return (response as List).map((json) => Product.fromJson(json)).toList();
+  }
 }
