@@ -161,7 +161,7 @@ class _HomeContentState extends State<HomeContent> {
       });
     } catch (e) {
       setState(() {
-        _errorMessage = e.toString();
+        _errorMessage = 'Failed to load products';
         _isLoading = false;
       });
     }
