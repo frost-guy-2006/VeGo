@@ -26,12 +26,14 @@ class _RainModeOverlayState extends State<RainModeOverlay>
 
     // Initialize drops
     for (int i = 0; i < 100; i++) {
-      _drops.add(RainDrop(
-        x: _random.nextDouble(),
-        y: _random.nextDouble(),
-        speed: 0.5 + _random.nextDouble() * 0.5,
-        length: 0.05 + _random.nextDouble() * 0.05,
-      ));
+      _drops.add(
+        RainDrop(
+          x: _random.nextDouble(),
+          y: _random.nextDouble(),
+          speed: 0.5 + _random.nextDouble() * 0.5,
+          length: 0.05 + _random.nextDouble() * 0.05,
+        ),
+      );
     }
   }
 
@@ -56,8 +58,10 @@ class _RainModeOverlayState extends State<RainModeOverlay>
             animation: _controller,
             builder: (context, child) {
               return CustomPaint(
-                painter:
-                    RainPainter(drops: _drops, progress: _controller.value),
+                painter: RainPainter(
+                  drops: _drops,
+                  progress: _controller.value,
+                ),
                 size: Size.infinite,
               );
             },
@@ -74,7 +78,7 @@ class _RainModeOverlayState extends State<RainModeOverlay>
                 color: Colors.blueGrey[900]!.withValues(alpha: 0.9),
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: const [
-                  BoxShadow(color: Colors.black26, blurRadius: 10)
+                  BoxShadow(color: Colors.black26, blurRadius: 10),
                 ],
               ),
               child: Row(
@@ -119,16 +123,18 @@ class RainDrop {
   double speed;
   double length;
 
-  RainDrop(
-      {required this.x,
-      required this.y,
-      required this.speed,
-      required this.length});
+  RainDrop({
+    required this.x,
+    required this.y,
+    required this.speed,
+    required this.length,
+  });
 }
 
 class RainPainter extends CustomPainter {
   final List<RainDrop> drops;
   final double progress;
+  static final Random _random = Random();
 
   RainPainter({required this.drops, required this.progress});
 
@@ -150,7 +156,7 @@ class RainPainter extends CustomPainter {
       drop.y += drop.speed * 0.02; // Move down
       if (drop.y > 1.0) {
         drop.y = -drop.length; // Reset to top
-        drop.x = Random().nextDouble(); // Random new X
+        drop.x = _random.nextDouble(); // Random new X
       }
 
       final startX = drop.x * size.width;
