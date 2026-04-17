@@ -55,7 +55,7 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
       });
     } catch (e) {
       setState(() {
-        _error = e.toString();
+        _error = 'Failed to load products';
         _isLoading = false;
       });
     }
