@@ -11,6 +11,14 @@ class Product {
   final String? color; // inferred from name for demo
   final String? category; // product category (Fruits, Vegetables, etc.)
 
+  static const Map<String, List<String>> colorKeywords = {
+    'red': ['red', 'tomato', 'apple', 'strawberry'],
+    'green': ['green', 'spinach', 'broccoli', 'cucumber'],
+    'orange': ['orange', 'carrot', 'banana'],
+    'yellow': ['yellow', 'banana', 'lemon'],
+    'blue': ['blue', 'blueberry'],
+  };
+
   Product({
     required this.id,
     required this.name,
@@ -42,27 +50,18 @@ class Product {
     final name = json['name'] as String;
     // Mock Visual Search Tagging logic
     String? inferredColor;
-    if (name.toLowerCase().contains('red') ||
-        name.toLowerCase().contains('tomato') ||
-        name.toLowerCase().contains('apple') ||
-        name.toLowerCase().contains('strawberry')) {
-      inferredColor = 'Red';
-    } else if (name.toLowerCase().contains('green') ||
-        name.toLowerCase().contains('spinach') ||
-        name.toLowerCase().contains('broccoli') ||
-        name.toLowerCase().contains('cucumber')) {
-      inferredColor = 'Green';
-    } else if (name.toLowerCase().contains('orange') ||
-        name.toLowerCase().contains('carrot') ||
-        name.toLowerCase().contains('banana')) {
-      // Banana is yellow/orange-ish in context or we can add Yellow
-      inferredColor = 'Orange';
-    }
 
-    // For "Blue Packet" demo, let's arbitrarily tag something as Blue if it doesn't match above or if we add specific items later.
-    // Let's say "Blue" search finds nothing for now unless we add chips, OR we can map "Cauliflower" to "Blue" just to show the feature working if user searches "Blue".
-    // Better yet, let's map 'Berry' or generic items.
-    // Actually, let's just leave it natural. If I search "Red" I should see Red items.
+    final lowerName = name.toLowerCase();
+    for (var entry in colorKeywords.entries) {
+      for (var keyword in entry.value) {
+        if (lowerName.contains(keyword)) {
+          // Capitalize the color name
+          inferredColor = entry.key[0].toUpperCase() + entry.key.substring(1);
+          break;
+        }
+      }
+      if (inferredColor != null) break;
+    }
 
     return Product(
       id: json['id'],
