@@ -49,7 +49,8 @@ class RetryHelper {
         // Log retry attempt
         if (kDebugMode) {
           debugPrint(
-              'RetryHelper: Attempt $attempt failed, retrying in ${delay.inMilliseconds}ms...');
+            'RetryHelper: Attempt $attempt failed, retrying in ${delay.inMilliseconds}ms...',
+          );
         }
 
         // Call optional callback
@@ -60,8 +61,8 @@ class RetryHelper {
 
         // Calculate next delay with exponential backoff
         delay = Duration(
-          milliseconds:
-              (delay.inMilliseconds * config.backoffMultiplier).round(),
+          milliseconds: (delay.inMilliseconds * config.backoffMultiplier)
+              .round(),
         );
         if (delay > config.maxDelay) {
           delay = config.maxDelay;

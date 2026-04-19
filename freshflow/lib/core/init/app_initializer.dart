@@ -49,12 +49,9 @@ class GlobalErrorHandler {
     };
 
     // Handle errors outside Flutter framework
-    runZonedGuarded(
-      () => runApp(app),
-      (error, stackTrace) {
-        _logError(error, stackTrace);
-      },
-    );
+    runZonedGuarded(() => runApp(app), (error, stackTrace) {
+      _logError(error, stackTrace);
+    });
   }
 
   static void _logError(Object error, StackTrace? stackTrace) {

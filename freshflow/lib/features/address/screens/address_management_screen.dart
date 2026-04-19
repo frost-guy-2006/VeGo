@@ -62,7 +62,10 @@ class AddressManagementScreen extends StatelessWidget {
                 address: addresses[index],
                 onEdit: () => _navigateToEditAddress(context, addresses[index]),
                 onDelete: () => _showDeleteConfirmation(
-                    context, addressProvider, addresses[index]),
+                  context,
+                  addressProvider,
+                  addresses[index],
+                ),
                 onSetDefault: () =>
                     addressProvider.setAsDefault(addresses[index].id),
               );
@@ -119,8 +122,10 @@ class AddressManagementScreen extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 14,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -147,7 +152,10 @@ class AddressManagementScreen extends StatelessWidget {
   }
 
   void _showDeleteConfirmation(
-      BuildContext context, AddressProvider provider, Address address) {
+    BuildContext context,
+    AddressProvider provider,
+    Address address,
+  ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -176,7 +184,8 @@ class AddressManagementScreen extends StatelessWidget {
                   content: const Text('Address deleted'),
                   behavior: SnackBarBehavior.floating,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               );
             },
@@ -254,8 +263,10 @@ class _AddressCard extends StatelessWidget {
                 if (address.isDefault) ...[
                   const SizedBox(width: 8),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.primary,
                       borderRadius: BorderRadius.circular(12),
@@ -291,8 +302,11 @@ class _AddressCard extends StatelessWidget {
                       value: 'edit',
                       child: Row(
                         children: [
-                          Icon(Icons.edit_outlined,
-                              size: 18, color: context.textPrimary),
+                          Icon(
+                            Icons.edit_outlined,
+                            size: 18,
+                            color: context.textPrimary,
+                          ),
                           const SizedBox(width: 8),
                           Text('Edit', style: GoogleFonts.outfit()),
                         ],
@@ -303,8 +317,11 @@ class _AddressCard extends StatelessWidget {
                         value: 'default',
                         child: Row(
                           children: [
-                            const Icon(Icons.check_circle_outline,
-                                size: 18, color: AppColors.primary),
+                            const Icon(
+                              Icons.check_circle_outline,
+                              size: 18,
+                              color: AppColors.primary,
+                            ),
                             const SizedBox(width: 8),
                             Text('Set as Default', style: GoogleFonts.outfit()),
                           ],
@@ -314,12 +331,16 @@ class _AddressCard extends StatelessWidget {
                       value: 'delete',
                       child: Row(
                         children: [
-                          const Icon(Icons.delete_outline,
-                              size: 18, color: AppColors.error),
+                          const Icon(
+                            Icons.delete_outline,
+                            size: 18,
+                            color: AppColors.error,
+                          ),
                           const SizedBox(width: 8),
-                          Text('Delete',
-                              style:
-                                  GoogleFonts.outfit(color: AppColors.error)),
+                          Text(
+                            'Delete',
+                            style: GoogleFonts.outfit(color: AppColors.error),
+                          ),
                         ],
                       ),
                     ),
@@ -357,8 +378,11 @@ class _AddressCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Icon(Icons.phone_outlined,
-                        size: 14, color: context.textSecondary),
+                    Icon(
+                      Icons.phone_outlined,
+                      size: 14,
+                      color: context.textSecondary,
+                    ),
                     const SizedBox(width: 6),
                     Text(
                       address.phoneNumber,
@@ -422,10 +446,12 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
     final address = widget.address;
     _fullNameController = TextEditingController(text: address?.fullName ?? '');
     _phoneController = TextEditingController(text: address?.phoneNumber ?? '');
-    _addressLine1Controller =
-        TextEditingController(text: address?.addressLine1 ?? '');
-    _addressLine2Controller =
-        TextEditingController(text: address?.addressLine2 ?? '');
+    _addressLine1Controller = TextEditingController(
+      text: address?.addressLine1 ?? '',
+    );
+    _addressLine2Controller = TextEditingController(
+      text: address?.addressLine2 ?? '',
+    );
     _cityController = TextEditingController(text: address?.city ?? '');
     _stateController = TextEditingController(text: address?.state ?? '');
     _pincodeController = TextEditingController(text: address?.pincode ?? '');
@@ -497,7 +523,9 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 10),
+                        horizontal: 20,
+                        vertical: 10,
+                      ),
                       decoration: BoxDecoration(
                         color: isSelected
                             ? AppColors.primary
@@ -514,8 +542,9 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                         style: GoogleFonts.outfit(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
-                          color:
-                              isSelected ? Colors.white : context.textPrimary,
+                          color: isSelected
+                              ? Colors.white
+                              : context.textPrimary,
                         ),
                       ),
                     ),
@@ -675,8 +704,9 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                         height: 24,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
                         ),
                       )
                     : Text(
@@ -722,10 +752,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
             controller: controller,
             keyboardType: keyboardType,
             validator: validator,
-            style: GoogleFonts.outfit(
-              fontSize: 14,
-              color: context.textPrimary,
-            ),
+            style: GoogleFonts.outfit(fontSize: 14, color: context.textPrimary),
             cursorColor: AppColors.primary,
             decoration: InputDecoration(
               hintText: hint,
@@ -743,15 +770,19 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide:
-                    const BorderSide(color: AppColors.primary, width: 2),
+                borderSide: const BorderSide(
+                  color: AppColors.primary,
+                  width: 2,
+                ),
               ),
               errorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(color: AppColors.error),
               ),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
+              ),
             ),
           ),
         ],
@@ -800,8 +831,9 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
           content: Text(isEditing ? 'Address updated' : 'Address saved'),
           behavior: SnackBarBehavior.floating,
           backgroundColor: AppColors.primary,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
     }

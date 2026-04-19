@@ -24,16 +24,16 @@ class OrderItem {
   double get total => priceAtPurchase * quantity;
 
   Map<String, dynamic> toJson() => {
-        'product': product.toJson(),
-        'quantity': quantity,
-        'priceAtPurchase': priceAtPurchase,
-      };
+    'product': product.toJson(),
+    'quantity': quantity,
+    'priceAtPurchase': priceAtPurchase,
+  };
 
   factory OrderItem.fromJson(Map<String, dynamic> json) => OrderItem(
-        product: Product.fromJson(json['product']),
-        quantity: json['quantity'] as int,
-        priceAtPurchase: (json['priceAtPurchase'] as num).toDouble(),
-      );
+    product: Product.fromJson(json['product']),
+    quantity: json['quantity'] as int,
+    priceAtPurchase: (json['priceAtPurchase'] as num).toDouble(),
+  );
 }
 
 /// Represents a complete order
@@ -79,27 +79,26 @@ class Order {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'items': items.map((e) => e.toJson()).toList(),
-        'totalAmount': totalAmount,
-        'deliveryFee': deliveryFee,
-        'status': status.index,
-        'createdAt': createdAt.toIso8601String(),
-        'deliveredAt': deliveredAt?.toIso8601String(),
-        'deliveryAddress': deliveryAddress,
-      };
+    'id': id,
+    'items': items.map((e) => e.toJson()).toList(),
+    'totalAmount': totalAmount,
+    'deliveryFee': deliveryFee,
+    'status': status.index,
+    'createdAt': createdAt.toIso8601String(),
+    'deliveredAt': deliveredAt?.toIso8601String(),
+    'deliveryAddress': deliveryAddress,
+  };
 
   factory Order.fromJson(Map<String, dynamic> json) => Order(
-        id: json['id'],
-        items:
-            (json['items'] as List).map((e) => OrderItem.fromJson(e)).toList(),
-        totalAmount: (json['totalAmount'] as num).toDouble(),
-        deliveryFee: (json['deliveryFee'] as num?)?.toDouble() ?? 0.0,
-        status: OrderStatus.values[json['status'] as int],
-        createdAt: DateTime.parse(json['createdAt']),
-        deliveredAt: json['deliveredAt'] != null
-            ? DateTime.parse(json['deliveredAt'])
-            : null,
-        deliveryAddress: json['deliveryAddress'],
-      );
+    id: json['id'],
+    items: (json['items'] as List).map((e) => OrderItem.fromJson(e)).toList(),
+    totalAmount: (json['totalAmount'] as num).toDouble(),
+    deliveryFee: (json['deliveryFee'] as num?)?.toDouble() ?? 0.0,
+    status: OrderStatus.values[json['status'] as int],
+    createdAt: DateTime.parse(json['createdAt']),
+    deliveredAt: json['deliveredAt'] != null
+        ? DateTime.parse(json['deliveredAt'])
+        : null,
+    deliveryAddress: json['deliveryAddress'],
+  );
 }

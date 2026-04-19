@@ -22,8 +22,8 @@ class Product {
     this.color,
     this.category,
   }) : discountPercent = marketPrice > 0
-            ? ((marketPrice - currentPrice) / marketPrice * 100).round()
-            : 0;
+           ? ((marketPrice - currentPrice) / marketPrice * 100).round()
+           : 0;
 
   Map<String, dynamic> toJson() {
     return {
@@ -72,10 +72,10 @@ class Product {
           : (json['image_url'] ?? json['imageUrl']),
       currentPrice:
           (json['current_price'] ?? json['currentPrice'] as num?)?.toDouble() ??
-              0.0,
+          0.0,
       marketPrice:
           (json['market_price'] ?? json['marketPrice'] as num?)?.toDouble() ??
-              0.0,
+          0.0,
       harvestTime: json['harvest_time'] ?? json['harvestTime'] ?? '',
       stock: json['stock'] as int? ?? 0,
       color: inferredColor,

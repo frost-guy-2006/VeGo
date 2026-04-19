@@ -40,8 +40,11 @@ class CartBottomSheet extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.shopping_cart_outlined,
-                            size: 64, color: context.textSecondary),
+                        Icon(
+                          Icons.shopping_cart_outlined,
+                          size: 64,
+                          color: context.textSecondary,
+                        ),
                         const SizedBox(height: 16),
                         Text(
                           'Your cart is empty',
@@ -72,10 +75,10 @@ class CartBottomSheet extends StatelessWidget {
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) =>
                                 Container(
-                              width: 64,
-                              height: 64,
-                              color: Colors.grey[200],
-                            ),
+                                  width: 64,
+                                  height: 64,
+                                  color: Colors.grey[200],
+                                ),
                           ),
                         ),
                         const SizedBox(width: 16),
@@ -188,7 +191,8 @@ class CartBottomSheet extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (_) => const TrackingScreen()),
+                                  builder: (_) => const TrackingScreen(),
+                                ),
                               );
                             }
                             return null; // Reset slider

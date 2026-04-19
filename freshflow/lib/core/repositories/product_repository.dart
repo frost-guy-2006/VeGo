@@ -43,10 +43,7 @@ class ProductRepository {
   }
 
   /// Check if there are more products to load
-  Future<bool> hasMoreProducts({
-    int currentCount = 0,
-    String? category,
-  }) async {
+  Future<bool> hasMoreProducts({int currentCount = 0, String? category}) async {
     var query = _client.from('products').select('id');
 
     if (category != null && category != 'All') {
@@ -75,8 +72,11 @@ class ProductRepository {
 
   /// Fetch a single product by ID
   Future<Product?> fetchProductById(String id) async {
-    final response =
-        await _client.from('products').select().eq('id', id).maybeSingle();
+    final response = await _client
+        .from('products')
+        .select()
+        .eq('id', id)
+        .maybeSingle();
 
     if (response == null) return null;
     return Product.fromJson(response);
