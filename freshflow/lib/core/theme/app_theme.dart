@@ -5,9 +5,9 @@ import 'app_colors.dart';
 class AppTheme {
   // Custom text styles for prices and numbers (distinctive monospace)
   static TextStyle get priceStyle => GoogleFonts.jetBrainsMono(
-        fontWeight: FontWeight.w700,
-        color: AppColors.textDark,
-      );
+    fontWeight: FontWeight.w700,
+    color: AppColors.textDark,
+  );
 
   static TextStyle get priceLarge => priceStyle.copyWith(fontSize: 28);
   static TextStyle get priceMedium => priceStyle.copyWith(fontSize: 20);
@@ -128,9 +128,7 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: AppColors.surface,
         elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       // AppBar
       appBarTheme: AppBarTheme(
@@ -152,8 +150,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 16,
+        ),
       ),
     );
   }
@@ -272,9 +272,7 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: AppColors.cardDark,
         elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       // AppBar
       appBarTheme: AppBarTheme(
@@ -296,8 +294,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 16,
+        ),
       ),
     );
   }

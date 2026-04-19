@@ -25,11 +25,13 @@ class AppColors {
   static const Color backgroundDark = Color(0xFF0B1A13); // Deep forest night
   static const Color surfaceDark = Color(0xFF1F4231); // Leaf card surface
   static const Color cardDark = Color(0xFF2A5740); // Elevated card
-  static const Color surfaceAltDark =
-      Color(0xFF2A5740); // Alt surface (same as card for elevation)
+  static const Color surfaceAltDark = Color(
+    0xFF2A5740,
+  ); // Alt surface (same as card for elevation)
   static const Color borderDark = Color(0xFF538A72); // Visible dark border
-  static const Color textMutedDark =
-      Color(0xFFB0BEC0); // Lighter muted text for readability
+  static const Color textMutedDark = Color(
+    0xFFB0BEC0,
+  ); // Lighter muted text for readability
 
   // ⚡ Utility Colors
   static const Color success = Color(0xFF22C55E); // Fresh Green

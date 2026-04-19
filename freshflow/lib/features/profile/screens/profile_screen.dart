@@ -42,7 +42,8 @@ class ProfileScreen extends StatelessWidget {
             padding: const EdgeInsets.all(24.0),
             child: ConstrainedBox(
               constraints: BoxConstraints(
-                  minHeight: constraints.maxHeight - 48), // -48 for padding
+                minHeight: constraints.maxHeight - 48,
+              ), // -48 for padding
               child: IntrinsicHeight(
                 child: Column(
                   children: [
@@ -52,8 +53,9 @@ class ProfileScreen extends StatelessWidget {
                       child: CircleAvatar(
                         radius: 50,
                         backgroundColor: AppColors.secondary,
-                        backgroundImage:
-                            NetworkImage('https://i.pravatar.cc/150?img=12'),
+                        backgroundImage: NetworkImage(
+                          'https://i.pravatar.cc/150?img=12',
+                        ),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -92,26 +94,35 @@ class ProfileScreen extends StatelessWidget {
                           final defaultAddress = addressProvider.defaultAddress;
                           final addressText =
                               defaultAddress?.formattedAddress ??
-                                  'Add delivery address';
+                              'Add delivery address';
                           // Get phone from saved address if user phone is null
                           final displayPhone =
                               (user?.phone?.isNotEmpty ?? false)
-                                  ? user!.phone!
-                                  : defaultAddress?.phoneNumber ??
-                                      'Add phone number';
+                              ? user!.phone!
+                              : defaultAddress?.phoneNumber ??
+                                    'Add phone number';
                           return Column(
                             children: [
-                              _buildProfileRow(context, Icons.email_outlined,
-                                  'Email', email),
-                              Divider(height: 32, color: context.borderColor),
-                              _buildProfileRow(context, Icons.phone_android,
-                                  'Phone', displayPhone),
+                              _buildProfileRow(
+                                context,
+                                Icons.email_outlined,
+                                'Email',
+                                email,
+                              ),
                               Divider(height: 32, color: context.borderColor),
                               _buildProfileRow(
-                                  context,
-                                  Icons.location_on_outlined,
-                                  'Address',
-                                  addressText),
+                                context,
+                                Icons.phone_android,
+                                'Phone',
+                                displayPhone,
+                              ),
+                              Divider(height: 32, color: context.borderColor),
+                              _buildProfileRow(
+                                context,
+                                Icons.location_on_outlined,
+                                'Address',
+                                addressText,
+                              ),
                             ],
                           );
                         },
@@ -133,7 +144,8 @@ class ProfileScreen extends StatelessWidget {
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (_) => const WishlistScreen()),
+                              builder: (_) => const WishlistScreen(),
+                            ),
                           ),
                         );
                       },
@@ -146,8 +158,9 @@ class ProfileScreen extends StatelessWidget {
                       builder: (context, orderProvider, _) {
                         final isDark =
                             Theme.of(context).brightness == Brightness.dark;
-                        final orderColor =
-                            isDark ? AppColors.primaryLight : AppColors.primary;
+                        final orderColor = isDark
+                            ? AppColors.primaryLight
+                            : AppColors.primary;
                         return _buildGlassTile(
                           context: context,
                           icon: Icons.receipt_long,
@@ -160,7 +173,8 @@ class ProfileScreen extends StatelessWidget {
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (_) => const OrderHistoryScreen()),
+                              builder: (_) => const OrderHistoryScreen(),
+                            ),
                           ),
                         );
                       },
@@ -183,8 +197,8 @@ class ProfileScreen extends StatelessWidget {
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (_) =>
-                                    const AddressManagementScreen()),
+                              builder: (_) => const AddressManagementScreen(),
+                            ),
                           ),
                         );
                       },
@@ -197,8 +211,9 @@ class ProfileScreen extends StatelessWidget {
                       builder: (context, themeProvider, _) {
                         final isDark =
                             Theme.of(context).brightness == Brightness.dark;
-                        final themeColor =
-                            isDark ? AppColors.primaryLight : AppColors.primary;
+                        final themeColor = isDark
+                            ? AppColors.primaryLight
+                            : AppColors.primary;
                         return _buildGlassContainer(
                           context: context,
                           child: Row(
@@ -273,7 +288,11 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildProfileRow(
-      BuildContext context, IconData icon, String label, String value) {
+    BuildContext context,
+    IconData icon,
+    String label,
+    String value,
+  ) {
     return Row(
       children: [
         Container(
@@ -282,11 +301,13 @@ class ProfileScreen extends StatelessWidget {
             color: context.surfaceAltColor,
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(icon,
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? AppColors.primaryLight
-                  : AppColors.primary,
-              size: 20),
+          child: Icon(
+            icon,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.primaryLight
+                : AppColors.primary,
+            size: 20,
+          ),
         ),
         const SizedBox(width: 16),
         Expanded(
@@ -346,8 +367,10 @@ class ProfileScreen extends StatelessWidget {
             ),
             if (badge != null) ...[
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: (badgeColor ?? iconColor).withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(12),
@@ -410,9 +433,7 @@ class ProfileScreen extends StatelessWidget {
           ],
         ),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: color.withValues(alpha: 0.1),
-        ),
+        border: Border.all(color: color.withValues(alpha: 0.1)),
       ),
       child: Icon(icon, color: color, size: 20),
     );

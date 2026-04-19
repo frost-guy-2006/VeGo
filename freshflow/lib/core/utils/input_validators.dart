@@ -115,7 +115,10 @@ class InputValidators {
 
   /// Validates minimum length.
   static String? validateMinLength(
-      String? value, int minLength, String fieldName) {
+    String? value,
+    int minLength,
+    String fieldName,
+  ) {
     if (value == null || value.length < minLength) {
       return '$fieldName must be at least $minLength characters';
     }
@@ -125,7 +128,10 @@ class InputValidators {
 
   /// Validates maximum length.
   static String? validateMaxLength(
-      String? value, int maxLength, String fieldName) {
+    String? value,
+    int maxLength,
+    String fieldName,
+  ) {
     if (value != null && value.length > maxLength) {
       return '$fieldName cannot exceed $maxLength characters';
     }

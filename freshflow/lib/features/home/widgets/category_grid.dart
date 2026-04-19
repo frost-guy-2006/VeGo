@@ -26,7 +26,7 @@ class _CategoryGridState extends State<CategoryGrid>
     {
       'name': 'Bakery',
       'icon': Icons.breakfast_dining_rounded,
-      'color': 0xFFA3584E
+      'color': 0xFFA3584E,
     },
     {'name': 'Tea/Coffee', 'icon': Icons.coffee_rounded, 'color': 0xFF6D4C41},
   ];
@@ -94,7 +94,9 @@ class _CategoryGridState extends State<CategoryGrid>
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeOutCubic,
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 10),
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
                       // Glass fill
                       gradient: isSelected
@@ -110,22 +112,23 @@ class _CategoryGridState extends State<CategoryGrid>
                       color: isSelected
                           ? null
                           : (isDark
-                              ? Colors.white.withValues(alpha: 0.06)
-                              : const Color(0xFFF1F2F4)),
+                                ? Colors.white.withValues(alpha: 0.06)
+                                : const Color(0xFFF1F2F4)),
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(
                         color: isSelected
                             ? categoryColor.withValues(alpha: 0.6)
                             : (isDark
-                                ? Colors.white.withValues(alpha: 0.1)
-                                : const Color(0xFFD8DADF)),
+                                  ? Colors.white.withValues(alpha: 0.1)
+                                  : const Color(0xFFD8DADF)),
                         width: 1,
                       ),
                       boxShadow: isSelected
                           ? [
                               BoxShadow(
                                 color: categoryColor.withValues(
-                                    alpha: _glowAnimation.value * 0.4),
+                                  alpha: _glowAnimation.value * 0.4,
+                                ),
                                 blurRadius: 16,
                                 offset: const Offset(0, 4),
                                 spreadRadius: -2,
@@ -142,21 +145,22 @@ class _CategoryGridState extends State<CategoryGrid>
                           color: isSelected
                               ? Colors.white
                               : (isDark
-                                  ? context.textSecondary
-                                  : categoryColor.withValues(alpha: 0.85)),
+                                    ? context.textSecondary
+                                    : categoryColor.withValues(alpha: 0.85)),
                         ),
                         const SizedBox(width: 8),
                         Text(
                           categoryName,
                           style: GoogleFonts.outfit(
                             fontSize: 13,
-                            fontWeight:
-                                isSelected ? FontWeight.w600 : FontWeight.w500,
+                            fontWeight: isSelected
+                                ? FontWeight.w600
+                                : FontWeight.w500,
                             color: isSelected
                                 ? Colors.white
                                 : (isDark
-                                    ? context.textSecondary
-                                    : context.textPrimary),
+                                      ? context.textSecondary
+                                      : context.textPrimary),
                             letterSpacing: 0.2,
                           ),
                         ),

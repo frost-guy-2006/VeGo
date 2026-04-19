@@ -61,8 +61,9 @@ class _SearchScreenState extends State<SearchScreen> {
       List<Product> filtered;
       if (_activeColorFilter != null) {
         // Filter by inferred color
-        filtered =
-            allProducts.where((p) => p.color == _activeColorFilter).toList();
+        filtered = allProducts
+            .where((p) => p.color == _activeColorFilter)
+            .toList();
       } else {
         // Filter by name
         filtered = allProducts
@@ -135,8 +136,9 @@ class _SearchScreenState extends State<SearchScreen> {
                       border: Border.all(color: Colors.white, width: 2),
                       boxShadow: [
                         BoxShadow(
-                            color: themeColor.withValues(alpha: 0.4),
-                            blurRadius: 8)
+                          color: themeColor.withValues(alpha: 0.4),
+                          blurRadius: 8,
+                        ),
                       ],
                     ),
                   ),
@@ -161,7 +163,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),
@@ -170,29 +172,36 @@ class _SearchScreenState extends State<SearchScreen> {
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _searchResults.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.search_off,
-                                size: 64, color: Colors.grey),
-                            Text('No items found',
-                                style: GoogleFonts.plusJakartaSans(
-                                    color: Colors.grey)),
-                          ],
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.search_off,
+                          size: 64,
+                          color: Colors.grey,
                         ),
-                      )
-                    : MasonryGridView.count(
-                        padding: const EdgeInsets.all(16),
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 12,
-                        crossAxisSpacing: 12,
-                        itemCount: _searchResults.length,
-                        itemBuilder: (context, index) {
-                          return PriceComparisonCard(
-                              product: _searchResults[index]);
-                        },
-                      ),
+                        Text(
+                          'No items found',
+                          style: GoogleFonts.plusJakartaSans(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : MasonryGridView.count(
+                    padding: const EdgeInsets.all(16),
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    itemCount: _searchResults.length,
+                    itemBuilder: (context, index) {
+                      return PriceComparisonCard(
+                        product: _searchResults[index],
+                      );
+                    },
+                  ),
           ),
         ],
       ),
