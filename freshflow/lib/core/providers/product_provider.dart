@@ -56,7 +56,7 @@ class ProductProvider extends ChangeNotifier {
       _hasMore = _products.length >= ProductRepository.defaultPageSize;
       _error = null;
     } catch (e) {
-      _error = e.toString();
+      _error = 'Failed to load products';
       debugPrint('ProductProvider: Error loading products: $e');
     } finally {
       _isLoading = false;
