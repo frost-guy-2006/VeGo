@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:vego/core/models/product_model.dart';
 import 'package:vego/core/repositories/product_repository.dart';
@@ -20,6 +21,14 @@ class _SearchScreenState extends State<SearchScreen> {
   List<Product> _searchResults = [];
   bool _isLoading = false;
   String? _activeColorFilter; // "Red", "Blue", etc.
+  Timer? _debounce;
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -33,51 +42,60 @@ class _SearchScreenState extends State<SearchScreen> {
   // Visual Search Logic:
   // If query matches a color name, switch to "Visual Mode"
   void _performSearch(String query) async {
-    if (query.isEmpty) {
-      setState(() {
-        _searchResults = [];
-        _activeColorFilter = null;
-      });
-      return;
-    }
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
 
-    setState(() => _isLoading = true);
-
-    // Check for color keywords
-    final lowerQuery = query.toLowerCase();
-    if (['red', 'blue', 'green', 'orange', 'yellow'].contains(lowerQuery)) {
-      _activeColorFilter = lowerQuery;
-      // Capitalize first letter for display
-      _activeColorFilter =
-          lowerQuery[0].toUpperCase() + lowerQuery.substring(1);
-    } else {
-      _activeColorFilter = null;
-    }
-
-    try {
-      // Fetch all products using repository
-      final allProducts = await _productRepository.fetchProducts();
-
-      List<Product> filtered;
-      if (_activeColorFilter != null) {
-        // Filter by inferred color
-        filtered =
-            allProducts.where((p) => p.color == _activeColorFilter).toList();
-      } else {
-        // Filter by name
-        filtered = allProducts
-            .where((p) => p.name.toLowerCase().contains(lowerQuery))
-            .toList();
+    _debounce = Timer(const Duration(milliseconds: 300), () async {
+      if (query.isEmpty) {
+        if (mounted) {
+          setState(() {
+            _searchResults = [];
+            _activeColorFilter = null;
+          });
+        }
+        return;
       }
 
-      setState(() {
-        _searchResults = filtered;
-        _isLoading = false;
-      });
-    } catch (e) {
-      debugPrint('Search error: $e');
-      setState(() => _isLoading = false);
-    }
+      if (mounted) {
+        setState(() => _isLoading = true);
+      }
+
+      // Check for color keywords
+      final lowerQuery = query.toLowerCase();
+      if (['red', 'blue', 'green', 'orange', 'yellow'].contains(lowerQuery)) {
+        _activeColorFilter = lowerQuery;
+        // Capitalize first letter for display
+        _activeColorFilter =
+            lowerQuery[0].toUpperCase() + lowerQuery.substring(1);
+      } else {
+        _activeColorFilter = null;
+      }
+
+      try {
+        List<Product> results;
+        if (_activeColorFilter != null) {
+          results = await _productRepository.searchProductsByColor(_activeColorFilter!);
+        } else {
+          results = await _productRepository.searchProducts(query);
+        }
+
+        if (!mounted || _searchController.text.trim().toLowerCase() != query.trim().toLowerCase()) {
+          if (mounted) {
+            setState(() => _isLoading = false);
+          }
+          return;
+        }
+
+        setState(() {
+          _searchResults = results;
+          _isLoading = false;
+        });
+      } catch (e) {
+        debugPrint('Search error: $e');
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
+      }
+    });
   }
 
   @override
