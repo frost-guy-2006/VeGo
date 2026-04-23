@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:vego/core/widgets/liquid_wave_background.dart';
 import 'package:vego/core/widgets/backgrounds.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class OtpScreen extends StatefulWidget {
   final String phoneNumber;
@@ -64,20 +65,26 @@ class _OtpScreenState extends State<OtpScreen> {
           (route) => false,
         );
       }
+    } on AuthException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Invalid OTP: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Invalid OTP provided')));
       }
     }
   }
 
   void _resendOtp() {
     // Mock resend logic or call provider
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('OTP Resent!')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('OTP Resent!')));
     startTimer();
   }
 
@@ -127,7 +134,9 @@ class _OtpScreenState extends State<OtpScreen> {
                       // OTP Input
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 4),
+                          horizontal: 16,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: context.surfaceColor,
                           borderRadius: BorderRadius.circular(12),
@@ -165,7 +174,8 @@ class _OtpScreenState extends State<OtpScreen> {
                           ),
                           child: isLoading
                               ? const CircularProgressIndicator(
-                                  color: Colors.white)
+                                  color: Colors.white,
+                                )
                               : Text(
                                   'Confirm',
                                   style: GoogleFonts.plusJakartaSans(

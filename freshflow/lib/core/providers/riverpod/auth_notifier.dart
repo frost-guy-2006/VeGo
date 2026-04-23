@@ -7,19 +7,11 @@ class AuthState {
   final User? user;
   final String? error;
 
-  const AuthState({
-    this.isLoading = false,
-    this.user,
-    this.error,
-  });
+  const AuthState({this.isLoading = false, this.user, this.error});
 
   bool get isAuthenticated => user != null;
 
-  AuthState copyWith({
-    bool? isLoading,
-    User? user,
-    String? error,
-  }) {
+  AuthState copyWith({bool? isLoading, User? user, String? error}) {
     return AuthState(
       isLoading: isLoading ?? this.isLoading,
       user: user ?? this.user,
@@ -33,7 +25,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   final SupabaseClient _supabase;
 
   AuthNotifier(this._supabase)
-      : super(AuthState(user: _supabase.auth.currentUser)) {
+    : super(AuthState(user: _supabase.auth.currentUser)) {
     _supabase.auth.onAuthStateChange.listen((data) {
       state = state.copyWith(user: data.session?.user);
     });
@@ -45,7 +37,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await _supabase.auth.signInWithOtp(phone: phoneNumber);
       state = state.copyWith(isLoading: false);
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(
+        isLoading: false,
+        error: e is AuthException ? e.message : 'Authentication failed',
+      );
       rethrow;
     }
   }
@@ -60,7 +55,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
       state = state.copyWith(isLoading: false);
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(
+        isLoading: false,
+        error: e is AuthException ? e.message : 'Authentication failed',
+      );
       rethrow;
     }
   }
@@ -71,7 +69,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await _supabase.auth.signInWithPassword(email: email, password: password);
       state = state.copyWith(isLoading: false);
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(
+        isLoading: false,
+        error: e is AuthException ? e.message : 'Authentication failed',
+      );
       rethrow;
     }
   }
@@ -82,7 +83,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await _supabase.auth.signUp(email: email, password: password);
       state = state.copyWith(isLoading: false);
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(
+        isLoading: false,
+        error: e is AuthException ? e.message : 'Authentication failed',
+      );
       rethrow;
     }
   }
