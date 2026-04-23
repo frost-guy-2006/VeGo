@@ -49,13 +49,14 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
           .order('name');
 
       setState(() {
-        _products =
-            (response as List).map((json) => Product.fromJson(json)).toList();
+        _products = (response as List)
+            .map((json) => Product.fromJson(json))
+            .toList();
         _isLoading = false;
       });
     } catch (e) {
       setState(() {
-        _error = e.toString();
+        _error = 'Failed to load products';
         _isLoading = false;
       });
     }
@@ -119,8 +120,10 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
               child: Row(
                 children: [
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: widget.categoryColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
@@ -150,8 +153,11 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.error_outline,
-                        size: 48, color: Colors.red.shade300),
+                    Icon(
+                      Icons.error_outline,
+                      size: 48,
+                      color: Colors.red.shade300,
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       'Failed to load products',
@@ -213,32 +219,27 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
                 ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final product = _products[index];
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          PageTransition(
-                            type: PageTransitionType.scale,
-                            alignment: Alignment.center,
-                            child: ProductDetailScreen(product: product),
-                          ),
-                        );
-                      },
-                      child: PriceComparisonCard(product: product),
-                    );
-                  },
-                  childCount: _products.length,
-                ),
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  final product = _products[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                          type: PageTransitionType.scale,
+                          alignment: Alignment.center,
+                          child: ProductDetailScreen(product: product),
+                        ),
+                      );
+                    },
+                    child: PriceComparisonCard(product: product),
+                  );
+                }, childCount: _products.length),
               ),
             ),
 
           // Bottom padding
-          const SliverToBoxAdapter(
-            child: SizedBox(height: 100),
-          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 100)),
         ],
       ),
     );
