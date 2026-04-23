@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:vego/core/models/product_model.dart';
 import 'package:vego/core/repositories/product_repository.dart';
@@ -20,6 +21,14 @@ class _SearchScreenState extends State<SearchScreen> {
   List<Product> _searchResults = [];
   bool _isLoading = false;
   String? _activeColorFilter; // "Red", "Blue", etc.
+  Timer? _debounce;
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -55,28 +64,34 @@ class _SearchScreenState extends State<SearchScreen> {
     }
 
     try {
-      // Fetch all products using repository
-      final allProducts = await _productRepository.fetchProducts();
-
-      List<Product> filtered;
+      List<Product> results;
       if (_activeColorFilter != null) {
-        // Filter by inferred color
-        filtered =
-            allProducts.where((p) => p.color == _activeColorFilter).toList();
+        results = await _productRepository.searchProductsByColor(
+          _activeColorFilter!,
+        );
       } else {
-        // Filter by name
-        filtered = allProducts
-            .where((p) => p.name.toLowerCase().contains(lowerQuery))
-            .toList();
+        results = await _productRepository.searchProducts(query);
       }
 
-      setState(() {
-        _searchResults = filtered;
-        _isLoading = false;
-      });
+      if (_searchController.text.trim().toLowerCase() !=
+          query.trim().toLowerCase()) {
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
+        return;
+      }
+
+      if (mounted) {
+        setState(() {
+          _searchResults = results;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
       debugPrint('Search error: $e');
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -111,8 +126,10 @@ class _SearchScreenState extends State<SearchScreen> {
             color: context.textPrimary,
           ),
           onChanged: (val) {
-            // Debounce could be added here
-            _performSearch(val);
+            if (_debounce?.isActive ?? false) _debounce?.cancel();
+            _debounce = Timer(const Duration(milliseconds: 300), () {
+              _performSearch(val);
+            });
           },
         ),
       ),
@@ -135,8 +152,9 @@ class _SearchScreenState extends State<SearchScreen> {
                       border: Border.all(color: Colors.white, width: 2),
                       boxShadow: [
                         BoxShadow(
-                            color: themeColor.withValues(alpha: 0.4),
-                            blurRadius: 8)
+                          color: themeColor.withValues(alpha: 0.4),
+                          blurRadius: 8,
+                        ),
                       ],
                     ),
                   ),
@@ -161,7 +179,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),
@@ -170,29 +188,36 @@ class _SearchScreenState extends State<SearchScreen> {
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _searchResults.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.search_off,
-                                size: 64, color: Colors.grey),
-                            Text('No items found',
-                                style: GoogleFonts.plusJakartaSans(
-                                    color: Colors.grey)),
-                          ],
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.search_off,
+                          size: 64,
+                          color: Colors.grey,
                         ),
-                      )
-                    : MasonryGridView.count(
-                        padding: const EdgeInsets.all(16),
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 12,
-                        crossAxisSpacing: 12,
-                        itemCount: _searchResults.length,
-                        itemBuilder: (context, index) {
-                          return PriceComparisonCard(
-                              product: _searchResults[index]);
-                        },
-                      ),
+                        Text(
+                          'No items found',
+                          style: GoogleFonts.plusJakartaSans(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : MasonryGridView.count(
+                    padding: const EdgeInsets.all(16),
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    itemCount: _searchResults.length,
+                    itemBuilder: (context, index) {
+                      return PriceComparisonCard(
+                        product: _searchResults[index],
+                      );
+                    },
+                  ),
           ),
         ],
       ),
