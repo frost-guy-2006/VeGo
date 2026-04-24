@@ -3,7 +3,10 @@ import 'package:vego/core/models/product_model.dart';
 
 /// Repository for product-related data operations
 class ProductRepository {
-  final SupabaseClient _client = Supabase.instance.client;
+  final SupabaseClient _client;
+
+  ProductRepository({SupabaseClient? client})
+      : _client = client ?? Supabase.instance.client;
 
   /// Default page size for pagination
   static const int defaultPageSize = 10;

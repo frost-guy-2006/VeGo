@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-import 'package:vego/core/providers/cart_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vego/core/providers/riverpod/providers.dart';
 import 'package:vego/core/theme/app_colors.dart';
 
 /// Order details card showing current order items.
 /// Intentionally opaque (no frost) for visual contrast with frosted cards above.
-class OrderDetailsCard extends StatelessWidget {
+class OrderDetailsCard extends ConsumerWidget {
   const OrderDetailsCard({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(16),
@@ -115,8 +115,9 @@ class OrderDetailsCard extends StatelessWidget {
           const SizedBox(height: 12),
 
           // Order items
-          Consumer<CartProvider>(
-            builder: (context, cart, _) {
+          Builder(
+            builder: (context) {
+              final cart = ref.watch(cartProvider);
               final items = cart.items;
               if (items.isEmpty) {
                 return Text(

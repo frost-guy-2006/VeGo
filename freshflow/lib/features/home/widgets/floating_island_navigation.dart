@@ -1,13 +1,13 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-import 'package:vego/core/providers/cart_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vego/core/providers/riverpod/providers.dart';
 import 'package:vego/core/theme/app_colors.dart';
 
 import 'package:vego/features/cart/screens/cart_screen.dart';
 
-class FloatingIslandNavigation extends StatefulWidget {
+class FloatingIslandNavigation extends ConsumerStatefulWidget {
   final int selectedIndex;
   final Function(int) onIndexChanged;
 
@@ -18,16 +18,15 @@ class FloatingIslandNavigation extends StatefulWidget {
   });
 
   @override
-  State<FloatingIslandNavigation> createState() =>
+  ConsumerState<FloatingIslandNavigation> createState() =>
       _FloatingIslandNavigationState();
 }
 
-class _FloatingIslandNavigationState extends State<FloatingIslandNavigation> {
+class _FloatingIslandNavigationState extends ConsumerState<FloatingIslandNavigation> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<CartProvider>(
-      builder: (context, cart, child) {
-        final hasItems = cart.items.isNotEmpty;
+    final cart = ref.watch(cartProvider);
+    final hasItems = cart.items.isNotEmpty;
 
         return AnimatedContainer(
           duration: const Duration(milliseconds: 400),
@@ -87,8 +86,6 @@ class _FloatingIslandNavigationState extends State<FloatingIslandNavigation> {
             ),
           ),
         );
-      },
-    );
   }
 
   Widget _buildNavigationMode(BuildContext context) {
@@ -105,7 +102,7 @@ class _FloatingIslandNavigationState extends State<FloatingIslandNavigation> {
     );
   }
 
-  Widget _buildCartMode(BuildContext context, CartProvider cart) {
+  Widget _buildCartMode(BuildContext context, dynamic cart) {
     return GestureDetector(
       key: const ValueKey('cart_mode'),
       onTap: () {

@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-import 'package:vego/core/providers/wishlist_provider.dart';
+import 'package:vego/core/providers/riverpod/providers.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:vego/features/home/widgets/price_comparison_card.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
-class WishlistScreen extends StatelessWidget {
+class WishlistScreen extends ConsumerWidget {
   const WishlistScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final wishlistState = ref.watch(wishlistProvider);
+    final wishlist = wishlistState.items;
+
     return Scaffold(
       backgroundColor: context.backgroundColor,
       appBar: AppBar(
@@ -35,88 +38,74 @@ class WishlistScreen extends StatelessWidget {
           ],
         ),
         actions: [
-          Consumer<WishlistProvider>(
-            builder: (context, wishlistProvider, _) {
-              if (wishlistProvider.itemCount == 0) {
-                return const SizedBox.shrink();
-              }
-              return TextButton.icon(
-                onPressed: () =>
-                    _showClearConfirmation(context, wishlistProvider),
-                icon: const Icon(Icons.delete_outline,
-                    color: AppColors.error, size: 20),
-                label: Text(
-                  'Clear',
-                  style: GoogleFonts.outfit(
-                    color: AppColors.error,
-                    fontWeight: FontWeight.w500,
-                  ),
+          if (wishlistState.itemCount > 0)
+            TextButton.icon(
+              onPressed: () =>
+                  _showClearConfirmation(context, ref),
+              icon: const Icon(Icons.delete_outline,
+                  color: AppColors.error, size: 20),
+              label: Text(
+                'Clear',
+                style: GoogleFonts.outfit(
+                  color: AppColors.error,
+                  fontWeight: FontWeight.w500,
                 ),
-              );
-            },
-          ),
+              ),
+            ),
         ],
       ),
-      body: Consumer<WishlistProvider>(
-        builder: (context, wishlistProvider, child) {
-          final wishlist = wishlistProvider.wishlist;
-
-          if (wishlist.isEmpty) {
-            return _buildEmptyState(context);
-          }
-
-          return CustomScrollView(
-            slivers: [
-              // Item count header
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: AppColors.accent.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          '${wishlist.length} ${wishlist.length == 1 ? 'item' : 'items'}',
-                          style: GoogleFonts.outfit(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.accent,
+      body: wishlist.isEmpty
+          ? _buildEmptyState(context)
+          : CustomScrollView(
+              slivers: [
+                // Item count header
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: AppColors.accent.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            '${wishlist.length} ${wishlist.length == 1 ? 'item' : 'items'}',
+                            style: GoogleFonts.outfit(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.accent,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
 
-              // Wishlist grid
-              SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                sliver: SliverMasonryGrid.count(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  childCount: wishlist.length,
-                  itemBuilder: (context, index) {
-                    return PriceComparisonCard(
-                      product: wishlist[index],
-                      index: index,
-                    );
-                  },
+                // Wishlist grid
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  sliver: SliverMasonryGrid.count(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    childCount: wishlist.length,
+                    itemBuilder: (context, index) {
+                      return PriceComparisonCard(
+                        product: wishlist[index],
+                        index: index,
+                      );
+                    },
+                  ),
                 ),
-              ),
 
-              // Bottom spacing
-              const SliverToBoxAdapter(child: SizedBox(height: 32)),
-            ],
-          );
-        },
-      ),
+                // Bottom spacing
+                const SliverToBoxAdapter(child: SizedBox(height: 32)),
+              ],
+            ),
     );
   }
 
@@ -180,8 +169,8 @@ class WishlistScreen extends StatelessWidget {
     );
   }
 
-  void _showClearConfirmation(
-      BuildContext context, WishlistProvider wishlistProvider) {
+  void _showClearConfirmation(BuildContext context, WidgetRef ref) {
+    final itemCount = ref.read(wishlistProvider).itemCount;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -190,7 +179,7 @@ class WishlistScreen extends StatelessWidget {
           style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.bold),
         ),
         content: Text(
-          'This will remove all ${wishlistProvider.itemCount} items from your wishlist.',
+          'This will remove all $itemCount items from your wishlist.',
           style: GoogleFonts.outfit(),
         ),
         actions: [
@@ -203,7 +192,7 @@ class WishlistScreen extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              wishlistProvider.clearWishlist();
+              ref.read(wishlistProvider.notifier).clearWishlist();
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(

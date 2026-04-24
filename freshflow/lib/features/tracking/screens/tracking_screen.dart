@@ -4,11 +4,11 @@ import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:vego/core/providers/cart_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vego/core/providers/riverpod/providers.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 
 import 'package:vego/features/tracking/widgets/delivery_header_widget.dart';
 import 'package:vego/features/tracking/widgets/rider_info_card.dart';
@@ -16,14 +16,14 @@ import 'package:vego/features/tracking/widgets/tip_section_widget.dart';
 import 'package:vego/features/tracking/widgets/delivery_instructions_card.dart';
 import 'package:vego/features/tracking/widgets/order_details_card.dart';
 
-class TrackingScreen extends StatefulWidget {
+class TrackingScreen extends ConsumerStatefulWidget {
   const TrackingScreen({super.key});
 
   @override
-  State<TrackingScreen> createState() => _TrackingScreenState();
+  ConsumerState<TrackingScreen> createState() => _TrackingScreenState();
 }
 
-class _TrackingScreenState extends State<TrackingScreen> {
+class _TrackingScreenState extends ConsumerState<TrackingScreen> {
   // Coordinates for HSR Layout, Sector 2 (Mock)
   final LatLng _userLocation = const LatLng(12.9121, 77.6446);
   final LatLng _riderStartLocation = const LatLng(12.9150, 77.6500);
@@ -71,7 +71,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
         _undoTimer?.cancel();
         // Commit order: Clear cart now
         if (mounted) {
-          context.read<CartProvider>().clearCart();
+          ref.read(cartProvider.notifier).clearCart();
         }
       }
     });
@@ -161,7 +161,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
           TextButton(
             onPressed: () {
               Navigator.of(context).popUntil((route) => route.isFirst);
-              context.read<CartProvider>().clearCart();
+              ref.read(cartProvider.notifier).clearCart();
             },
             child: Text(
               'Back to Home',
@@ -367,7 +367,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
               eta: _currentStep < 3 ? 'Preparing...' : 'Arriving in $_eta',
               onBack: () {
                 Navigator.of(context).popUntil((route) => route.isFirst);
-                context.read<CartProvider>().clearCart();
+                ref.read(cartProvider.notifier).clearCart();
               },
             ),
           ),

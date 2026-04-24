@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uuid/uuid.dart';
 import 'package:vego/core/models/address_model.dart';
-import 'package:vego/core/providers/address_provider.dart';
+import 'package:vego/core/providers/riverpod/providers.dart';
 import 'package:vego/core/theme/app_colors.dart';
 
-class AddressManagementScreen extends StatelessWidget {
+class AddressManagementScreen extends ConsumerWidget {
   const AddressManagementScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: context.backgroundColor,
       appBar: AppBar(
@@ -46,9 +47,10 @@ class AddressManagementScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: Consumer<AddressProvider>(
-        builder: (context, addressProvider, child) {
-          final addresses = addressProvider.addresses;
+      body: Builder(
+        builder: (context) {
+          final addressState = ref.watch(addressProvider);
+          final addresses = addressState.addresses;
 
           if (addresses.isEmpty) {
             return _buildEmptyState(context);
@@ -62,9 +64,9 @@ class AddressManagementScreen extends StatelessWidget {
                 address: addresses[index],
                 onEdit: () => _navigateToEditAddress(context, addresses[index]),
                 onDelete: () => _showDeleteConfirmation(
-                    context, addressProvider, addresses[index]),
+                    context, ref, addresses[index]),
                 onSetDefault: () =>
-                    addressProvider.setAsDefault(addresses[index].id),
+                    ref.read(addressProvider.notifier).setAsDefault(addresses[index].id),
               );
             },
           );
@@ -147,7 +149,7 @@ class AddressManagementScreen extends StatelessWidget {
   }
 
   void _showDeleteConfirmation(
-      BuildContext context, AddressProvider provider, Address address) {
+      BuildContext context, WidgetRef ref, Address address) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -169,7 +171,7 @@ class AddressManagementScreen extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              provider.deleteAddress(address.id);
+              ref.read(addressProvider.notifier).deleteAddress(address.id);
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -390,16 +392,16 @@ class _AddressCard extends StatelessWidget {
   }
 }
 
-class AddEditAddressScreen extends StatefulWidget {
+class AddEditAddressScreen extends ConsumerStatefulWidget {
   final Address? address;
 
   const AddEditAddressScreen({super.key, this.address});
 
   @override
-  State<AddEditAddressScreen> createState() => _AddEditAddressScreenState();
+  ConsumerState<AddEditAddressScreen> createState() => _AddEditAddressScreenState();
 }
 
-class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
+class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _fullNameController;
   late TextEditingController _phoneController;
@@ -764,11 +766,10 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
 
     setState(() => _isLoading = true);
 
-    final addressProvider = context.read<AddressProvider>();
     final isEditing = widget.address != null;
 
     final address = Address(
-      id: widget.address?.id ?? addressProvider.generateId(),
+      id: widget.address?.id ?? const Uuid().v4(),
       label: _selectedLabel,
       fullName: _fullNameController.text.trim(),
       phoneNumber: _phoneController.text.trim(),
@@ -786,9 +787,9 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
     );
 
     if (isEditing) {
-      await addressProvider.updateAddress(address);
+      await ref.read(addressProvider.notifier).updateAddress(address);
     } else {
-      await addressProvider.addAddress(address);
+      await ref.read(addressProvider.notifier).addAddress(address);
     }
 
     setState(() => _isLoading = false);

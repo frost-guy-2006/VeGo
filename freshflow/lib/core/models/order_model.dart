@@ -102,4 +102,110 @@ class Order {
             : null,
         deliveryAddress: json['deliveryAddress'],
       );
+
+  /// Versioned factory for Supabase data.
+  /// Tries relational order_items first, falls back to JSONB.
+  factory Order.fromSupabase(Map<String, dynamic> json) {
+    // Try V2 (relational) — order_items joined with products
+    final orderItems = json['order_items'];
+    if (orderItems != null && (orderItems as List).isNotEmpty) {
+      return Order._fromRelational(json);
+    }
+    // Fallback to V1 (JSONB)
+    return Order._fromJsonb(json);
+  }
+
+  /// Parse from relational order_items (V2 — new schema)
+  factory Order._fromRelational(Map<String, dynamic> json) {
+    final orderItemsList = (json['order_items'] as List).map((itemJson) {
+      final productData = itemJson['products'] as Map<String, dynamic>?;
+      return OrderItem(
+        product: productData != null
+            ? Product.fromJson(productData)
+            : Product(
+                id: itemJson['product_id'] ?? '',
+                name: 'Unknown Product',
+                imageUrl: '',
+                currentPrice: (itemJson['price_at_purchase'] as num).toDouble(),
+                marketPrice: (itemJson['price_at_purchase'] as num).toDouble(),
+                harvestTime: '',
+                stock: 0,
+              ),
+        quantity: itemJson['quantity'] as int,
+        priceAtPurchase: (itemJson['price_at_purchase'] as num).toDouble(),
+      );
+    }).toList();
+
+    return Order(
+      id: json['id'],
+      items: orderItemsList,
+      totalAmount: (json['total_amount'] as num).toDouble(),
+      deliveryFee: (json['delivery_fee'] as num?)?.toDouble() ?? 0.0,
+      status: _statusFromString(json['status'] as String? ?? 'pending'),
+      createdAt: DateTime.parse(json['created_at']),
+      deliveredAt: json['delivered_at'] != null
+          ? DateTime.parse(json['delivered_at'])
+          : null,
+      deliveryAddress: json['delivery_address'] ?? '',
+    );
+  }
+
+  /// Parse from JSONB items blob (V1 — legacy schema)
+  factory Order._fromJsonb(Map<String, dynamic> json) {
+    final itemsList = json['items'] as List? ?? [];
+    final orderItems = itemsList.map((itemJson) {
+      return OrderItem.fromJson(itemJson);
+    }).toList();
+
+    return Order(
+      id: json['id'],
+      items: orderItems,
+      totalAmount: (json['total_amount'] as num).toDouble(),
+      deliveryFee: (json['delivery_fee'] as num?)?.toDouble() ?? 0.0,
+      status: _statusFromString(json['status'] as String? ?? 'pending'),
+      createdAt: DateTime.parse(json['created_at']),
+      deliveredAt: json['delivered_at'] != null
+          ? DateTime.parse(json['delivered_at'])
+          : null,
+      deliveryAddress: json['delivery_address'] ?? '',
+    );
+  }
+
+  /// Convert database status string to OrderStatus enum
+  static OrderStatus _statusFromString(String status) {
+    switch (status) {
+      case 'pending':
+        return OrderStatus.pending;
+      case 'confirmed':
+        return OrderStatus.confirmed;
+      case 'preparing':
+        return OrderStatus.preparing;
+      case 'out_for_delivery':
+        return OrderStatus.outForDelivery;
+      case 'delivered':
+        return OrderStatus.delivered;
+      case 'cancelled':
+        return OrderStatus.cancelled;
+      default:
+        return OrderStatus.pending;
+    }
+  }
+
+  /// Convert OrderStatus enum to database string
+  static String statusToString(OrderStatus status) {
+    switch (status) {
+      case OrderStatus.pending:
+        return 'pending';
+      case OrderStatus.confirmed:
+        return 'confirmed';
+      case OrderStatus.preparing:
+        return 'preparing';
+      case OrderStatus.outForDelivery:
+        return 'out_for_delivery';
+      case OrderStatus.delivered:
+        return 'delivered';
+      case OrderStatus.cancelled:
+        return 'cancelled';
+    }
+  }
 }

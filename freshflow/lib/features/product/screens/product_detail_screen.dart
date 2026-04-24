@@ -1,18 +1,18 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vego/core/models/product_model.dart';
-import 'package:vego/core/providers/cart_provider.dart';
+import 'package:vego/core/providers/riverpod/providers.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 
-class ProductDetailScreen extends StatelessWidget {
+class ProductDetailScreen extends ConsumerWidget {
   final Product product;
 
   const ProductDetailScreen({super.key, required this.product});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: context.surfaceColor,
       body: CustomScrollView(
@@ -244,7 +244,7 @@ class ProductDetailScreen extends StatelessWidget {
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
-                        context.read<CartProvider>().addToCart(product);
+                        ref.read(cartProvider.notifier).addToCart(product);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Row(

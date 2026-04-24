@@ -1,20 +1,20 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:vego/core/providers/cart_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vego/core/providers/riverpod/providers.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:vego/core/theme/app_theme.dart';
 import 'package:vego/features/cart/screens/cart_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 
-class FloatingCartBar extends StatefulWidget {
+class FloatingCartBar extends ConsumerStatefulWidget {
   const FloatingCartBar({super.key});
 
   @override
-  State<FloatingCartBar> createState() => _FloatingCartBarState();
+  ConsumerState<FloatingCartBar> createState() => _FloatingCartBarState();
 }
 
-class _FloatingCartBarState extends State<FloatingCartBar>
+class _FloatingCartBarState extends ConsumerState<FloatingCartBar>
     with SingleTickerProviderStateMixin {
   late AnimationController _bounceController;
   late Animation<double> _scaleAnimation;
@@ -47,10 +47,9 @@ class _FloatingCartBarState extends State<FloatingCartBar>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cart = ref.watch(cartProvider);
 
-    return Consumer<CartProvider>(
-      builder: (context, cart, child) {
-        if (cart.items.isEmpty) return const SizedBox.shrink();
+    if (cart.items.isEmpty) return const SizedBox.shrink();
 
         // Trigger bounce when item count changes
         if (cart.items.length != _previousItemCount) {
@@ -81,12 +80,10 @@ class _FloatingCartBarState extends State<FloatingCartBar>
             ),
           ),
         );
-      },
-    );
   }
 
   Widget _buildInnerContent(
-      BuildContext context, bool isDark, CartProvider cart) {
+      BuildContext context, bool isDark, dynamic cart) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(

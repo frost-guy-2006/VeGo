@@ -1,45 +1,43 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-import 'package:vego/core/providers/address_provider.dart';
-import 'package:vego/core/providers/wishlist_provider.dart';
+import 'package:vego/core/providers/riverpod/providers.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:vego/features/address/screens/address_management_screen.dart';
 import 'package:vego/features/wishlist/screens/wishlist_screen.dart';
 
 /// Home app bar with delivery badge, address, and wishlist button.
-class HomeAppBar extends StatelessWidget {
+class HomeAppBar extends ConsumerWidget {
   const HomeAppBar({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Consumer2<AddressProvider, WishlistProvider>(
-      builder: (context, addressProvider, wishlistProvider, _) {
-        final defaultAddress = addressProvider.defaultAddress;
-        final addressLabel = defaultAddress?.label ?? 'Home';
-        final addressText = defaultAddress != null
-            ? '${defaultAddress.city}, ${defaultAddress.state}'
-            : 'Add Address';
-        final wishlistCount = wishlistProvider.itemCount;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final addressState = ref.watch(addressProvider);
+    final wishlistState = ref.watch(wishlistProvider);
 
-        return SliverAppBar(
-          pinned: true,
-          floating: true,
-          backgroundColor: context.backgroundColor,
-          elevation: 0,
-          expandedHeight: 90,
-          toolbarHeight: 70,
-          title: _AddressSection(
-            addressLabel: addressLabel,
-            addressText: addressText,
-          ),
-          actions: [
-            _WishlistButton(wishlistCount: wishlistCount),
-            const SizedBox(width: 16),
-          ],
-        );
-      },
+    final defaultAddress = addressState.defaultAddress;
+    final addressLabel = defaultAddress?.label ?? 'Home';
+    final addressText = defaultAddress != null
+        ? '${defaultAddress.city}, ${defaultAddress.state}'
+        : 'Add Address';
+    final wishlistCount = wishlistState.itemCount;
+
+    return SliverAppBar(
+      pinned: true,
+      floating: true,
+      backgroundColor: context.backgroundColor,
+      elevation: 0,
+      expandedHeight: 90,
+      toolbarHeight: 70,
+      title: _AddressSection(
+        addressLabel: addressLabel,
+        addressText: addressText,
+      ),
+      actions: [
+        _WishlistButton(wishlistCount: wishlistCount),
+        const SizedBox(width: 16),
+      ],
     );
   }
 }

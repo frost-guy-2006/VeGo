@@ -68,6 +68,21 @@ class Address {
         isDefault: json['isDefault'] ?? false,
       );
 
+  /// Factory for parsing Supabase row data (snake_case columns)
+  factory Address.fromSupabase(Map<String, dynamic> json) => Address(
+        id: json['id'],
+        label: json['label'] ?? 'Home',
+        fullName: json['full_name'] ?? '',
+        phoneNumber: json['phone_number'] ?? '',
+        addressLine1: json['street'] ?? '',
+        addressLine2: json['address_line_2'],
+        city: json['city'] ?? '',
+        state: json['state'] ?? '',
+        pincode: json['zip_code'] ?? '',
+        landmark: json['landmark'],
+        isDefault: json['is_default'] ?? false,
+      );
+
   Address copyWith({
     String? id,
     String? label,

@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:vego/features/tracking/screens/tracking_screen.dart';
 import 'package:slide_to_act/slide_to_act.dart';
-import 'package:vego/core/providers/cart_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vego/core/providers/riverpod/providers.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 
-class CartBottomSheet extends StatelessWidget {
+class CartBottomSheet extends ConsumerWidget {
   const CartBottomSheet({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cart = ref.watch(cartProvider);
+    
     return Container(
       decoration: BoxDecoration(
         color: context.surfaceColor,
@@ -33,8 +35,8 @@ class CartBottomSheet extends StatelessWidget {
           ),
 
           Expanded(
-            child: Consumer<CartProvider>(
-              builder: (context, cart, child) {
+            child: Builder(
+              builder: (context) {
                 if (cart.items.isEmpty) {
                   return Center(
                     child: Column(
@@ -107,7 +109,7 @@ class CartBottomSheet extends StatelessWidget {
                               icon: const Icon(Icons.remove_circle_outline),
                               color: context.textSecondary,
                               onPressed: () =>
-                                  cart.decreaseQuantity(item.product.id),
+                                  ref.read(cartProvider.notifier).decreaseQuantity(item.product.id),
                             ),
                             Text(
                               '${item.quantity}',
@@ -119,7 +121,7 @@ class CartBottomSheet extends StatelessWidget {
                             IconButton(
                               icon: const Icon(Icons.add_circle_outline),
                               color: AppColors.primary,
-                              onPressed: () => cart.addToCart(item.product),
+                              onPressed: () => ref.read(cartProvider.notifier).addToCart(item.product),
                             ),
                           ],
                         ),
@@ -132,9 +134,7 @@ class CartBottomSheet extends StatelessWidget {
           ),
 
           // Checkout Area
-          Consumer<CartProvider>(
-            builder: (context, cart, child) {
-              return Container(
+          Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   color: context.surfaceColor,
@@ -198,9 +198,7 @@ class CartBottomSheet extends StatelessWidget {
                     ],
                   ),
                 ),
-              );
-            },
-          ),
+              ),
         ],
       ),
     );

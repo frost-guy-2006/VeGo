@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:vego/core/providers/address_provider.dart';
+import 'package:vego/core/providers/riverpod/providers.dart';
 import 'package:vego/core/models/address_model.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:vego/features/address/screens/address_management_screen.dart';
 
 /// Bottom sheet for quickly selecting a delivery address without navigation.
-class AddressPickerSheet extends StatelessWidget {
+class AddressPickerSheet extends ConsumerWidget {
   const AddressPickerSheet({super.key});
 
   static Future<void> show(BuildContext context) {
@@ -20,13 +20,12 @@ class AddressPickerSheet extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Consumer<AddressProvider>(
-      builder: (context, addressProvider, _) {
-        final addresses = addressProvider.addresses;
-        final selectedAddress = addressProvider.selectedDeliveryAddress;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final addressState = ref.watch(addressProvider);
+    final addresses = addressState.addresses;
+    final selectedAddress = addressState.defaultAddress;
 
-        return Container(
+    return Container(
           decoration: BoxDecoration(
             color: context.surfaceColor,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
@@ -140,7 +139,7 @@ class AddressPickerSheet extends StatelessWidget {
                         address: address,
                         isSelected: isSelected,
                         onTap: () {
-                          addressProvider.selectDeliveryAddress(address);
+                          ref.read(addressProvider.notifier).selectDeliveryAddress(address);
                           Navigator.pop(context);
                         },
                       );
@@ -153,8 +152,6 @@ class AddressPickerSheet extends StatelessWidget {
             ],
           ),
         );
-      },
-    );
   }
 }
 

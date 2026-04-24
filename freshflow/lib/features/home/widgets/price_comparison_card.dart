@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vego/core/models/product_model.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:vego/core/providers/cart_provider.dart';
-import 'package:vego/core/providers/wishlist_provider.dart';
+import 'package:vego/core/providers/riverpod/providers.dart';
 import 'package:vego/features/product/screens/product_detail_screen.dart';
-import 'package:provider/provider.dart';
 
 class PriceComparisonCard extends StatefulWidget {
   final Product product;
@@ -167,13 +166,14 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
         Positioned(
           top: 8,
           right: 8,
-          child: Consumer<WishlistProvider>(
-            builder: (context, wishlist, _) {
-              final isWishlisted = wishlist.isInWishlist(product.id);
+          child: Consumer(
+            builder: (context, ref, _) {
+              final wishlistState = ref.watch(wishlistProvider);
+              final isWishlisted = wishlistState.isInWishlist(product.id);
               return GestureDetector(
                 onTap: () {
                   HapticFeedback.selectionClick();
-                  wishlist.toggleWishlist(product);
+                  ref.read(wishlistProvider.notifier).toggleWishlist(product);
                 },
                 child: Container(
                   padding: const EdgeInsets.all(6),
@@ -213,7 +213,11 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
         Positioned(
           bottom: -20,
           right: 10,
-          child: _buildAddButton(product),
+          child: Consumer(
+            builder: (context, ref, _) {
+              return _buildAddButton(product, ref);
+            },
+          ),
         ),
       ],
     );
@@ -241,14 +245,14 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
     );
   }
 
-  Widget _buildAddButton(Product product) {
+  Widget _buildAddButton(Product product, WidgetRef ref) {
     final inStock = product.stock > 0;
 
     return GestureDetector(
       onTap: inStock
           ? () {
               HapticFeedback.mediumImpact();
-              context.read<CartProvider>().addToCart(product);
+              ref.read(cartProvider.notifier).addToCart(product);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Row(

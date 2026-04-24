@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import 'package:vego/core/models/order_model.dart';
-import 'package:vego/core/providers/order_provider.dart';
+import 'package:vego/core/providers/riverpod/providers.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:intl/intl.dart';
 
-class OrderHistoryScreen extends StatelessWidget {
+class OrderHistoryScreen extends ConsumerWidget {
   const OrderHistoryScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final orderState = ref.watch(orderProvider);
+    final orders = orderState.recentOrders;
+
     return Scaffold(
       backgroundColor: context.backgroundColor,
       appBar: AppBar(
@@ -35,23 +38,15 @@ class OrderHistoryScreen extends StatelessWidget {
           ],
         ),
       ),
-      body: Consumer<OrderProvider>(
-        builder: (context, orderProvider, child) {
-          final orders = orderProvider.recentOrders;
-
-          if (orders.isEmpty) {
-            return _buildEmptyState(context);
-          }
-
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: orders.length,
-            itemBuilder: (context, index) {
-              return _OrderCard(order: orders[index]);
-            },
-          );
-        },
-      ),
+      body: orders.isEmpty
+          ? _buildEmptyState(context)
+          : ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: orders.length,
+              itemBuilder: (context, index) {
+                return _OrderCard(order: orders[index]);
+              },
+            ),
     );
   }
 

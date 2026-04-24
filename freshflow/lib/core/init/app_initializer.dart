@@ -17,10 +17,22 @@ class AppInitializer {
   static Future<void> initialize() async {
     if (_initialized) return;
 
-    WidgetsFlutterBinding.ensureInitialized();
-
     // Load environment variables from .env file
-    await dotenv.load(fileName: '.env');
+    try {
+      await dotenv.load(fileName: '.env');
+    } catch (e) {
+      throw Exception(
+        'Failed to load .env file. Make sure it exists in the project root '
+        'with SUPABASE_URL and SUPABASE_ANON_KEY. Error: $e',
+      );
+    }
+
+    if (Env.supabaseUrl.isEmpty || Env.supabaseAnonKey.isEmpty) {
+      throw Exception(
+        'Missing Supabase config. Check that your .env file contains '
+        'SUPABASE_URL and SUPABASE_ANON_KEY values.',
+      );
+    }
 
     await _initSupabase();
 

@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:vego/core/providers/auth_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vego/core/providers/riverpod/providers.dart';
 import 'package:vego/features/auth/screens/otp_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:vego/core/widgets/liquid_wave_background.dart';
 import 'package:vego/core/widgets/backgrounds.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -52,7 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     try {
-      await context.read<AuthProvider>().signInWithPhone(formattedPhone);
+      await ref.read(authProvider.notifier).signInWithPhone(formattedPhone);
       if (mounted) {
         Navigator.push(
           context,
@@ -81,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     try {
-      await context.read<AuthProvider>().signInWithEmail(email, password);
+      await ref.read(authProvider.notifier).signInWithEmail(email, password);
       // AuthProvider listens to auth state changes, so navigation might be handled by wrapper
       // But for explicit feedback/navigation:
     } catch (e) {
@@ -105,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     try {
-      await context.read<AuthProvider>().signUpWithEmail(email, password);
+      await ref.read(authProvider.notifier).signUpWithEmail(email, password);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -124,7 +124,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = context.watch<AuthProvider>().isLoading;
+    final authState = ref.watch(authProvider);
+    final isLoading = authState.isLoading;
 
     return Scaffold(
       backgroundColor: context.backgroundColor,
@@ -167,45 +168,53 @@ class _LoginScreenState extends State<LoginScreen> {
                         // Toggle
                         Row(
                           children: [
-                            ChoiceChip(
-                              label: const Text('Phone'),
-                              selected: !_isEmailMode,
-                              onSelected: (selected) {
-                                setState(() => _isEmailMode = !selected);
-                              },
-                              selectedColor: AppColors.primary,
-                              backgroundColor: context.surfaceAltColor,
-                              labelStyle: TextStyle(
-                                color: !_isEmailMode
-                                    ? Colors.white
-                                    : context.textSecondary,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              checkmarkColor: Colors.white,
-                              side: BorderSide.none,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
+                            Expanded(
+                              child: ChoiceChip(
+                                label: const Center(child: Text('Phone')),
+                                selected: !_isEmailMode,
+                                onSelected: (selected) {
+                                  setState(() => _isEmailMode = !selected);
+                                },
+                                selectedColor: AppColors.primary,
+                                backgroundColor: context.surfaceAltColor,
+                                labelStyle: TextStyle(
+                                  color: !_isEmailMode
+                                      ? Colors.white
+                                      : context.textSecondary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                checkmarkColor: Colors.white,
+                                side: BorderSide.none,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                showCheckmark: false,
                               ),
                             ),
                             const SizedBox(width: 12),
-                            ChoiceChip(
-                              label: const Text('Email'),
-                              selected: _isEmailMode,
-                              onSelected: (selected) {
-                                setState(() => _isEmailMode = selected);
-                              },
-                              selectedColor: AppColors.primary,
-                              backgroundColor: context.surfaceAltColor,
-                              labelStyle: TextStyle(
-                                color: _isEmailMode
-                                    ? Colors.white
-                                    : context.textSecondary,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              checkmarkColor: Colors.white,
-                              side: BorderSide.none,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
+                            Expanded(
+                              child: ChoiceChip(
+                                label: const Center(child: Text('Email')),
+                                selected: _isEmailMode,
+                                onSelected: (selected) {
+                                  setState(() => _isEmailMode = selected);
+                                },
+                                selectedColor: AppColors.primary,
+                                backgroundColor: context.surfaceAltColor,
+                                labelStyle: TextStyle(
+                                  color: _isEmailMode
+                                      ? Colors.white
+                                      : context.textSecondary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                checkmarkColor: Colors.white,
+                                side: BorderSide.none,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                showCheckmark: false, // Don't show checkmark to save space
                               ),
                             ),
                           ],

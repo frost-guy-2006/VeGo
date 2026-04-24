@@ -1,22 +1,22 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:vego/core/providers/auth_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vego/core/providers/riverpod/providers.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:vego/features/home/screens/home_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import 'package:vego/core/widgets/liquid_wave_background.dart';
 import 'package:vego/core/widgets/backgrounds.dart';
 
-class OtpScreen extends StatefulWidget {
+class OtpScreen extends ConsumerStatefulWidget {
   final String phoneNumber;
   const OtpScreen({super.key, required this.phoneNumber});
 
   @override
-  State<OtpScreen> createState() => _OtpScreenState();
+  ConsumerState<OtpScreen> createState() => _OtpScreenState();
 }
 
-class _OtpScreenState extends State<OtpScreen> {
+class _OtpScreenState extends ConsumerState<OtpScreen> {
   Timer? _timer;
   final TextEditingController _otpController = TextEditingController();
   int _start = 30;
@@ -57,7 +57,7 @@ class _OtpScreenState extends State<OtpScreen> {
     if (otp.length != 6) return;
 
     try {
-      await context.read<AuthProvider>().verifyOtp(widget.phoneNumber, otp);
+      await ref.read(authProvider.notifier).verifyOtp(widget.phoneNumber, otp);
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => const HomeScreen()),
@@ -83,7 +83,8 @@ class _OtpScreenState extends State<OtpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = context.watch<AuthProvider>().isLoading;
+    final authState = ref.watch(authProvider);
+    final isLoading = authState.isLoading;
 
     return Scaffold(
       backgroundColor: context.backgroundColor,

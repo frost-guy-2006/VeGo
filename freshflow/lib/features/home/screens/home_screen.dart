@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vego/core/providers/riverpod/providers.dart';
 import 'package:vego/features/cart/screens/cart_screen.dart';
 
 import 'package:vego/features/home/widgets/category_grid.dart';
@@ -12,7 +13,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:vego/core/models/product_model.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:vego/core/repositories/product_repository.dart';
-import 'package:vego/core/providers/address_provider.dart';
 import 'package:vego/features/home/widgets/flash_price_widget.dart';
 import 'package:vego/features/home/widgets/price_comparison_card.dart';
 import 'package:vego/features/home/widgets/rain_mode_overlay.dart';
@@ -95,14 +95,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class HomeContent extends StatefulWidget {
+class HomeContent extends ConsumerStatefulWidget {
   const HomeContent({super.key});
 
   @override
-  State<HomeContent> createState() => _HomeContentState();
+  ConsumerState<HomeContent> createState() => _HomeContentState();
 }
 
-class _HomeContentState extends State<HomeContent> {
+class _HomeContentState extends ConsumerState<HomeContent> {
   // Key to force rebuild of StreamBuilders on refresh
   Key _refreshKey = UniqueKey();
 
@@ -229,9 +229,10 @@ class _HomeContentState extends State<HomeContent> {
         slivers: [
           // Sticky Header with 10-min Delivery Badge
           // Header with dynamic address and wishlist button
-          Consumer<AddressProvider>(
-            builder: (context, addressProvider, _) {
-              final selectedAddress = addressProvider.selectedDeliveryAddress;
+          Builder(
+            builder: (context) {
+              final addressState = ref.watch(addressProvider);
+              final selectedAddress = addressState.defaultAddress;
               final addressLabel = selectedAddress?.label ?? 'Home';
               final addressText = selectedAddress != null
                   ? '${selectedAddress.city}, ${selectedAddress.state}'

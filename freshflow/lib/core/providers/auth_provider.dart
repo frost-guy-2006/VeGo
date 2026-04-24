@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:vego/core/repositories/auth_repository.dart';
 
 class AuthProvider extends ChangeNotifier {
-  final SupabaseClient _supabase = Supabase.instance.client;
+  final AuthRepository _repository;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  User? get currentUser => _supabase.auth.currentUser;
-  bool get isAuthenticated => currentUser != null;
+  User? get currentUser => _repository.currentUser;
+  bool get isAuthenticated => _repository.isAuthenticated;
 
-  AuthProvider() {
-    _supabase.auth.onAuthStateChange.listen((data) {
+  AuthProvider({AuthRepository? repository})
+      : _repository = repository ?? AuthRepository() {
+    _repository.onAuthStateChange.listen((data) {
       notifyListeners();
     });
   }
@@ -21,9 +23,7 @@ class AuthProvider extends ChangeNotifier {
       _isLoading = true;
       notifyListeners();
 
-      await _supabase.auth.signInWithOtp(
-        phone: phoneNumber,
-      );
+      await _repository.signInWithPhone(phoneNumber);
     } catch (e) {
       rethrow;
     } finally {
@@ -37,11 +37,7 @@ class AuthProvider extends ChangeNotifier {
       _isLoading = true;
       notifyListeners();
 
-      await _supabase.auth.verifyOTP(
-        type: OtpType.sms,
-        token: otp,
-        phone: phoneNumber,
-      );
+      await _repository.verifyOtp(phoneNumber, otp);
     } catch (e) {
       rethrow;
     } finally {
@@ -55,10 +51,7 @@ class AuthProvider extends ChangeNotifier {
       _isLoading = true;
       notifyListeners();
 
-      await _supabase.auth.signInWithPassword(
-        email: email,
-        password: password,
-      );
+      await _repository.signInWithEmail(email, password);
     } catch (e) {
       rethrow;
     } finally {
@@ -72,10 +65,7 @@ class AuthProvider extends ChangeNotifier {
       _isLoading = true;
       notifyListeners();
 
-      await _supabase.auth.signUp(
-        email: email,
-        password: password,
-      );
+      await _repository.signUpWithEmail(email, password);
     } catch (e) {
       rethrow;
     } finally {
@@ -85,7 +75,8 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> signOut() async {
-    await _supabase.auth.signOut();
+    await _repository.signOut();
     notifyListeners();
   }
 }
+
