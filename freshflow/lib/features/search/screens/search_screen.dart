@@ -65,8 +65,9 @@ class _SearchScreenState extends State<SearchScreen> {
             allProducts.where((p) => p.color == _activeColorFilter).toList();
       } else {
         // Filter by name
+        final regex = RegExp(RegExp.escape(lowerQuery), caseSensitive: false);
         filtered = allProducts
-            .where((p) => p.name.toLowerCase().contains(lowerQuery))
+            .where((p) => regex.hasMatch(p.name))
             .toList();
       }
 
