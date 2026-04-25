@@ -16,7 +16,7 @@ Future<void> main() async {
     debugPrint('=== APP INITIALIZATION FAILED ===');
     debugPrint('Error: $e');
     debugPrint('StackTrace: $stackTrace');
-    runApp(InitErrorApp(error: e.toString()));
+    runApp(const InitErrorApp(error: 'App initialization failed'));
   }
 }
 

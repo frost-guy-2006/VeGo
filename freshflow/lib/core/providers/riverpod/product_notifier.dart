@@ -78,7 +78,7 @@ class ProductNotifier extends StateNotifier<ProductState> {
         isLoading: false,
       );
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(isLoading: false, error: 'Failed to load products');
       debugPrint('ProductNotifier: Error loading products: $e');
     }
   }

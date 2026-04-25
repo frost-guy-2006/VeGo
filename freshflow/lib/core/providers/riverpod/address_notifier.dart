@@ -80,7 +80,7 @@ class AddressNotifier extends StateNotifier<AddressState> {
       state = state.copyWith(addresses: addresses, isLoading: false);
     } catch (e) {
       debugPrint('AddressNotifier: Error loading addresses: $e');
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(isLoading: false, error: 'Failed to load addresses');
     }
   }
 
@@ -106,7 +106,7 @@ class AddressNotifier extends StateNotifier<AddressState> {
       await loadAddresses(); // Reload to get consistent state
     } catch (e) {
       debugPrint('AddressNotifier: Error adding address: $e');
-      state = state.copyWith(error: e.toString());
+      state = state.copyWith(error: 'Operation failed');
     }
   }
 
@@ -122,7 +122,7 @@ class AddressNotifier extends StateNotifier<AddressState> {
       await loadAddresses();
     } catch (e) {
       debugPrint('AddressNotifier: Error updating address: $e');
-      state = state.copyWith(error: e.toString());
+      state = state.copyWith(error: 'Operation failed');
     }
   }
 
@@ -144,7 +144,7 @@ class AddressNotifier extends StateNotifier<AddressState> {
       await loadAddresses();
     } catch (e) {
       debugPrint('AddressNotifier: Error deleting address: $e');
-      state = state.copyWith(error: e.toString());
+      state = state.copyWith(error: 'Operation failed');
     }
   }
 
@@ -160,7 +160,7 @@ class AddressNotifier extends StateNotifier<AddressState> {
       await loadAddresses();
     } catch (e) {
       debugPrint('AddressNotifier: Error setting default: $e');
-      state = state.copyWith(error: e.toString());
+      state = state.copyWith(error: 'Operation failed');
     }
   }
 

@@ -1,3 +1,4 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -67,7 +68,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Invalid OTP: ${e.toString()}')),
+          SnackBar(content: Text(e is AuthException ? e.message : 'Invalid OTP')),
         );
       }
     }
