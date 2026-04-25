@@ -161,7 +161,7 @@ class _HomeContentState extends ConsumerState<HomeContent> {
       });
     } catch (e) {
       setState(() {
-        _errorMessage = e.toString();
+        _errorMessage = 'Failed to load data';
         _isLoading = false;
       });
     }

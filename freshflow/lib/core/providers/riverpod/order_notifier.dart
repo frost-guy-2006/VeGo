@@ -108,7 +108,7 @@ class OrderNotifier extends StateNotifier<OrderState> {
       await _saveToLocalCache();
     } catch (e) {
       debugPrint('OrderNotifier: Error loading from Supabase: $e');
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(isLoading: false, error: 'Failed to create order');
       await _loadFromLocalCache();
     }
   }
