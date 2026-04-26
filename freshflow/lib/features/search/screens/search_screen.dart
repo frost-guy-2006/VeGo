@@ -4,6 +4,7 @@ import 'package:vego/core/repositories/product_repository.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:vego/features/home/widgets/price_comparison_card.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'dart:async';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -20,6 +21,7 @@ class _SearchScreenState extends State<SearchScreen> {
   List<Product> _searchResults = [];
   bool _isLoading = false;
   String? _activeColorFilter; // "Red", "Blue", etc.
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -28,6 +30,13 @@ class _SearchScreenState extends State<SearchScreen> {
       _searchController.text = widget.initialQuery!;
       _performSearch(widget.initialQuery!);
     }
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
   }
 
   // Visual Search Logic:
@@ -55,19 +64,25 @@ class _SearchScreenState extends State<SearchScreen> {
     }
 
     try {
-      // Fetch all products using repository
-      final allProducts = await _productRepository.fetchProducts();
-
       List<Product> filtered;
       if (_activeColorFilter != null) {
+        // Fetch all products using repository to filter color client-side for demo
+        final allProducts = await _productRepository.fetchProducts();
         // Filter by inferred color
         filtered =
             allProducts.where((p) => p.color == _activeColorFilter).toList();
       } else {
-        // Filter by name
-        filtered = allProducts
-            .where((p) => p.name.toLowerCase().contains(lowerQuery))
-            .toList();
+        // Delegate general text search filtering to the server via searchProducts
+        filtered = await _productRepository.searchProducts(query);
+      }
+
+      if (!mounted) return;
+
+      // Prevent stale data updates if the query has changed
+      if (_searchController.text.trim().toLowerCase() !=
+          query.trim().toLowerCase()) {
+        setState(() => _isLoading = false);
+        return;
       }
 
       setState(() {
@@ -111,8 +126,10 @@ class _SearchScreenState extends State<SearchScreen> {
             color: context.textPrimary,
           ),
           onChanged: (val) {
-            // Debounce could be added here
-            _performSearch(val);
+            if (_debounce?.isActive ?? false) _debounce!.cancel();
+            _debounce = Timer(const Duration(milliseconds: 300), () {
+              _performSearch(val);
+            });
           },
         ),
       ),
