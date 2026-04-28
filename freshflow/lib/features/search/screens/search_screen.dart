@@ -57,20 +57,22 @@ class _SearchScreenState extends State<SearchScreen> {
     }
 
     try {
-      // Fetch all products using repository
-      final allProducts = await _productRepository.fetchProducts();
-
       List<Product> filtered;
+
       if (_activeColorFilter != null) {
+        // Fetch all products using repository
+        final allProducts = await _productRepository.fetchProducts();
+
         // Filter by inferred color
         filtered =
             allProducts.where((p) => p.color == _activeColorFilter).toList();
       } else {
-        // Filter by name
-        filtered = allProducts
-            .where((p) => p.name.toLowerCase().contains(lowerQuery))
-            .toList();
+        // Filter by name using server-side query
+        filtered = await _productRepository.searchProducts(query);
       }
+
+      if (!mounted) return;
+      if (_searchController.text.trim().toLowerCase() != query.trim().toLowerCase()) return;
 
       setState(() {
         _searchResults = filtered;
@@ -78,6 +80,7 @@ class _SearchScreenState extends State<SearchScreen> {
       });
     } catch (e) {
       debugPrint('Search error: $e');
+      if (!mounted) return;
       setState(() => _isLoading = false);
     }
   }
