@@ -102,7 +102,7 @@ class _FloatingIslandNavigationState extends ConsumerState<FloatingIslandNavigat
     );
   }
 
-  Widget _buildCartMode(BuildContext context, dynamic cart) {
+  Widget _buildCartMode(BuildContext context, CartState cart) {
     return GestureDetector(
       key: const ValueKey('cart_mode'),
       onTap: () {

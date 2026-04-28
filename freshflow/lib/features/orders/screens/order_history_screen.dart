@@ -336,6 +336,17 @@ class _StatusBadge extends StatelessWidget {
 
   const _StatusBadge({required this.status});
 
+  String get _statusText {
+    switch (status) {
+      case OrderStatus.pending: return 'Order Placed';
+      case OrderStatus.confirmed: return 'Order Confirmed';
+      case OrderStatus.preparing: return 'Preparing';
+      case OrderStatus.outForDelivery: return 'Out for Delivery';
+      case OrderStatus.delivered: return 'Delivered';
+      case OrderStatus.cancelled: return 'Cancelled';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Color bgColor;
@@ -375,14 +386,6 @@ class _StatusBadge extends StatelessWidget {
         break;
     }
 
-    final order = Order(
-      id: '',
-      items: [],
-      totalAmount: 0,
-      status: status,
-      createdAt: DateTime.now(),
-      deliveryAddress: '',
-    );
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -396,7 +399,7 @@ class _StatusBadge extends StatelessWidget {
           Icon(icon, size: 14, color: textColor),
           const SizedBox(width: 6),
           Text(
-            order.statusText,
+            _statusText,
             style: GoogleFonts.outfit(
               fontSize: 12,
               fontWeight: FontWeight.w600,

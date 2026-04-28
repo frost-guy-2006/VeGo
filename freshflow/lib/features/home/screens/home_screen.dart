@@ -182,7 +182,7 @@ class _HomeContentState extends ConsumerState<HomeContent> {
       );
 
       setState(() {
-        _products.addAll(newProducts);
+        _products = [..._products, ...newProducts];
         _currentPage = nextPage;
         _hasMore = newProducts.length >= ProductRepository.defaultPageSize;
         _isLoading = false;
