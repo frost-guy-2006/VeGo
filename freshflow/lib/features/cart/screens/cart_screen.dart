@@ -6,6 +6,7 @@ import 'package:vego/core/providers/riverpod/providers.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:vego/features/tracking/screens/tracking_screen.dart';
 import 'package:slide_to_act/slide_to_act.dart';
+import 'package:vego/core/widgets/delivery_slot_picker.dart';
 
 class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
@@ -36,6 +37,9 @@ class CartScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cart = ref.watch(cartProvider);
+    final hasStockIssue = cart.items.any(
+      (item) => item.quantity > item.product.stock,
+    );
 
     return Scaffold(
       backgroundColor: context.backgroundColor,
@@ -155,6 +159,18 @@ class CartScreen extends ConsumerWidget {
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
+                                  if (item.quantity > item.product.stock)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 4),
+                                      child: Text(
+                                        'Only ${item.product.stock} in stock',
+                                        style: GoogleFonts.plusJakartaSans(
+                                          color: Colors.red,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
                                 ],
                               ),
                             ),
@@ -246,6 +262,8 @@ class CartScreen extends ConsumerWidget {
                                 ),
                               ],
                             ),
+                            const SizedBox(height: 12),
+                            const _DeliverySlotButton(),
                             const SizedBox(height: 16),
                             Container(
                               decoration: BoxDecoration(
@@ -259,7 +277,27 @@ class CartScreen extends ConsumerWidget {
                                   ),
                                 ],
                               ),
-                              child: SizedBox(
+                              child: hasStockIssue
+                                  ? Container(
+                                      width: double.infinity,
+                                      height: 48,
+                                      decoration: BoxDecoration(
+                                        color: Colors.red.withValues(alpha: 0.1),
+                                        borderRadius: BorderRadius.circular(24),
+                                        border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          'Reduce quantity to checkout',
+                                          style: GoogleFonts.plusJakartaSans(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.red,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  : SizedBox(
                                 width: double.infinity,
                                 height: 48,
                                 child: SlideAction(
@@ -301,6 +339,67 @@ class CartScreen extends ConsumerWidget {
                 ),
               ],
             ),
+    );
+  }
+}
+
+class _DeliverySlotButton extends StatefulWidget {
+  const _DeliverySlotButton();
+
+  @override
+  State<_DeliverySlotButton> createState() => _DeliverySlotButtonState();
+}
+
+class _DeliverySlotButtonState extends State<_DeliverySlotButton> {
+  DeliverySlot? _slot;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () async {
+        final result = await showDeliverySlotPicker(context);
+        if (result != null && mounted) {
+          setState(() => _slot = result);
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: _slot != null
+              ? AppColors.primary.withValues(alpha: 0.08)
+              : context.surfaceAltColor,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: _slot != null
+                ? AppColors.primary.withValues(alpha: 0.3)
+                : context.borderColor.withValues(alpha: 0.3),
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              _slot != null ? Icons.check_circle : Icons.schedule_rounded,
+              size: 18,
+              color: _slot != null ? AppColors.primary : context.textSecondary,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                _slot?.displayText ?? 'Schedule delivery time',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: _slot != null
+                      ? AppColors.primary
+                      : context.textSecondary,
+                ),
+              ),
+            ),
+            Icon(Icons.chevron_right_rounded,
+                size: 18, color: context.textSecondary),
+          ],
+        ),
+      ),
     );
   }
 }

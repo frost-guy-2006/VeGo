@@ -5,6 +5,7 @@ import 'package:vego/core/theme/app_colors.dart';
 import 'package:vego/features/wishlist/screens/wishlist_screen.dart';
 import 'package:vego/features/orders/screens/order_history_screen.dart';
 import 'package:vego/features/address/screens/address_management_screen.dart';
+import 'package:vego/features/profile/screens/edit_profile_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -82,7 +83,25 @@ class ProfileScreen extends ConsumerWidget {
                         color: context.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 8),
+                    TextButton.icon(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const EditProfileScreen()),
+                      ),
+                      icon: Icon(Icons.edit_outlined,
+                          size: 16, color: AppColors.primary),
+                      label: Text(
+                        'Edit Profile',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
 
                     // Details Card
                     Container(

@@ -110,13 +110,68 @@ class OrderHistoryScreen extends ConsumerWidget {
   }
 }
 
-class _OrderCard extends StatelessWidget {
+class _OrderCard extends ConsumerWidget {
   final Order order;
 
   const _OrderCard({required this.order});
 
+  void _showCancelDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text('Cancel Order', style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.bold)),
+        content: Text(
+          'Are you sure you want to cancel this order? This cannot be undone.',
+          style: GoogleFonts.outfit(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Keep Order', style: GoogleFonts.outfit(color: context.textSecondary)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              try {
+                await ref.read(orderProvider.notifier).cancelOrder(order.id);
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('Order cancelled successfully'),
+                      backgroundColor: Colors.green,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Failed to cancel: $e'),
+                      backgroundColor: Colors.red,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  );
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            child: const Text('Cancel Order'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final dateFormat = DateFormat('MMM dd, yyyy • hh:mm a');
 
     return Container(
@@ -278,11 +333,51 @@ class _OrderCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                if (order.status != OrderStatus.delivered &&
-                    order.status != OrderStatus.cancelled)
+                if (order.status == OrderStatus.pending ||
+                    order.status == OrderStatus.confirmed)
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      OutlinedButton(
+                        onPressed: () => _showCancelDialog(context, ref),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.red,
+                          side: const BorderSide(color: Colors.red),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                        ),
+                        child: const Text('Cancel'),
+                      ),
+                      const SizedBox(width: 8),
+                      OutlinedButton(
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text('Order tracking coming soon!'),
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12)),
+                            ),
+                          );
+                        },
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.primary,
+                          side: const BorderSide(color: AppColors.primary),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                        ),
+                        child: const Text('Track'),
+                      ),
+                    ],
+                  ),
+                if (order.status == OrderStatus.preparing ||
+                    order.status == OrderStatus.outForDelivery)
                   OutlinedButton(
                     onPressed: () {
-                      // Track order action
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: const Text('Order tracking coming soon!'),
@@ -301,12 +396,17 @@ class _OrderCard extends StatelessWidget {
                     ),
                     child: const Text('Track Order'),
                   ),
-                if (order.status == OrderStatus.delivered)
+                if (order.status == OrderStatus.delivered ||
+                    order.status == OrderStatus.cancelled)
                   ElevatedButton(
                     onPressed: () {
+                      for (final item in order.items) {
+                        ref.read(cartProvider.notifier).addToCart(item.product);
+                      }
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: const Text('Reorder coming soon!'),
+                          content: Text('${order.items.length} items added to cart'),
+                          backgroundColor: AppColors.primary,
                           behavior: SnackBarBehavior.floating,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12)),

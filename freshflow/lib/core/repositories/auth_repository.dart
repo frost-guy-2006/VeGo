@@ -68,6 +68,62 @@ class AuthRepository {
     }
   }
 
+  /// Update user profile data in the profiles table
+  Future<void> updateProfile({
+    required String userId,
+    String? fullName,
+    String? phone,
+    String? avatarUrl,
+  }) async {
+    try {
+      final updates = <String, dynamic>{};
+      if (fullName != null) updates['full_name'] = fullName;
+      if (phone != null) updates['phone'] = phone;
+      if (avatarUrl != null) updates['avatar_url'] = avatarUrl;
+      updates['updated_at'] = DateTime.now().toIso8601String();
+
+      await _client.from('profiles').upsert({
+        'id': userId,
+        ...updates,
+      });
+    } catch (e) {
+      debugPrint('AuthRepository: Error updating profile: $e');
+      rethrow;
+    }
+  }
+
+  /// Fetch user profile from profiles table
+  Future<Map<String, dynamic>?> fetchProfile(String userId) async {
+    try {
+      final response = await _client
+          .from('profiles')
+          .select()
+          .eq('id', userId)
+          .maybeSingle();
+      return response;
+    } catch (e) {
+      debugPrint('AuthRepository: Error fetching profile: $e');
+      rethrow;
+    }
+  }
+
+  /// Update user profile metadata (display name, avatar URL)
+  Future<void> updateProfile({
+    String? displayName,
+    String? avatarUrl,
+  }) async {
+    try {
+      final data = <String, dynamic>{};
+      if (displayName != null) data['display_name'] = displayName;
+      if (avatarUrl != null) data['avatar_url'] = avatarUrl;
+
+      await _client.auth.updateUser(UserAttributes(data: data));
+    } catch (e) {
+      debugPrint('AuthRepository: Error updating profile: $e');
+      rethrow;
+    }
+  }
+
   /// Sign out the current user
   Future<void> signOut() async {
     try {

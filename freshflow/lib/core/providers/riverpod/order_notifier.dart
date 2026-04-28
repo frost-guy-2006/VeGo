@@ -174,6 +174,41 @@ class OrderNotifier extends StateNotifier<OrderState> {
     }
   }
 
+  /// Cancel an order (only pending/confirmed)
+  Future<void> cancelOrder(String orderId) async {
+    final orders = [...state.orders];
+    final index = orders.indexWhere((o) => o.id == orderId);
+    if (index == -1) return;
+
+    final order = orders[index];
+    if (order.status != OrderStatus.pending &&
+        order.status != OrderStatus.confirmed) {
+      throw Exception('Only pending or confirmed orders can be cancelled');
+    }
+
+    try {
+      await _repository.cancelOrder(
+        orderId: orderId,
+        currentStatus: Order.statusToString(order.status),
+      );
+    } catch (e) {
+      debugPrint('OrderNotifier: Error cancelling order on Supabase: $e');
+    }
+
+    orders[index] = Order(
+      id: order.id,
+      items: order.items,
+      totalAmount: order.totalAmount,
+      deliveryFee: order.deliveryFee,
+      status: OrderStatus.cancelled,
+      createdAt: order.createdAt,
+      deliveredAt: order.deliveredAt,
+      deliveryAddress: order.deliveryAddress,
+    );
+    state = state.copyWith(orders: orders);
+    await _saveToLocalCache();
+  }
+
   /// Clear all order history
   void clearHistory() {
     state = const OrderState();

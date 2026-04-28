@@ -158,6 +158,38 @@ class OrderRepository {
     }
   }
 
+  /// Cancel an order (only if pending or confirmed)
+  Future<void> cancelOrder({
+    required String orderId,
+    required String currentStatus,
+    String? reason,
+  }) async {
+    if (currentStatus != 'pending' && currentStatus != 'confirmed') {
+      throw Exception('Only pending or confirmed orders can be cancelled');
+    }
+
+    try {
+      await _client
+          .from('orders')
+          .update({'status': 'cancelled'})
+          .eq('id', orderId);
+
+      try {
+        await _client.from('order_status_log').insert({
+          'order_id': orderId,
+          'old_status': currentStatus,
+          'new_status': 'cancelled',
+          'changed_by': _client.auth.currentUser?.id,
+        });
+      } catch (e) {
+        debugPrint('OrderRepository: Warning - cancel log insert failed: $e');
+      }
+    } catch (e) {
+      debugPrint('OrderRepository: Error cancelling order: $e');
+      rethrow;
+    }
+  }
+
   /// Fetch the status history for an order
   Future<List<Map<String, dynamic>>> fetchStatusHistory(String orderId) async {
     try {
