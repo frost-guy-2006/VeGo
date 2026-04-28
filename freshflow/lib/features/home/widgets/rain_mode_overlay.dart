@@ -57,7 +57,7 @@ class _RainModeOverlayState extends State<RainModeOverlay>
             builder: (context, child) {
               return CustomPaint(
                 painter:
-                    RainPainter(drops: _drops, progress: _controller.value),
+                    RainPainter(drops: _drops, progress: _controller.value, random: _random),
                 size: Size.infinite,
               );
             },
@@ -129,8 +129,10 @@ class RainDrop {
 class RainPainter extends CustomPainter {
   final List<RainDrop> drops;
   final double progress;
+  final Random _random;
 
-  RainPainter({required this.drops, required this.progress});
+  RainPainter({required this.drops, required this.progress, Random? random})
+      : _random = random ?? Random();
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -140,23 +142,16 @@ class RainPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     for (var drop in drops) {
-      // Simulate movement: y increases
-      // We use progress just to "tick", but actual position stored in drop object
-      // is simpler to handle if we update it.
-      // But CustomPainter paint should be stateless ideally if just drawing frame.
-      // Let's rely on simple stateless calculation relative to time if possible,
-      // or simple mutable update here is practically fine for this visual.
-
-      drop.y += drop.speed * 0.02; // Move down
+      drop.y += drop.speed * 0.02;
       if (drop.y > 1.0) {
-        drop.y = -drop.length; // Reset to top
-        drop.x = Random().nextDouble(); // Random new X
+        drop.y = -drop.length;
+        drop.x = _random.nextDouble();
       }
 
       final startX = drop.x * size.width;
       final startY = drop.y * size.height;
       final endX =
-          startX - (drop.length * size.height * 0.2); // Slanted slightly
+          startX - (drop.length * size.height * 0.2);
       final endY = startY + (drop.length * size.height);
 
       canvas.drawLine(Offset(startX, startY), Offset(endX, endY), paint);

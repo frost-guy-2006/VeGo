@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:vego/core/models/product_model.dart';
 import 'package:vego/core/repositories/product_repository.dart';
@@ -19,7 +20,8 @@ class _SearchScreenState extends State<SearchScreen> {
   final ProductRepository _productRepository = ProductRepository();
   List<Product> _searchResults = [];
   bool _isLoading = false;
-  String? _activeColorFilter; // "Red", "Blue", etc.
+  String? _activeColorFilter;
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -81,6 +83,13 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     Color themeColor = AppColors.primary;
     if (_activeColorFilter == 'Red') themeColor = Colors.red;
@@ -111,8 +120,10 @@ class _SearchScreenState extends State<SearchScreen> {
             color: context.textPrimary,
           ),
           onChanged: (val) {
-            // Debounce could be added here
-            _performSearch(val);
+            _debounce?.cancel();
+            _debounce = Timer(const Duration(milliseconds: 300), () {
+              _performSearch(val);
+            });
           },
         ),
       ),

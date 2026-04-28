@@ -17,12 +17,12 @@ class AuthState {
 
   AuthState copyWith({
     bool? isLoading,
-    User? user,
+    User? Function()? user,
     String? error,
   }) {
     return AuthState(
       isLoading: isLoading ?? this.isLoading,
-      user: user ?? this.user,
+      user: user != null ? user() : this.user,
       error: error,
     );
   }
@@ -35,7 +35,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   AuthNotifier(this._supabase)
       : super(AuthState(user: _supabase.auth.currentUser)) {
     _supabase.auth.onAuthStateChange.listen((data) {
-      state = state.copyWith(user: data.session?.user);
+      state = state.copyWith(user: () => data.session?.user);
     });
   }
 
@@ -69,7 +69,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(isLoading: true, error: null);
     try {
       await _supabase.auth.signInWithPassword(email: email, password: password);
-      state = state.copyWith(isLoading: false);
+      state = state.copyWith(isLoading: false, user: () => _supabase.auth.currentUser);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
       rethrow;

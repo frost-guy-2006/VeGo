@@ -137,7 +137,9 @@ class OrderNotifier extends StateNotifier<OrderState> {
         deliveryFee: oldOrder.deliveryFee,
         status: newStatus,
         createdAt: oldOrder.createdAt,
-        deliveredAt: newStatus == OrderStatus.delivered ? DateTime.now() : null,
+        deliveredAt: newStatus == OrderStatus.delivered
+            ? (oldOrder.deliveredAt ?? DateTime.now())
+            : oldOrder.deliveredAt,
         deliveryAddress: oldOrder.deliveryAddress,
       );
       state = state.copyWith(orders: orders);

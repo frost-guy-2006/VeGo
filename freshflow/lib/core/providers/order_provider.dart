@@ -112,7 +112,9 @@ class OrderProvider extends ChangeNotifier {
         deliveryFee: oldOrder.deliveryFee,
         status: newStatus,
         createdAt: oldOrder.createdAt,
-        deliveredAt: newStatus == OrderStatus.delivered ? DateTime.now() : null,
+        deliveredAt: newStatus == OrderStatus.delivered
+            ? (oldOrder.deliveredAt ?? DateTime.now())
+            : oldOrder.deliveredAt,
         deliveryAddress: oldOrder.deliveryAddress,
       );
       _orders[index] = updatedOrder;

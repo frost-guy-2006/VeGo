@@ -5,9 +5,12 @@ import 'package:vego/core/models/product_model.dart';
 
 class CartItem {
   final Product product;
-  int quantity;
+  final int quantity;
 
   CartItem({required this.product, this.quantity = 1});
+
+  CartItem copyWith({int? quantity}) =>
+      CartItem(product: product, quantity: quantity ?? this.quantity);
 
   Map<String, dynamic> toJson() => {
         'product': product.toJson(),
@@ -37,7 +40,7 @@ class CartProvider extends ChangeNotifier {
   void addToCart(Product product) {
     var index = _items.indexWhere((item) => item.product.id == product.id);
     if (index >= 0) {
-      _items[index].quantity++;
+      _items[index] = _items[index].copyWith(quantity: _items[index].quantity + 1);
     } else {
       _items.add(CartItem(product: product));
     }
@@ -55,7 +58,7 @@ class CartProvider extends ChangeNotifier {
     var index = _items.indexWhere((item) => item.product.id == productId);
     if (index >= 0) {
       if (_items[index].quantity > 1) {
-        _items[index].quantity--;
+        _items[index] = _items[index].copyWith(quantity: _items[index].quantity - 1);
       } else {
         _items.removeAt(index);
       }

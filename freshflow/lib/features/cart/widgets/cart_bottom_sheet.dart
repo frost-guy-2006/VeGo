@@ -94,7 +94,7 @@ class CartBottomSheet extends ConsumerWidget {
                                 ),
                               ),
                               Text(
-                                '\$${item.product.currentPrice.toStringAsFixed(2)}',
+                                '₹${item.product.currentPrice.toStringAsFixed(2)}',
                                 style: GoogleFonts.plusJakartaSans(
                                   color: context.textSecondary,
                                   fontSize: 14,

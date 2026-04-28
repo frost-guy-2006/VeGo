@@ -33,10 +33,12 @@ class OrderRepository {
         'totalAmount': totalAmount,
         'deliveryAddress': deliveryAddress,
         'deliveryFee': deliveryFee,
-        'items': items.map((item) => {
-          'product': item.product.toJson(),
-          'quantity': item.quantity,
-          'priceAtPurchase': item.priceAtPurchase,
+        'items': items.map((item) {
+          return {
+            'product': item.product.toJson(),
+            'quantity': item.quantity,
+            'priceAtPurchase': item.priceAtPurchase,
+          };
         }).toList(),
       };
 
