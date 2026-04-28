@@ -79,7 +79,7 @@ class ProductProvider extends ChangeNotifier {
         category: _selectedCategory,
       );
 
-      _products.addAll(newProducts);
+      _products = [..._products, ...newProducts];
       _currentPage = nextPage;
       _hasMore = newProducts.length >= ProductRepository.defaultPageSize;
     } catch (e) {

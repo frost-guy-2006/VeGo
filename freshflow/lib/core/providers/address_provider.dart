@@ -21,11 +21,9 @@ class AddressProvider extends ChangeNotifier {
 
   /// Get the default address (saved preference)
   Address? get defaultAddress {
-    try {
-      return _addresses.firstWhere((a) => a.isDefault);
-    } catch (e) {
-      return _addresses.isNotEmpty ? _addresses.first : null;
-    }
+    final defaults = _addresses.where((a) => a.isDefault);
+    if (defaults.isNotEmpty) return defaults.first;
+    return _addresses.isNotEmpty ? _addresses.first : null;
   }
 
   /// Get storage key specific to current user

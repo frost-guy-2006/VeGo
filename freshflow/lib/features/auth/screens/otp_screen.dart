@@ -25,10 +25,10 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   @override
   void initState() {
     super.initState();
-    startTimer();
+    _startTimer();
   }
 
-  void startTimer() {
+  void _startTimer() {
     _start = 30;
     _canResend = false;
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -78,7 +78,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('OTP Resent!')),
     );
-    startTimer();
+    _startTimer();
   }
 
   @override

@@ -14,7 +14,7 @@ class FlashPriceWidget extends StatefulWidget {
 }
 
 class _FlashPriceWidgetState extends State<FlashPriceWidget> {
-  late Timer _timer;
+  Timer? _timer;
   Duration _timeLeft = const Duration(hours: 4, minutes: 23, seconds: 12);
 
   @override
@@ -37,7 +37,7 @@ class _FlashPriceWidgetState extends State<FlashPriceWidget> {
 
   @override
   void dispose() {
-    _timer.cancel();
+    _timer?.cancel();
     super.dispose();
   }
 
