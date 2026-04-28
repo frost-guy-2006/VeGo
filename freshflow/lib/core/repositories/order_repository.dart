@@ -57,7 +57,9 @@ class OrderRepository {
         totalAmount: totalAmount,
         deliveryFee: deliveryFee,
         status: OrderStatus.pending,
-        createdAt: DateTime.now(), // Fallback or we can parse from data['created_at']
+        createdAt: data['created_at'] != null
+            ? DateTime.parse(data['created_at'])
+            : DateTime.now(),
         deliveryAddress: deliveryAddress,
       );
     } catch (e) {

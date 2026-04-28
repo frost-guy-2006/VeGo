@@ -71,10 +71,10 @@ class Product {
           ? _getDefaultImage(name)
           : (json['image_url'] ?? json['imageUrl']),
       currentPrice:
-          (json['current_price'] ?? json['currentPrice'] as num?)?.toDouble() ??
+          ((json['current_price'] ?? json['currentPrice']) as num?)?.toDouble() ??
               0.0,
       marketPrice:
-          (json['market_price'] ?? json['marketPrice'] as num?)?.toDouble() ??
+          ((json['market_price'] ?? json['marketPrice']) as num?)?.toDouble() ??
               0.0,
       harvestTime: json['harvest_time'] ?? json['harvestTime'] ?? '',
       stock: json['stock'] as int? ?? 0,

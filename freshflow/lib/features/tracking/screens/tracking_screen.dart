@@ -79,11 +79,11 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
 
   void _undoOrder() {
     _undoTimer?.cancel();
-    Navigator.pop(context); // Go back to Cart
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       content: Text('Order Cancelled'),
       backgroundColor: Colors.red,
     ));
+    Navigator.pop(context);
   }
 
   Future<void> _fetchRoute() async {
