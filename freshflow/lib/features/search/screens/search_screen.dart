@@ -57,20 +57,21 @@ class _SearchScreenState extends State<SearchScreen> {
     }
 
     try {
-      // Fetch all products using repository
-      final allProducts = await _productRepository.fetchProducts();
-
       List<Product> filtered;
+
       if (_activeColorFilter != null) {
-        // Filter by inferred color
+        // Fetch all products using repository to filter by inferred color
+        // Since we compute color client-side in model, we need to fetch all and filter client side
+        final allProducts = await _productRepository.fetchProducts();
         filtered =
             allProducts.where((p) => p.color == _activeColorFilter).toList();
       } else {
-        // Filter by name
-        filtered = allProducts
-            .where((p) => p.name.toLowerCase().contains(lowerQuery))
-            .toList();
+        // Delegate general text search filtering to the repository (server-side)
+        filtered = await _productRepository.searchProducts(query);
       }
+
+      if (!mounted) return;
+      if (_searchController.text.trim().toLowerCase() != query.trim().toLowerCase()) return;
 
       setState(() {
         _searchResults = filtered;
@@ -78,6 +79,7 @@ class _SearchScreenState extends State<SearchScreen> {
       });
     } catch (e) {
       debugPrint('Search error: $e');
+      if (!mounted) return;
       setState(() => _isLoading = false);
     }
   }
