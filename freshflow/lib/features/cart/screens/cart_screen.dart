@@ -319,21 +319,30 @@ class CartScreen extends ConsumerWidget {
                                       color: AppColors.primary),
                                   onSubmit: () async {
                                     if (cart.items.isNotEmpty) {
-                                      // Wait for order creation
                                       final user = ref.read(authProvider).user;
                                       if (user == null) return null;
                                       final address = ref.read(addressProvider).effectiveDeliveryAddress;
                                       final deliveryAddress = address?.formattedAddress ?? 'Unknown';
 
-                                      final order = await ref.read(orderProvider.notifier).createOrder(
-                                        cart: cart,
-                                        userId: user.id,
-                                        deliveryAddress: deliveryAddress,
-                                      );
-                                      final orderId = order.id;
-                                      if (context.mounted) {
-                                        ref.read(cartProvider.notifier).clearCart();
-                                        context.push('/tracking', extra: orderId);
+                                      try {
+                                        final order = await ref.read(orderProvider.notifier).createOrder(
+                                          cart: cart,
+                                          userId: user.id,
+                                          deliveryAddress: deliveryAddress,
+                                        );
+                                        final orderId = order.id;
+                                        if (context.mounted) {
+                                          ref.read(cartProvider.notifier).clearCart();
+                                          context.push('/tracking', extra: orderId);
+                                        }
+                                      } catch (e) {
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                            content: Text('Failed to place order: ${e.toString()}'),
+                                            backgroundColor: AppColors.error,
+                                          ));
+                                        }
+                                        return null;
                                       }
                                     }
                                     return null;

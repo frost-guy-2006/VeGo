@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vego/core/init/app_initializer.dart';
 import 'package:vego/core/providers/riverpod/providers.dart';
+import 'package:vego/core/theme/app_colors.dart';
 import 'package:vego/core/theme/app_theme.dart';
 import 'package:vego/core/router/app_router.dart';
 import 'package:vego/l10n/app_localizations.dart';

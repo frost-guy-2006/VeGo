@@ -115,12 +115,19 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.tracking,
-      builder: (context, state) => const TrackingScreen(),
+      builder: (context, state) {
+        final orderId = state.extra as String?;
+        return TrackingScreen(orderId: orderId);
+      },
     ),
     GoRoute(
       path: AppRoutes.product,
       builder: (context, state) {
-        final product = state.extra as Product;
+        final product = state.extra as Product?;
+        if (product == null) {
+          // Fallback if accessed via deep link without object
+          return const Scaffold(body: Center(child: Text('Product not found')));
+        }
         return ProductDetailScreen(product: product);
       },
     ),

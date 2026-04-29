@@ -17,7 +17,9 @@ import 'package:vego/features/tracking/widgets/delivery_instructions_card.dart';
 import 'package:vego/features/tracking/widgets/order_details_card.dart';
 
 class TrackingScreen extends ConsumerStatefulWidget {
-  const TrackingScreen({super.key});
+  final String? orderId;
+
+  const TrackingScreen({super.key, this.orderId});
 
   @override
   ConsumerState<TrackingScreen> createState() => _TrackingScreenState();
@@ -79,6 +81,9 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
 
   void _undoOrder() {
     _undoTimer?.cancel();
+    if (widget.orderId != null) {
+      ref.read(orderProvider.notifier).cancelOrder(widget.orderId!);
+    }
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       content: Text('Order Cancelled'),
       backgroundColor: Colors.red,

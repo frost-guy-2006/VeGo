@@ -58,19 +58,15 @@ class _SearchScreenState extends State<SearchScreen> {
     }
 
     try {
-      // Fetch all products using repository
-      final allProducts = await _productRepository.fetchProducts();
-
       List<Product> filtered;
       if (_activeColorFilter != null) {
-        // Filter by inferred color
+        // Fetch all products using repository and filter by inferred color
+        final allProducts = await _productRepository.fetchProducts();
         filtered =
             allProducts.where((p) => p.color == _activeColorFilter).toList();
       } else {
-        // Filter by name
-        filtered = allProducts
-            .where((p) => p.name.toLowerCase().contains(lowerQuery))
-            .toList();
+        // Server-side filter by name using ilike
+        filtered = await _productRepository.searchProducts(query);
       }
 
       setState(() {

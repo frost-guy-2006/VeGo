@@ -85,7 +85,7 @@ class Order {
         'items': items.map((e) => e.toJson()).toList(),
         'totalAmount': totalAmount,
         'deliveryFee': deliveryFee,
-        'status': status.index,
+        'status': statusToString(status),
         'createdAt': createdAt.toIso8601String(),
         'deliveredAt': deliveredAt?.toIso8601String(),
         'deliveryAddress': deliveryAddress,
@@ -98,7 +98,9 @@ class Order {
             (json['items'] as List).map((e) => OrderItem.fromJson(e)).toList(),
         totalAmount: (json['totalAmount'] as num).toDouble(),
         deliveryFee: (json['deliveryFee'] as num?)?.toDouble() ?? 0.0,
-        status: OrderStatus.values[json['status'] as int],
+        status: json['status'] is int
+            ? OrderStatus.values[json['status'] as int]
+            : statusFromString(json['status'] as String),
         createdAt: DateTime.parse(json['createdAt']),
         deliveredAt: json['deliveredAt'] != null
             ? DateTime.parse(json['deliveredAt'])
@@ -145,7 +147,7 @@ class Order {
       items: orderItemsList,
       totalAmount: (json['total_amount'] as num).toDouble(),
       deliveryFee: (json['delivery_fee'] as num?)?.toDouble() ?? 0.0,
-      status: _statusFromString(json['status'] as String? ?? 'pending'),
+      status: statusFromString(json['status'] as String? ?? 'pending'),
       createdAt: DateTime.parse(json['created_at']),
       deliveredAt: json['delivered_at'] != null
           ? DateTime.parse(json['delivered_at'])
@@ -167,7 +169,7 @@ class Order {
       items: orderItems,
       totalAmount: (json['total_amount'] as num).toDouble(),
       deliveryFee: (json['delivery_fee'] as num?)?.toDouble() ?? 0.0,
-      status: _statusFromString(json['status'] as String? ?? 'pending'),
+      status: statusFromString(json['status'] as String? ?? 'pending'),
       createdAt: DateTime.parse(json['created_at']),
       deliveredAt: json['delivered_at'] != null
           ? DateTime.parse(json['delivered_at'])
@@ -178,7 +180,7 @@ class Order {
   }
 
   /// Convert database status string to OrderStatus enum
-  static OrderStatus _statusFromString(String status) {
+  static OrderStatus statusFromString(String status) {
     switch (status) {
       case 'pending':
         return OrderStatus.pending;

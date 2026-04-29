@@ -70,12 +70,22 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     }
   }
 
-  void _resendOtp() {
-    // Mock resend logic or call provider
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('OTP Resent!')),
-    );
-    _startTimer();
+  Future<void> _resendOtp() async {
+    try {
+      await ref.read(authProvider.notifier).signInWithPhone(widget.phoneNumber);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('OTP Resent!')),
+        );
+        _startTimer();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to resend OTP: ${e.toString()}')),
+        );
+      }
+    }
   }
 
   @override

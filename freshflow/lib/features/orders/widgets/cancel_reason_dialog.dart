@@ -45,19 +45,19 @@ class _CancelReasonDialogState extends State<CancelReasonDialog> {
               style: GoogleFonts.plusJakartaSans(fontSize: 14),
             ),
             const SizedBox(height: 12),
-            RadioGroup<String>(
-              groupValue: _selectedReason,
-              onChanged: (v) => setState(() => _selectedReason = v),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: _reasons.map((r) => RadioListTile<String>(
-                      title: Text(r, style: GoogleFonts.plusJakartaSans()),
-                      value: r,
-                      activeColor: AppColors.primary,
-                      contentPadding: EdgeInsets.zero,
-                      dense: true,
-                    )).toList(),
-              ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: _reasons.map((r) => RadioListTile<String>(
+                    title: Text(r, style: GoogleFonts.plusJakartaSans()),
+                    value: r,
+                    // ignore: deprecated_member_use
+                    groupValue: _selectedReason,
+                    // ignore: deprecated_member_use
+                    onChanged: (v) => setState(() => _selectedReason = v),
+                    activeColor: AppColors.primary,
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                  )).toList(),
             ),
             if (_selectedReason == 'Other')
               Padding(

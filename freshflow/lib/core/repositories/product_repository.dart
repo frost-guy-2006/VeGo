@@ -66,8 +66,8 @@ class ProductRepository {
         query = query.eq('category', category);
       }
 
-      final response = await query;
-      final totalCount = (response as List).length;
+      final countResponse = await query.count(CountOption.exact);
+      final totalCount = countResponse.count;
       return currentCount < totalCount;
     } catch (e) {
       throw AppError.from(e);
@@ -109,12 +109,23 @@ class ProductRepository {
   /// Search products by name
   Future<List<Product>> searchProducts(String query) async {
     try {
+      final safeQuery = query.replaceAll('%', '\\%').replaceAll('_', '\\_');
       final response = await _client
           .from('products')
           .select()
-          .ilike('name', '%$query%')
+          .ilike('name', '%$safeQuery%')
           .order('name');
 
+      return (response as List).map((json) => Product.fromJson(json)).toList();
+    } catch (e) {
+      throw AppError.from(e);
+    }
+  }
+
+  /// Fetch flash deals
+  Future<List<Product>> fetchFlashDeals() async {
+    try {
+      final response = await _client.from('products').select().limit(5);
       return (response as List).map((json) => Product.fromJson(json)).toList();
     } catch (e) {
       throw AppError.from(e);

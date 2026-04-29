@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:async';
 import 'package:vego/core/repositories/auth_repository.dart';
 
 /// Auth state for Riverpod.
@@ -33,12 +34,20 @@ class AuthState {
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthRepository _repository;
 
+  late final StreamSubscription _sub;
+
   AuthNotifier({AuthRepository? repository})
       : _repository = repository ?? AuthRepository(),
         super(AuthState(user: repository?.currentUser ?? AuthRepository().currentUser)) {
-    _repository.onAuthStateChange.listen((data) {
+    _sub = _repository.onAuthStateChange.listen((data) {
       state = state.copyWith(user: () => data.session?.user);
     });
+  }
+
+  @override
+  void dispose() {
+    _sub.cancel();
+    super.dispose();
   }
 
   Future<void> signInWithPhone(String phoneNumber) async {
@@ -86,8 +95,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> signOut() async {
-    await _repository.signOut();
-    state = const AuthState();
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      await _repository.signOut();
+      state = const AuthState();
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      rethrow;
+    }
   }
 }
 

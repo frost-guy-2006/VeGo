@@ -63,12 +63,18 @@ class ProfileScreen extends ConsumerWidget {
                   children: [
                     const SizedBox(height: 24),
                     // Avatar
-                    const Center(
+                    Center(
                       child: CircleAvatar(
                         radius: 50,
                         backgroundColor: AppColors.secondary,
-                        backgroundImage:
-                            NetworkImage('https://i.pravatar.cc/150?img=12'),
+                        child: Text(
+                          displayName.isNotEmpty ? displayName[0].toUpperCase() : 'U',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 16),

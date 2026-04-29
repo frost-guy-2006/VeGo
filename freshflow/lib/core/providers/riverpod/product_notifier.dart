@@ -158,6 +158,16 @@ class ProductNotifier extends StateNotifier<ProductState> {
       return null;
     }
   }
+
+  /// Fetch flash deals
+  Future<List<Product>> fetchFlashDeals() async {
+    try {
+      return await _repository.fetchFlashDeals();
+    } catch (e) {
+      debugPrint('ProductNotifier: Error fetching flash deals: $e');
+      return [];
+    }
+  }
 }
 
 /// Riverpod provider for product state.

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:vego/core/providers/riverpod/providers.dart';
 import 'package:vego/core/theme/app_colors.dart';
+
+import 'package:vego/core/models/order_model.dart';
 
 /// Order details card showing current order items.
 /// Intentionally opaque (no frost) for visual contrast with frosted cards above.
 class OrderDetailsCard extends ConsumerWidget {
-  const OrderDetailsCard({super.key});
+  final Order? order;
+
+  const OrderDetailsCard({super.key, this.order});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -99,7 +102,7 @@ class OrderDetailsCard extends ConsumerWidget {
                         ),
                       ),
                       Text(
-                        'HSR Layout, Sector 2, Bangalore',
+                        order?.deliveryAddress ?? 'Loading address...',
                         style: GoogleFonts.outfit(
                           fontSize: 12,
                           color: context.textSecondary,
@@ -117,8 +120,7 @@ class OrderDetailsCard extends ConsumerWidget {
           // Order items
           Builder(
             builder: (context) {
-              final cart = ref.watch(cartProvider);
-              final items = cart.items;
+              final items = order?.items ?? [];
               if (items.isEmpty) {
                 return Text(
                   'Order items cleared',
@@ -170,7 +172,7 @@ class OrderDetailsCard extends ConsumerWidget {
                                 ),
                               ),
                               Text(
-                                '₹${(item.product.currentPrice * item.quantity).toStringAsFixed(0)}',
+                                '₹${(item.priceAtPurchase * item.quantity).toStringAsFixed(0)}',
                                 style: GoogleFonts.jetBrainsMono(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
@@ -208,7 +210,7 @@ class OrderDetailsCard extends ConsumerWidget {
                         ),
                       ),
                       Text(
-                        '₹${cart.totalPrice.toStringAsFixed(0)}',
+                        '₹${order?.totalAmount.toStringAsFixed(0) ?? '0'}',
                         style: GoogleFonts.jetBrainsMono(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
