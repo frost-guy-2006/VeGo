@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vego/core/models/order_model.dart';
 import 'package:vego/core/repositories/order_repository.dart';
 import 'package:vego/core/providers/riverpod/cart_notifier.dart';
+import 'package:vego/core/services/analytics_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
@@ -95,6 +96,7 @@ class OrderNotifier extends StateNotifier<OrderState> {
 
     state = state.copyWith(orders: [...state.orders, order]);
     await _saveToLocalCache();
+    AnalyticsService().logPurchase(order.id, order.totalAmount, order.itemCount);
 
     return order;
   }
@@ -175,7 +177,7 @@ class OrderNotifier extends StateNotifier<OrderState> {
   }
 
   /// Cancel an order (only pending/confirmed)
-  Future<void> cancelOrder(String orderId) async {
+  Future<void> cancelOrder(String orderId, {String? reason}) async {
     final orders = [...state.orders];
     final index = orders.indexWhere((o) => o.id == orderId);
     if (index == -1) return;
@@ -190,6 +192,7 @@ class OrderNotifier extends StateNotifier<OrderState> {
       await _repository.cancelOrder(
         orderId: orderId,
         currentStatus: Order.statusToString(order.status),
+        reason: reason,
       );
     } catch (e) {
       debugPrint('OrderNotifier: Error cancelling order on Supabase: $e');
@@ -204,9 +207,11 @@ class OrderNotifier extends StateNotifier<OrderState> {
       createdAt: order.createdAt,
       deliveredAt: order.deliveredAt,
       deliveryAddress: order.deliveryAddress,
+      cancellationReason: reason,
     );
     state = state.copyWith(orders: orders);
     await _saveToLocalCache();
+    AnalyticsService().logCancelOrder(orderId, reason);
   }
 
   /// Clear all order history

@@ -39,6 +39,35 @@ class AppColors {
 
   // Legacy aliases for backward compatibility
   static const Color secondary = textMuted;
+
+  // 🌤️ Weather & Gradient Colors
+  static const Color weatherSunnyStart = Color(0xFFFF9F1C);
+  static const Color weatherSunnyEnd = Color(0xFFF4D35E);
+  static const Color weatherCloudyStart = Color(0xFF78909C);
+  static const Color weatherCloudyEnd = Color(0xFFB0BEC5);
+  static const Color weatherRainyStart = Color(0xFF5C6BC0);
+  static const Color weatherRainyEnd = Color(0xFF7986CB);
+  static const Color weatherSnowyStart = Color(0xFF80DEEA);
+  static const Color weatherSnowyEnd = Color(0xFFB2EBF2);
+  static const Color weatherNightStart = Color(0xFF37474F);
+  static const Color weatherNightEnd = Color(0xFF546E7A);
+
+  // 🏷️ Category Colors
+  static const Color categoryVegetables = Color(0xFF22C55E);
+  static const Color categoryFruits = Color(0xFFE63946);
+  static const Color categoryDairy = Color(0xFF3B82F6);
+  static const Color categoryBakery = Color(0xFFA3584E);
+  static const Color categoryTeaCoffee = Color(0xFF6D4C41);
+  static const Color categoryBgLight = Color(0xFFF1F2F4);
+  static const Color categoryBorderLight = Color(0xFFD8DADF);
+
+  // 🧩 Misc UI Colors
+  static const Color darkBg = Color(0xFF1A1A2E);
+  static const Color flashDark = Color(0xFF252837);
+  static const Color waveDarkEnd = Color(0xFF0D2818);
+  static const Color waveLightEnd = Color(0xFFD8F3DC);
+  static const Color bgMintWhisper = Color(0xFFF0FDF4);
+  static const Color bgPeachCream = Color(0xFFFEF3E2);
 }
 
 /// Context-aware color extension. Use these instead of hardcoded AppColors

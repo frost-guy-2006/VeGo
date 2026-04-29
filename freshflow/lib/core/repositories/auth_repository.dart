@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:vego/core/models/app_error.dart';
 
 /// Repository for authentication-related data operations.
 /// Extracts all Supabase auth calls from the provider layer.
@@ -24,7 +25,7 @@ class AuthRepository {
       await _client.auth.signInWithOtp(phone: phoneNumber);
     } catch (e) {
       debugPrint('AuthRepository: Error signing in with phone: $e');
-      rethrow;
+      throw AppError.from(e);
     }
   }
 
@@ -38,7 +39,7 @@ class AuthRepository {
       );
     } catch (e) {
       debugPrint('AuthRepository: Error verifying OTP: $e');
-      rethrow;
+      throw AppError.from(e);
     }
   }
 
@@ -51,7 +52,7 @@ class AuthRepository {
       );
     } catch (e) {
       debugPrint('AuthRepository: Error signing in with email: $e');
-      rethrow;
+      throw AppError.from(e);
     }
   }
 
@@ -64,7 +65,7 @@ class AuthRepository {
       );
     } catch (e) {
       debugPrint('AuthRepository: Error signing up: $e');
-      rethrow;
+      throw AppError.from(e);
     }
   }
 
@@ -88,7 +89,7 @@ class AuthRepository {
       });
     } catch (e) {
       debugPrint('AuthRepository: Error updating profile: $e');
-      rethrow;
+      throw AppError.from(e);
     }
   }
 
@@ -103,12 +104,12 @@ class AuthRepository {
       return response;
     } catch (e) {
       debugPrint('AuthRepository: Error fetching profile: $e');
-      rethrow;
+      throw AppError.from(e);
     }
   }
 
-  /// Update user profile metadata (display name, avatar URL)
-  Future<void> updateProfile({
+  /// Update user auth metadata (display name, avatar URL)
+  Future<void> updateAuthMetadata({
     String? displayName,
     String? avatarUrl,
   }) async {
@@ -119,8 +120,8 @@ class AuthRepository {
 
       await _client.auth.updateUser(UserAttributes(data: data));
     } catch (e) {
-      debugPrint('AuthRepository: Error updating profile: $e');
-      rethrow;
+      debugPrint('AuthRepository: Error updating auth metadata: $e');
+      throw AppError.from(e);
     }
   }
 
@@ -130,7 +131,7 @@ class AuthRepository {
       await _client.auth.signOut();
     } catch (e) {
       debugPrint('AuthRepository: Error signing out: $e');
-      rethrow;
+      throw AppError.from(e);
     }
   }
 }

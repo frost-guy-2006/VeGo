@@ -3,15 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vego/core/init/app_initializer.dart';
 import 'package:vego/core/providers/riverpod/providers.dart';
 import 'package:vego/core/theme/app_theme.dart';
+import 'package:vego/core/router/app_router.dart';
 import 'package:vego/l10n/app_localizations.dart';
-import 'package:vego/features/auth/screens/login_screen.dart';
-import 'package:vego/features/home/screens/home_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
     await AppInitializer.initialize();
-    runApp(const ProviderScope(child: VeGoApp()));
+    GlobalErrorHandler.runAppWithErrorHandling(const ProviderScope(child: VeGoApp()));
   } catch (e, stackTrace) {
     debugPrint('=== APP INITIALIZATION FAILED ===');
     debugPrint('Error: $e');
@@ -26,8 +25,14 @@ class VeGoApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeState = ref.watch(themeProvider);
-    
-    return MaterialApp(
+
+    ref.listen(authProvider, (prev, next) {
+      if (prev?.user?.id != next.user?.id) {
+        ref.read(addressProvider.notifier).initForUser(next.user?.id);
+      }
+    });
+
+    return MaterialApp.router(
       title: 'VeGo',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
@@ -35,43 +40,11 @@ class VeGoApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: const _AuthGate(),
+      routerConfig: appRouter,
     );
   }
 }
 
-/// Decides which screen to show based on auth state.
-class _AuthGate extends ConsumerStatefulWidget {
-  const _AuthGate();
-
-  @override
-  ConsumerState<_AuthGate> createState() => _AuthGateState();
-}
-
-class _AuthGateState extends ConsumerState<_AuthGate> {
-  String? _lastUserId;
-
-  @override
-  Widget build(BuildContext context) {
-    final authState = ref.watch(authProvider);
-    
-    // Initialize addresses for current user when auth state changes
-    final currentUserId = authState.user?.id;
-    if (currentUserId != _lastUserId) {
-      _lastUserId = currentUserId;
-      // Schedule address initialization after build
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          ref.read(addressProvider.notifier).initForUser(currentUserId);
-        }
-      });
-    }
-
-    return authState.isAuthenticated ? const HomeScreen() : const LoginScreen();
-  }
-}
-
-/// Fallback app shown when initialization fails (e.g. no network, bad .env).
 class InitErrorApp extends StatelessWidget {
   final String error;
   const InitErrorApp({super.key, required this.error});
@@ -81,7 +54,7 @@ class InitErrorApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: const Color(0xFF1A1A2E),
+        backgroundColor: AppColors.darkBg,
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(32),

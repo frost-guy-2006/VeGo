@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:vego/core/models/app_error.dart';
 import 'package:vego/core/models/order_model.dart';
 
 /// Repository for order-related data operations.
@@ -66,7 +67,7 @@ class OrderRepository {
       );
     } catch (e) {
       debugPrint('OrderRepository: Error calling checkout Edge Function: $e');
-      rethrow;
+      throw AppError.from(e);
     }
   }
 
@@ -97,7 +98,7 @@ class OrderRepository {
       }).toList();
     } catch (e) {
       debugPrint('OrderRepository: Error fetching orders: $e');
-      rethrow;
+      throw AppError.from(e);
     }
   }
 
@@ -123,7 +124,7 @@ class OrderRepository {
       return Order.fromSupabase(response);
     } catch (e) {
       debugPrint('OrderRepository: Error fetching order: $e');
-      rethrow;
+      throw AppError.from(e);
     }
   }
 
@@ -141,7 +142,7 @@ class OrderRepository {
           .update({'status': newStatus})
           .eq('id', orderId);
 
-      // Log the status change
+      // Log the status change (non-critical — keep inner try/catch)
       try {
         await _client.from('order_status_log').insert({
           'order_id': orderId,
@@ -154,7 +155,7 @@ class OrderRepository {
       }
     } catch (e) {
       debugPrint('OrderRepository: Error updating order status: $e');
-      rethrow;
+      throw AppError.from(e);
     }
   }
 
@@ -165,28 +166,36 @@ class OrderRepository {
     String? reason,
   }) async {
     if (currentStatus != 'pending' && currentStatus != 'confirmed') {
-      throw Exception('Only pending or confirmed orders can be cancelled');
+      throw const AppError(
+        code: AppError.invalidInput,
+        message: 'Only pending or confirmed orders can be cancelled',
+      );
     }
 
     try {
       await _client
           .from('orders')
-          .update({'status': 'cancelled'})
+          .update({
+            'status': 'cancelled',
+            'cancellation_reason': reason,
+          })
           .eq('id', orderId);
 
+      // Log the cancellation (non-critical — keep inner try/catch)
       try {
         await _client.from('order_status_log').insert({
           'order_id': orderId,
           'old_status': currentStatus,
           'new_status': 'cancelled',
           'changed_by': _client.auth.currentUser?.id,
+          'reason': reason,
         });
       } catch (e) {
         debugPrint('OrderRepository: Warning - cancel log insert failed: $e');
       }
     } catch (e) {
       debugPrint('OrderRepository: Error cancelling order: $e');
-      rethrow;
+      throw AppError.from(e);
     }
   }
 
@@ -202,7 +211,7 @@ class OrderRepository {
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
       debugPrint('OrderRepository: Error fetching status history: $e');
-      rethrow;
+      throw AppError.from(e);
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:vego/core/repositories/auth_repository.dart';
 
 /// Auth state for Riverpod.
 class AuthState {
@@ -30,11 +31,12 @@ class AuthState {
 
 /// Auth notifier for Riverpod.
 class AuthNotifier extends StateNotifier<AuthState> {
-  final SupabaseClient _supabase;
+  final AuthRepository _repository;
 
-  AuthNotifier(this._supabase)
-      : super(AuthState(user: _supabase.auth.currentUser)) {
-    _supabase.auth.onAuthStateChange.listen((data) {
+  AuthNotifier({AuthRepository? repository})
+      : _repository = repository ?? AuthRepository(),
+        super(AuthState(user: repository?.currentUser ?? AuthRepository().currentUser)) {
+    _repository.onAuthStateChange.listen((data) {
       state = state.copyWith(user: () => data.session?.user);
     });
   }
@@ -42,7 +44,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> signInWithPhone(String phoneNumber) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      await _supabase.auth.signInWithOtp(phone: phoneNumber);
+      await _repository.signInWithPhone(phoneNumber);
       state = state.copyWith(isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
@@ -53,11 +55,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> verifyOtp(String phoneNumber, String otp) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      await _supabase.auth.verifyOTP(
-        type: OtpType.sms,
-        token: otp,
-        phone: phoneNumber,
-      );
+      await _repository.verifyOtp(phoneNumber, otp);
       state = state.copyWith(isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
@@ -68,8 +66,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> signInWithEmail(String email, String password) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      await _supabase.auth.signInWithPassword(email: email, password: password);
-      state = state.copyWith(isLoading: false, user: () => _supabase.auth.currentUser);
+      await _repository.signInWithEmail(email, password);
+      state = state.copyWith(isLoading: false, user: () => _repository.currentUser);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
       rethrow;
@@ -79,7 +77,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> signUpWithEmail(String email, String password) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      await _supabase.auth.signUp(email: email, password: password);
+      await _repository.signUpWithEmail(email, password);
       state = state.copyWith(isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
@@ -88,12 +86,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> signOut() async {
-    await _supabase.auth.signOut();
+    await _repository.signOut();
     state = const AuthState();
   }
 }
 
 /// Riverpod provider for auth state.
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  return AuthNotifier(Supabase.instance.client);
+  return AuthNotifier();
 });

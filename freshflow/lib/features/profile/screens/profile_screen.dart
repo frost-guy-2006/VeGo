@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:vego/core/providers/riverpod/providers.dart';
 import 'package:vego/core/theme/app_colors.dart';
-import 'package:vego/features/wishlist/screens/wishlist_screen.dart';
-import 'package:vego/features/orders/screens/order_history_screen.dart';
-import 'package:vego/features/address/screens/address_management_screen.dart';
-import 'package:vego/features/profile/screens/edit_profile_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -85,12 +82,8 @@ class ProfileScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     TextButton.icon(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const EditProfileScreen()),
-                      ),
-                      icon: Icon(Icons.edit_outlined,
+                      onPressed: () => context.push('/profile/edit'),
+                      icon: const Icon(Icons.edit_outlined,
                           size: 16, color: AppColors.primary),
                       label: Text(
                         'Edit Profile',
@@ -143,11 +136,7 @@ class ProfileScreen extends ConsumerWidget {
                       title: 'My Wishlist',
                       badge: '${wishlistState.itemCount}',
                       badgeColor: AppColors.accent,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const WishlistScreen()),
-                      ),
+                      onTap: () => context.push('/wishlist'),
                     ),
 
                     const SizedBox(height: 10),
@@ -167,11 +156,7 @@ class ProfileScreen extends ConsumerWidget {
                             ? '${orderState.activeOrders.length} active'
                             : null,
                         badgeColor: orderColor,
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => const OrderHistoryScreen()),
-                        ),
+                        onTap: () => context.push('/orders'),
                       );
                     }),
 
@@ -187,12 +172,7 @@ class ProfileScreen extends ConsumerWidget {
                           ? '${addressState.addressCount}'
                           : null,
                       badgeColor: AppColors.accentWarm,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) =>
-                                const AddressManagementScreen()),
-                      ),
+                      onTap: () => context.push('/addresses'),
                     ),
 
                     const SizedBox(height: 10),

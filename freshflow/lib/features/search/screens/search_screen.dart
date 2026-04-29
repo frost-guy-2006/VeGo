@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:vego/core/models/product_model.dart';
 import 'package:vego/core/repositories/product_repository.dart';
+import 'package:vego/core/services/analytics_service.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:vego/features/home/widgets/price_comparison_card.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -76,6 +77,7 @@ class _SearchScreenState extends State<SearchScreen> {
         _searchResults = filtered;
         _isLoading = false;
       });
+      AnalyticsService().logSearch(query, filtered.length);
     } catch (e) {
       debugPrint('Search error: $e');
       setState(() => _isLoading = false);

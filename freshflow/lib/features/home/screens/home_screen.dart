@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:vego/core/providers/riverpod/providers.dart';
 import 'package:vego/features/cart/screens/cart_screen.dart';
 
 import 'package:vego/features/home/widgets/category_grid.dart';
-import 'package:vego/features/search/screens/search_screen.dart';
-import 'package:vego/features/profile/screens/profile_screen.dart';
 import 'package:vego/features/wishlist/screens/wishlist_screen.dart';
 import 'package:vego/features/address/widgets/address_picker_sheet.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:vego/core/models/product_model.dart';
 import 'package:vego/core/theme/app_colors.dart';
-import 'package:vego/core/repositories/product_repository.dart';
 import 'package:vego/features/home/widgets/flash_price_widget.dart';
 import 'package:vego/features/home/widgets/price_comparison_card.dart';
 import 'package:vego/features/home/widgets/rain_mode_overlay.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:vego/features/home/widgets/floating_island_navigation.dart';
+import 'package:vego/features/home/widgets/weather_recommendations.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -109,19 +108,12 @@ class _HomeContentState extends ConsumerState<HomeContent> {
   late Future<List<Product>> _flashDealsFuture;
 
   // Pagination state
-  final ProductRepository _productRepository = ProductRepository();
   final ScrollController _scrollController = ScrollController();
-  List<Product> _products = [];
-  int _currentPage = 0;
-  bool _isLoading = false;
-  bool _hasMore = true;
-  String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
     _flashDealsFuture = _loadFlashDeals();
-    _loadInitialProducts();
     _scrollController.addListener(_onScroll);
   }
 
@@ -135,62 +127,7 @@ class _HomeContentState extends ConsumerState<HomeContent> {
     // Trigger load more when user scrolls near the bottom
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
-      _loadMoreProducts();
-    }
-  }
-
-  Future<void> _loadInitialProducts() async {
-    if (_isLoading) return;
-
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
-
-    try {
-      final products = await _productRepository.fetchProductsPaginated(
-        page: 0,
-        pageSize: ProductRepository.defaultPageSize,
-      );
-
-      setState(() {
-        _products = products;
-        _currentPage = 0;
-        _hasMore = products.length >= ProductRepository.defaultPageSize;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _errorMessage = e.toString();
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<void> _loadMoreProducts() async {
-    if (_isLoading || !_hasMore) return;
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final nextPage = _currentPage + 1;
-      final newProducts = await _productRepository.fetchProductsPaginated(
-        page: nextPage,
-        pageSize: ProductRepository.defaultPageSize,
-      );
-
-      setState(() {
-        _products = [..._products, ...newProducts];
-        _currentPage = nextPage;
-        _hasMore = newProducts.length >= ProductRepository.defaultPageSize;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      ref.read(productProvider.notifier).loadMoreProducts();
     }
   }
 
@@ -198,12 +135,9 @@ class _HomeContentState extends ConsumerState<HomeContent> {
     setState(() {
       _refreshKey = UniqueKey();
       _flashDealsFuture = _loadFlashDeals();
-      _products = [];
-      _currentPage = 0;
-      _hasMore = true;
     });
 
-    await _loadInitialProducts();
+    await ref.read(productProvider.notifier).loadProducts();
   }
 
   Future<List<Product>> _loadFlashDeals() async {
@@ -214,6 +148,8 @@ class _HomeContentState extends ConsumerState<HomeContent> {
 
   @override
   Widget build(BuildContext context) {
+    final productState = ref.watch(productProvider);
+
     return RefreshIndicator(
       onRefresh: _onRefresh,
       color: AppColors.primary,
@@ -315,12 +251,7 @@ class _HomeContentState extends ConsumerState<HomeContent> {
                           color: context.textPrimary),
                     ),
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ProfileScreen(),
-                        ),
-                      );
+                      context.push('/profile');
                     },
                   ),
                   const SizedBox(width: 16),
@@ -336,14 +267,7 @@ class _HomeContentState extends ConsumerState<HomeContent> {
                   horizontal: 16), // Removed vertical padding
               child: GestureDetector(
                 onTap: () {
-                  Navigator.of(context).push(PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) =>
-                        const SearchScreen(),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      return FadeTransition(opacity: animation, child: child);
-                    },
-                  ));
+                  context.push('/search');
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -371,6 +295,11 @@ class _HomeContentState extends ConsumerState<HomeContent> {
 
           // Categories Bar (Horizontal)
           const CategoryGrid(),
+
+          // Weather-Based Recommendations
+          const SliverToBoxAdapter(
+            child: WeatherRecommendations(),
+          ),
 
           // Scrollable Flash Widgets
           SliverToBoxAdapter(
@@ -427,11 +356,11 @@ class _HomeContentState extends ConsumerState<HomeContent> {
           // Product Grid - Now using paginated data
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            sliver: _buildProductGrid(),
+            sliver: _buildProductGrid(productState),
           ),
 
           // Loading indicator for pagination
-          if (_isLoading && _products.isNotEmpty)
+          if (productState.isLoading && productState.products.isNotEmpty)
             const SliverToBoxAdapter(
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 24),
@@ -446,7 +375,7 @@ class _HomeContentState extends ConsumerState<HomeContent> {
             ),
 
           // "Load more" indicator or "End of list" message
-          if (!_hasMore && _products.isNotEmpty)
+          if (!productState.hasMore && productState.products.isNotEmpty)
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 24),
@@ -469,9 +398,9 @@ class _HomeContentState extends ConsumerState<HomeContent> {
     );
   }
 
-  Widget _buildProductGrid() {
+  Widget _buildProductGrid(dynamic productState) {
     // Initial loading state
-    if (_isLoading && _products.isEmpty) {
+    if (productState.isLoading && productState.products.isEmpty) {
       return SliverMasonryGrid.count(
         crossAxisCount: 2,
         mainAxisSpacing: 12,
@@ -494,7 +423,7 @@ class _HomeContentState extends ConsumerState<HomeContent> {
     }
 
     // Error state
-    if (_errorMessage != null && _products.isEmpty) {
+    if (productState.error != null && productState.products.isEmpty) {
       return SliverToBoxAdapter(
         child: Center(
           child: Padding(
@@ -508,12 +437,12 @@ class _HomeContentState extends ConsumerState<HomeContent> {
                         color: context.textPrimary,
                         fontSize: 16,
                         fontWeight: FontWeight.bold)),
-                Text(_errorMessage!,
+                Text(productState.error!,
                     style: GoogleFonts.plusJakartaSans(
                         color: context.textSecondary, fontSize: 12)),
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
-                  onPressed: _loadInitialProducts,
+                  onPressed: () => ref.read(productProvider.notifier).loadProducts(),
                   icon: const Icon(Icons.refresh, size: 16),
                   label: const Text('Retry'),
                   style: ElevatedButton.styleFrom(
@@ -529,7 +458,7 @@ class _HomeContentState extends ConsumerState<HomeContent> {
     }
 
     // Empty state
-    if (_products.isEmpty) {
+    if (productState.products.isEmpty) {
       return SliverToBoxAdapter(
         child: Center(
           child: Padding(
@@ -569,11 +498,11 @@ class _HomeContentState extends ConsumerState<HomeContent> {
       crossAxisCount: 2,
       mainAxisSpacing: 12,
       crossAxisSpacing: 12,
-      childCount: _products.length,
+      childCount: productState.products.length,
       itemBuilder: (context, index) {
         return SizedBox(
           child: PriceComparisonCard(
-            product: _products[index],
+            product: productState.products[index],
             index: index,
           ),
         );

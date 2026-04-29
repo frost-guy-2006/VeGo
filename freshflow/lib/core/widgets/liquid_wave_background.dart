@@ -56,8 +56,8 @@ class _LiquidWaveBackgroundState extends State<LiquidWaveBackground>
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: isDark
-                  ? [AppColors.backgroundDark, const Color(0xFF0D2818)]
-                  : [AppColors.background, const Color(0xFFD8F3DC)],
+                  ? [AppColors.backgroundDark, AppColors.waveDarkEnd]
+                  : [AppColors.background, AppColors.waveLightEnd],
             ),
           ),
         ),

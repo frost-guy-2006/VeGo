@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vego/core/providers/riverpod/providers.dart';
-import 'package:vego/features/auth/screens/otp_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:vego/core/widgets/liquid_wave_background.dart';
 import 'package:vego/core/widgets/backgrounds.dart';
@@ -54,11 +54,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       await ref.read(authProvider.notifier).signInWithPhone(formattedPhone);
       if (mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (_) => OtpScreen(phoneNumber: formattedPhone)),
-        );
+        context.push('/otp', extra: formattedPhone);
       }
     } catch (e) {
       if (mounted) {

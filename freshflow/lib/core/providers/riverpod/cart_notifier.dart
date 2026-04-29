@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vego/core/models/product_model.dart';
+import 'package:vego/core/services/analytics_service.dart';
 
 /// Cart item with product and quantity.
 class CartItem {
@@ -64,6 +65,7 @@ class CartNotifier extends StateNotifier<CartState> {
 
     state = state.copyWith(items: items);
     _saveCart();
+    AnalyticsService().logAddToCart(product.id, product.name, product.currentPrice);
   }
 
   void removeFromCart(String productId) {
@@ -71,6 +73,7 @@ class CartNotifier extends StateNotifier<CartState> {
         state.items.where((item) => item.product.id != productId).toList();
     state = state.copyWith(items: items);
     _saveCart();
+    AnalyticsService().logRemoveFromCart(productId);
   }
 
   void decreaseQuantity(String productId) {

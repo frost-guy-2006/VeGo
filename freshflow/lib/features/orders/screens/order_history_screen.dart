@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 import 'package:vego/core/models/order_model.dart';
 import 'package:vego/core/providers/riverpod/providers.dart';
 import 'package:vego/core/theme/app_colors.dart';
+import 'package:vego/features/orders/widgets/cancel_reason_dialog.dart';
 import 'package:intl/intl.dart';
 
 class OrderHistoryScreen extends ConsumerWidget {
@@ -115,59 +117,42 @@ class _OrderCard extends ConsumerWidget {
 
   const _OrderCard({required this.order});
 
-  void _showCancelDialog(BuildContext context, WidgetRef ref) {
-    showDialog(
+  void _showCancelDialog(BuildContext context, WidgetRef ref) async {
+    final reason = await showDialog<String>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text('Cancel Order', style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.bold)),
-        content: Text(
-          'Are you sure you want to cancel this order? This cannot be undone.',
-          style: GoogleFonts.outfit(),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text('Keep Order', style: GoogleFonts.outfit(color: context.textSecondary)),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              Navigator.pop(ctx);
-              try {
-                await ref.read(orderProvider.notifier).cancelOrder(order.id);
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text('Order cancelled successfully'),
-                      backgroundColor: Colors.green,
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                  );
-                }
-              } catch (e) {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Failed to cancel: $e'),
-                      backgroundColor: Colors.red,
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                  );
-                }
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            ),
-            child: const Text('Cancel Order'),
-          ),
-        ],
-      ),
+      builder: (_) => const CancelReasonDialog(),
     );
+    if (reason == null) return;
+
+    try {
+      await ref.read(orderProvider.notifier).cancelOrder(
+            order.id,
+            reason: reason,
+          );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Order cancelled successfully'),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to cancel: $e'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -353,14 +338,7 @@ class _OrderCard extends ConsumerWidget {
                       const SizedBox(width: 8),
                       OutlinedButton(
                         onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text('Order tracking coming soon!'),
-                              behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
-                            ),
-                          );
+                          context.push('/tracking', extra: order.id);
                         },
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.primary,
@@ -378,14 +356,7 @@ class _OrderCard extends ConsumerWidget {
                     order.status == OrderStatus.outForDelivery)
                   OutlinedButton(
                     onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: const Text('Order tracking coming soon!'),
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                        ),
-                      );
+                      context.push('/tracking', extra: order.id);
                     },
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.primary,

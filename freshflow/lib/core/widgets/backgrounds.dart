@@ -19,8 +19,8 @@ class GradientMeshBackground extends StatelessWidget {
     final gradientColors = colors ??
         [
           context.backgroundColor,
-          const Color(0xFFF0FDF4), // Mint whisper
-          const Color(0xFFFEF3E2), // Peach cream
+          AppColors.bgMintWhisper, // Mint whisper
+          AppColors.bgPeachCream, // Peach cream
         ];
 
     return Container(

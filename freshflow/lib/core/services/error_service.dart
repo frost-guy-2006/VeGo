@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:vego/core/models/app_error.dart';
 /// Centralized error handling service for displaying
 /// user-friendly error messages and success notifications
 class ErrorService {
@@ -134,6 +134,11 @@ class ErrorService {
 
   /// Format error messages for user display
   static String _formatErrorMessage(dynamic error) {
+    // Structured AppError — use its message directly
+    if (error is AppError) {
+      return error.message;
+    }
+
     final errorString = error.toString();
 
     // Handle common error patterns

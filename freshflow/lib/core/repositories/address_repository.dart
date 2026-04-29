@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:vego/core/models/address_model.dart';
+import 'package:vego/core/models/app_error.dart';
 
 /// Repository for address-related data operations.
 /// Handles CRUD against the Supabase `addresses` table.
@@ -23,7 +24,7 @@ class AddressRepository {
       return (response as List).map((json) => Address.fromSupabase(json)).toList();
     } catch (e) {
       debugPrint('AddressRepository: Error fetching addresses: $e');
-      rethrow;
+      throw AppError.from(e);
     }
   }
 
@@ -59,7 +60,7 @@ class AddressRepository {
       return Address.fromSupabase(response);
     } catch (e) {
       debugPrint('AddressRepository: Error adding address: $e');
-      rethrow;
+      throw AppError.from(e);
     }
   }
 
@@ -95,7 +96,7 @@ class AddressRepository {
       return Address.fromSupabase(response);
     } catch (e) {
       debugPrint('AddressRepository: Error updating address: $e');
-      rethrow;
+      throw AppError.from(e);
     }
   }
 
@@ -112,7 +113,7 @@ class AddressRepository {
           .eq('user_id', userId);
     } catch (e) {
       debugPrint('AddressRepository: Error deleting address: $e');
-      rethrow;
+      throw AppError.from(e);
     }
   }
 
@@ -130,7 +131,7 @@ class AddressRepository {
           .eq('user_id', userId);
     } catch (e) {
       debugPrint('AddressRepository: Error setting default address: $e');
-      rethrow;
+      throw AppError.from(e);
     }
   }
 

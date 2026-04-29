@@ -1,3 +1,5 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 /// Unified error model for handling structured errors
 /// from Supabase Edge Functions and other backend services.
 ///
@@ -34,7 +36,8 @@ class AppError implements Exception {
   /// Create a generic network error
   factory AppError.network([String? message]) => AppError(
         code: 'NETWORK_ERROR',
-        message: message ?? 'Unable to connect. Please check your internet connection.',
+        message: message ??
+            'Unable to connect. Please check your internet connection.',
       );
 
   /// Create a generic unknown error
@@ -64,4 +67,49 @@ class AppError implements Exception {
 
   @override
   String toString() => 'AppError($code): $message';
+
+  /// Convert any caught exception into an [AppError].
+  ///
+  /// Handles Supabase-specific types (AuthException, PostgrestException,
+  /// FunctionException) as well as common Dart exceptions.
+  static AppError from(dynamic error) {
+    if (error is AppError) return error;
+
+    if (error is AuthException) {
+      return AppError(code: unauthorized, message: error.message);
+    }
+
+    if (error is PostgrestException) {
+      return AppError(
+        code: serverError,
+        message: error.message,
+        details: [if (error.code != null) 'pg_code: ${error.code}'],
+      );
+    }
+
+    if (error is FunctionException) {
+      final body = error.details;
+      if (body is Map<String, dynamic> &&
+          body.containsKey('code') &&
+          body.containsKey('message')) {
+        return AppError.fromJson(body);
+      }
+      return AppError(code: serverError, message: error.toString());
+    }
+
+    final msg = error.toString();
+
+    if (msg.contains('SocketException') || msg.contains('NetworkException')) {
+      return AppError.network();
+    }
+    if (msg.contains('TimeoutException')) {
+      return const AppError(
+        code: 'TIMEOUT',
+        message: 'Request timed out. Please try again.',
+      );
+    }
+
+    return AppError.unknown(
+        msg.length > 200 ? '${msg.substring(0, 200)}...' : msg);
+  }
 }

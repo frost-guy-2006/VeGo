@@ -1,22 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:vego/core/theme/app_colors.dart';
-import 'package:vego/core/utils/app_exception.dart';
+import 'package:vego/core/models/app_error.dart';
 
-/// Shows a styled snackbar for AppException errors.
+/// Shows a styled snackbar for AppError errors.
 void showErrorSnackBar(BuildContext context, dynamic error) {
-  final appError = error is AppException
+  final appError = error is AppError
       ? error
-      : AppException.fromError(error);
+      : AppError.from(error);
 
-  final icon = switch (appError.type) {
-    ErrorType.network => Icons.wifi_off_rounded,
-    ErrorType.auth => Icons.lock_outline_rounded,
-    ErrorType.server => Icons.cloud_off_rounded,
-    ErrorType.validation => Icons.warning_amber_rounded,
-    ErrorType.notFound => Icons.search_off_rounded,
-    ErrorType.unknown => Icons.error_outline_rounded,
-  };
+  final String displayMessage;
+  final IconData icon;
+  final Color backgroundColor;
+
+  switch (appError.code) {
+    case 'network_error':
+    case 'socket_error':
+    case 'timeout':
+      displayMessage = 'Check your internet connection';
+      icon = Icons.wifi_off_rounded;
+      backgroundColor = Colors.orange.shade700;
+      break;
+    case 'not_found':
+      displayMessage = 'Item not found';
+      icon = Icons.search_off_rounded;
+      backgroundColor = Colors.red.shade600;
+      break;
+    case 'auth_error':
+    case 'invalid_credentials':
+      displayMessage = appError.message;
+      icon = Icons.lock_outline_rounded;
+      backgroundColor = Colors.red.shade600;
+      break;
+    default:
+      displayMessage = appError.message;
+      icon = Icons.error_outline_rounded;
+      backgroundColor = Colors.red.shade600;
+  }
 
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
@@ -26,15 +46,13 @@ void showErrorSnackBar(BuildContext context, dynamic error) {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              appError.displayMessage,
+              displayMessage,
               style: GoogleFonts.plusJakartaSans(fontSize: 14),
             ),
           ),
         ],
       ),
-      backgroundColor: appError.type == ErrorType.network
-          ? Colors.orange.shade700
-          : Colors.red.shade600,
+      backgroundColor: backgroundColor,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       duration: const Duration(seconds: 4),

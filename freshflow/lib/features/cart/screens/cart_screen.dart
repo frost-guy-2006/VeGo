@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vego/core/providers/riverpod/providers.dart';
 import 'package:vego/core/theme/app_colors.dart';
-import 'package:vego/features/tracking/screens/tracking_screen.dart';
+import 'package:go_router/go_router.dart';
 import 'package:slide_to_act/slide_to_act.dart';
 import 'package:vego/core/widgets/delivery_slot_picker.dart';
 
@@ -319,12 +319,22 @@ class CartScreen extends ConsumerWidget {
                                       color: AppColors.primary),
                                   onSubmit: () async {
                                     if (cart.items.isNotEmpty) {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (_) =>
-                                                const TrackingScreen()),
+                                      // Wait for order creation
+                                      final user = ref.read(authProvider).user;
+                                      if (user == null) return null;
+                                      final address = ref.read(addressProvider).effectiveDeliveryAddress;
+                                      final deliveryAddress = address?.formattedAddress ?? 'Unknown';
+
+                                      final order = await ref.read(orderProvider.notifier).createOrder(
+                                        cart: cart,
+                                        userId: user.id,
+                                        deliveryAddress: deliveryAddress,
                                       );
+                                      final orderId = order.id;
+                                      if (context.mounted) {
+                                        ref.read(cartProvider.notifier).clearCart();
+                                        context.push('/tracking', extra: orderId);
+                                      }
                                     }
                                     return null;
                                   },

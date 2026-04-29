@@ -46,6 +46,7 @@ class Order {
   final DateTime createdAt;
   final DateTime? deliveredAt;
   final String deliveryAddress;
+  final String? cancellationReason;
 
   Order({
     required this.id,
@@ -56,6 +57,7 @@ class Order {
     required this.createdAt,
     this.deliveredAt,
     required this.deliveryAddress,
+    this.cancellationReason,
   });
 
   int get itemCount => items.fold(0, (sum, item) => sum + item.quantity);
@@ -87,6 +89,7 @@ class Order {
         'createdAt': createdAt.toIso8601String(),
         'deliveredAt': deliveredAt?.toIso8601String(),
         'deliveryAddress': deliveryAddress,
+        'cancellationReason': cancellationReason,
       };
 
   factory Order.fromJson(Map<String, dynamic> json) => Order(
@@ -101,6 +104,7 @@ class Order {
             ? DateTime.parse(json['deliveredAt'])
             : null,
         deliveryAddress: json['deliveryAddress'],
+        cancellationReason: json['cancellationReason'] as String?,
       );
 
   /// Versioned factory for Supabase data.
@@ -147,6 +151,7 @@ class Order {
           ? DateTime.parse(json['delivered_at'])
           : null,
       deliveryAddress: json['delivery_address'] ?? '',
+      cancellationReason: json['cancellation_reason'] as String?,
     );
   }
 
@@ -168,6 +173,7 @@ class Order {
           ? DateTime.parse(json['delivered_at'])
           : null,
       deliveryAddress: json['delivery_address'] ?? '',
+      cancellationReason: json['cancellation_reason'] as String?,
     );
   }
 

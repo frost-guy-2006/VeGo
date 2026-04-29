@@ -69,7 +69,7 @@ class _FlashPriceWidgetState extends State<FlashPriceWidget> {
             Container(
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [AppColors.primary, Color(0xFF252837)],
+                  colors: [AppColors.primary, AppColors.flashDark],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),

@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:vego/core/models/app_error.dart';
 import 'package:vego/core/models/product_model.dart';
 
 /// Repository for product-related data operations
@@ -13,12 +14,16 @@ class ProductRepository {
 
   /// Fetch all products from database
   Future<List<Product>> fetchProducts() async {
-    final response = await _client
-        .from('products')
-        .select()
-        .order('created_at', ascending: false);
+    try {
+      final response = await _client
+          .from('products')
+          .select()
+          .order('created_at', ascending: false);
 
-    return (response as List).map((json) => Product.fromJson(json)).toList();
+      return (response as List).map((json) => Product.fromJson(json)).toList();
+    } catch (e) {
+      throw AppError.from(e);
+    }
   }
 
   /// Fetch products with pagination support
@@ -29,20 +34,24 @@ class ProductRepository {
     int pageSize = defaultPageSize,
     String? category,
   }) async {
-    final offset = page * pageSize;
+    try {
+      final offset = page * pageSize;
 
-    var query = _client.from('products').select();
+      var query = _client.from('products').select();
 
-    // Apply category filter if specified
-    if (category != null && category != 'All') {
-      query = query.eq('category', category);
+      // Apply category filter if specified
+      if (category != null && category != 'All') {
+        query = query.eq('category', category);
+      }
+
+      final response = await query
+          .order('created_at', ascending: false)
+          .range(offset, offset + pageSize - 1);
+
+      return (response as List).map((json) => Product.fromJson(json)).toList();
+    } catch (e) {
+      throw AppError.from(e);
     }
-
-    final response = await query
-        .order('created_at', ascending: false)
-        .range(offset, offset + pageSize - 1);
-
-    return (response as List).map((json) => Product.fromJson(json)).toList();
   }
 
   /// Check if there are more products to load
@@ -50,49 +59,65 @@ class ProductRepository {
     int currentCount = 0,
     String? category,
   }) async {
-    var query = _client.from('products').select('id');
+    try {
+      var query = _client.from('products').select('id');
 
-    if (category != null && category != 'All') {
-      query = query.eq('category', category);
+      if (category != null && category != 'All') {
+        query = query.eq('category', category);
+      }
+
+      final response = await query;
+      final totalCount = (response as List).length;
+      return currentCount < totalCount;
+    } catch (e) {
+      throw AppError.from(e);
     }
-
-    final response = await query;
-    final totalCount = (response as List).length;
-    return currentCount < totalCount;
   }
 
   /// Fetch products by category
   Future<List<Product>> fetchProductsByCategory(String category) async {
-    if (category == 'All') {
-      return fetchProducts();
+    try {
+      if (category == 'All') {
+        return fetchProducts();
+      }
+
+      final response = await _client
+          .from('products')
+          .select()
+          .eq('category', category)
+          .order('created_at', ascending: false);
+
+      return (response as List).map((json) => Product.fromJson(json)).toList();
+    } catch (e) {
+      throw AppError.from(e);
     }
-
-    final response = await _client
-        .from('products')
-        .select()
-        .eq('category', category)
-        .order('created_at', ascending: false);
-
-    return (response as List).map((json) => Product.fromJson(json)).toList();
   }
 
   /// Fetch a single product by ID
   Future<Product?> fetchProductById(String id) async {
-    final response =
-        await _client.from('products').select().eq('id', id).maybeSingle();
+    try {
+      final response =
+          await _client.from('products').select().eq('id', id).maybeSingle();
 
-    if (response == null) return null;
-    return Product.fromJson(response);
+      if (response == null) return null;
+      return Product.fromJson(response);
+    } catch (e) {
+      throw AppError.from(e);
+    }
   }
 
   /// Search products by name
   Future<List<Product>> searchProducts(String query) async {
-    final response = await _client
-        .from('products')
-        .select()
-        .ilike('name', '%$query%')
-        .order('name');
+    try {
+      final response = await _client
+          .from('products')
+          .select()
+          .ilike('name', '%$query%')
+          .order('name');
 
-    return (response as List).map((json) => Product.fromJson(json)).toList();
+      return (response as List).map((json) => Product.fromJson(json)).toList();
+    } catch (e) {
+      throw AppError.from(e);
+    }
   }
 }

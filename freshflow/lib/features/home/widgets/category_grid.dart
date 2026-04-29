@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:page_transition/page_transition.dart';
+import 'package:go_router/go_router.dart';
 import 'package:vego/core/theme/app_colors.dart';
-import 'package:vego/features/category/screens/category_products_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CategoryGrid extends StatefulWidget {
@@ -19,16 +18,16 @@ class _CategoryGridState extends State<CategoryGrid>
   late AnimationController _glowController;
   late Animation<double> _glowAnimation;
 
-  final List<Map<String, dynamic>> categories = const [
-    {'name': 'Vegetables', 'icon': Icons.eco_rounded, 'color': 0xFF22C55E},
-    {'name': 'Fruits', 'icon': Icons.spa_rounded, 'color': 0xFFE63946},
-    {'name': 'Dairy', 'icon': Icons.local_drink_rounded, 'color': 0xFF3B82F6},
+  final List<Map<String, dynamic>> categories = [
+    {'name': 'Vegetables', 'icon': Icons.eco_rounded, 'color': AppColors.categoryVegetables.value},
+    {'name': 'Fruits', 'icon': Icons.spa_rounded, 'color': AppColors.categoryFruits.value},
+    {'name': 'Dairy', 'icon': Icons.local_drink_rounded, 'color': AppColors.categoryDairy.value},
     {
       'name': 'Bakery',
       'icon': Icons.breakfast_dining_rounded,
-      'color': 0xFFA3584E
+      'color': AppColors.categoryBakery.value
     },
-    {'name': 'Tea/Coffee', 'icon': Icons.coffee_rounded, 'color': 0xFF6D4C41},
+    {'name': 'Tea/Coffee', 'icon': Icons.coffee_rounded, 'color': AppColors.categoryTeaCoffee.value},
   ];
 
   @override
@@ -75,17 +74,7 @@ class _CategoryGridState extends State<CategoryGrid>
                 });
                 widget.onCategoryChanged?.call(categoryName);
 
-                Navigator.push(
-                  context,
-                  PageTransition(
-                    type: PageTransitionType.rightToLeft,
-                    child: CategoryProductsScreen(
-                      categoryName: categoryName,
-                      categoryColor: categoryColor,
-                      categoryIcon: categoryIcon,
-                    ),
-                  ),
-                );
+                context.push('/category/${Uri.encodeComponent(categoryName)}');
               },
               child: AnimatedBuilder(
                 animation: _glowAnimation,
@@ -111,14 +100,14 @@ class _CategoryGridState extends State<CategoryGrid>
                           ? null
                           : (isDark
                               ? Colors.white.withValues(alpha: 0.06)
-                              : const Color(0xFFF1F2F4)),
+                              : AppColors.categoryBgLight),
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(
                         color: isSelected
                             ? categoryColor.withValues(alpha: 0.6)
                             : (isDark
                                 ? Colors.white.withValues(alpha: 0.1)
-                                : const Color(0xFFD8DADF)),
+                                : AppColors.categoryBorderLight),
                         width: 1,
                       ),
                       boxShadow: isSelected
