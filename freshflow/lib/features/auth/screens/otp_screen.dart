@@ -7,6 +7,7 @@ import 'package:vego/core/theme/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:vego/core/widgets/liquid_wave_background.dart';
 import 'package:vego/core/widgets/backgrounds.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class OtpScreen extends ConsumerStatefulWidget {
   final String phoneNumber;
@@ -61,10 +62,16 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       if (mounted) {
         context.go('/');
       }
+    } on AuthException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Invalid OTP: ${e.message}')),
+        );
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Invalid OTP: ${e.toString()}')),
+          const SnackBar(content: Text('Sign in failed')),
         );
       }
     }
