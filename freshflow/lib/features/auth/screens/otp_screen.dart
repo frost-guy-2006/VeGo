@@ -64,7 +64,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Invalid OTP: ${e.toString()}')),
+          const SnackBar(content: Text('Invalid OTP')),
         );
       }
     }
