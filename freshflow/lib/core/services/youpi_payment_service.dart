@@ -99,15 +99,24 @@ class YouPiPaymentService {
 
     final uri = Uri.parse(upiUrl);
     try {
+      // Directly trigger externalApplication mode to force Android to display the native UPI chooser
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+      if (launched) return true;
+
       if (await canLaunchUrl(uri)) {
-        return await launchUrl(uri, mode: LaunchMode.externalApplication);
-      } else {
-        debugPrint('YouPI-PG: No native UPI handler found on device');
-        return false;
+        return await launchUrl(uri, mode: LaunchMode.externalNonBrowserApplication);
       }
+      return false;
     } catch (e) {
       debugPrint('YouPI-PG Error launching UPI app: $e');
-      return false;
+      try {
+        return await launchUrl(uri, mode: LaunchMode.externalNonBrowserApplication);
+      } catch (_) {
+        return false;
+      }
     }
   }
 
