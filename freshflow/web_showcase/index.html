@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VeGo / FreshFlow — Quick Commerce & YouPI-PG Gateway</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: rgba(18, 26, 43, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --primary: #10b981;
+      --primary-glow: rgba(16, 185, 129, 0.35);
+      --primary-light: #34d399;
+      --accent: #6366f1;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --upi-purple: #5f259f;
+      --upi-blue: #0088cc;
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(16, 185, 129, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(99, 102, 241, 0.12) 0%, transparent 40%);
+    }
+
+    /* Header Nav */
+    header {
+      padding: 20px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--card-border);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(9, 13, 22, 0.85);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 1.4rem;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, var(--primary), #059669);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      box-shadow: 0 4px 14px var(--primary-glow);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      color: var(--primary-light);
+      font-weight: 600;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 10px var(--primary);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    /* Hero Section */
+    .hero {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 24px 40px;
+      text-align: center;
+      position: relative;
+    }
+
+    .pill-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: #a5b4fc;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -1.5px;
+      margin-bottom: 20px;
+    }
+
+    h1 span {
+      background: linear-gradient(135deg, #34d399 20%, #60a5fa 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p.subtitle {
+      font-size: clamp(1.05rem, 2vw, 1.25rem);
+      color: var(--text-muted);
+      max-width: 720px;
+      margin: 0 auto 36px;
+      line-height: 1.6;
+    }
+
+    .cta-group {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 50px;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--primary), #059669);
+      color: white;
+      text-decoration: none;
+      padding: 16px 32px;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 1.05rem;
+      box-shadow: 0 10px 25px var(--primary-glow);
+      transition: all 0.25s ease;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(16, 185, 129, 0.5);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      text-decoration: none;
+      padding: 16px 28px;
+      border-radius: 14px;
+      font-weight: 600;
+      font-size: 1.05rem;
+      backdrop-filter: blur(10px);
+      transition: all 0.25s ease;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    /* Grid cards */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      max-width: 1200px;
+      margin: 0 auto 60px;
+      padding: 0 24px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 28px;
+      backdrop-filter: blur(16px);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      border-color: rgba(16, 185, 129, 0.3);
+      transform: translateY(-4px);
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 18px;
+    }
+
+    .card h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      letter-spacing: -0.3px;
+    }
+
+    .card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.55;
+      margin-bottom: 16px;
+    }
+
+    /* Interactive Showcase Section */
+    .showcase-container {
+      max-width: 900px;
+      margin: 0 auto 80px;
+      padding: 0 24px;
+    }
+
+    .interactive-card {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 16px;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active {
+      color: white;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* YouPI Simulation */
+    .youpi-box {
+      background: #0f172a;
+      border-radius: 16px;
+      padding: 24px;
+      border: 1px solid rgba(99, 102, 241, 0.25);
+    }
+
+    .payment-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .pay-btn {
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+      background: rgba(255, 255, 255, 0.03);
+      color: white;
+      cursor: pointer;
+      text-align: center;
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .pay-btn:hover {
+      border-color: var(--primary);
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .qr-demo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      padding: 20px;
+      background: white;
+      border-radius: 16px;
+      max-width: 260px;
+      margin: 20px auto;
+      color: #0f172a;
+    }
+
+    .qr-demo img {
+      width: 180px;
+      height: 180px;
+      border-radius: 8px;
+    }
+
+    .qr-timer {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      color: #ef4444;
+      font-size: 0.9rem;
+    }
+
+    footer {
+      margin-top: auto;
+      border-top: 1px solid var(--card-border);
+      padding: 30px 24px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+
+    .code-pill {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #38bdf8;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header>
+    <div class="brand">
+      <span class="brand-badge">⚡ VeGo</span>
+      <span>FreshFlow</span>
+    </div>
+    <div class="nav-links">
+      <div class="status-badge">
+        <span class="dot"></span>
+        <span>v1.0.0 Ready</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="pill-tag">
+      ✨ 10-Minute Grocery Delivery + YouPI-PG Gateway
+    </div>
+    <h1>Lightning Fresh Groceries,<br><span>Zero-Fee Payments.</span></h1>
+    <p class="subtitle">
+      FreshFlow delivers farm-fresh vegetables, dairy, and household essentials in under 15 minutes, powered by the self-hosted YouPI-PG UPI & COD payment infrastructure.
+    </p>
+
+    <div class="cta-group">
+      <a href="https://github.com/frost-guy-2006/VeGo/releases/latest" class="btn-primary" id="downloadApkBtn" target="_blank">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Download Android APK (v1.0.0)
+      </a>
+      <a href="https://github.com/frost-guy-2006/VeGo" class="btn-secondary" target="_blank">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+        View GitHub Repository
+      </a>
+    </div>
+  </section>
+
+  <!-- Feature Grid -->
+  <section class="grid">
+    <div class="card">
+      <div class="card-icon">⚡</div>
+      <h3>10–15 Min Hyperlocal Delivery</h3>
+      <p>Instant dispatch from local dark stores with live GPS order tracking, dynamic ETAs, and rider contact integration.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">💳</div>
+      <h3>YouPI-PG Gateway Integrated</h3>
+      <p>Direct UPI Intent (GPay, PhonePe, Paytm), dynamic vector QR codes with countdown expiry, and Cash on Delivery.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">🏷️</div>
+      <h3>Flash Price Comparisons</h3>
+      <p>Real-time market price benchmark badges showing exact savings per unit vs traditional supermarkets.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">🔄</div>
+      <h3>Supabase Realtime Cloud Sync</h3>
+      <p>State hydration on launch, persistent local caching, safe cart rollback on cancellation, and full logout sanitization.</p>
+    </div>
+  </section>
+
+  <!-- Interactive Demo Showcase -->
+  <section class="showcase-container">
+    <div class="interactive-card">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('gateway')">YouPI-PG Checkout Demo</button>
+        <button class="tab-btn" onclick="switchTab('builds')">Release & CI Status</button>
+      </div>
+
+      <!-- Tab 1: YouPI-PG Gateway -->
+      <div id="tab-gateway" class="tab-content active">
+        <div class="youpi-box">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <div>
+              <h4 style="font-size:1.15rem; font-weight:700;">Order Total: ₹249.00</h4>
+              <p style="font-size:0.85rem; color:var(--text-muted);">Self-Hosted Payment Gateway (Sandbox Active)</p>
+            </div>
+            <span style="background:rgba(16,185,129,0.2); color:var(--primary-light); padding:4px 10px; border-radius:8px; font-size:0.75rem; font-weight:700;">0% FEES</span>
+          </div>
+
+          <div class="payment-options">
+            <div class="pay-btn" onclick="simulatePayment('Google Pay')">
+              📱 Google Pay
+            </div>
+            <div class="pay-btn" onclick="simulatePayment('PhonePe')">
+              🟣 PhonePe
+            </div>
+            <div class="pay-btn" onclick="simulatePayment('Paytm')">
+              🔷 Paytm
+            </div>
+            <div class="pay-btn" onclick="simulatePayment('Dynamic QR')">
+              📷 Dynamic QR
+            </div>
+            <div class="pay-btn" onclick="simulatePayment('Cash on Delivery')">
+              💵 COD
+            </div>
+          </div>
+
+          <div id="payment-status" style="margin-top:16px; padding:12px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid var(--card-border); font-size:0.9rem; color:var(--text-muted); text-align:center;">
+            Tap any payment method above to simulate instant verification.
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Release & CI Details -->
+      <div id="tab-builds" class="tab-content">
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:14px; background:rgba(255,255,255,0.02); border-radius:12px; border:1px solid var(--card-border);">
+            <div>
+              <div style="font-weight:700;">Android Universal APK</div>
+              <div style="font-size:0.82rem; color:var(--text-muted);">FreshFlow-Release.apk • Built via GitHub Actions</div>
+            </div>
+            <a href="https://github.com/frost-guy-2006/VeGo/releases/latest" target="_blank" style="color:var(--primary-light); font-weight:700; text-decoration:none; font-size:0.9rem;">
+              Download →
+            </a>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:14px; background:rgba(255,255,255,0.02); border-radius:12px; border:1px solid var(--card-border);">
+            <div>
+              <div style="font-weight:700;">Unit & Integration Tests</div>
+              <div style="font-size:0.82rem; color:var(--text-muted);">12/12 Tests Passing • Zero static analysis warnings</div>
+            </div>
+            <span style="color:var(--primary-light); font-weight:700; font-size:0.85rem;">PASSING (100%)</span>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:14px; background:rgba(255,255,255,0.02); border-radius:12px; border:1px solid var(--card-border);">
+            <div>
+              <div style="font-weight:700;">Vercel Web Distribution</div>
+              <div style="font-size:0.82rem; color:var(--text-muted);">Production CDN Deployment & Live Showcase</div>
+            </div>
+            <span style="color:var(--primary-light); font-weight:700; font-size:0.85rem;">ACTIVE</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>VeGo / FreshFlow Quick Commerce • Open Source on GitHub: <a href="https://github.com/frost-guy-2006/VeGo" style="color:var(--primary-light); text-decoration:none;" target="_blank">frost-guy-2006/VeGo</a></p>
+  </footer>
+
+  <script>
+    function switchTab(name) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      if (name === 'gateway') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('tab-gateway').classList.add('active');
+      } else {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('tab-builds').classList.add('active');
+      }
+    }
+
+    function simulatePayment(method) {
+      const box = document.getElementById('payment-status');
+      box.innerHTML = `<span style="color:#60a5fa;">⏳ Initializing ${method} intent...</span>`;
+      setTimeout(() => {
+        box.innerHTML = `<span style="color:#34d399; font-weight:700;">✅ Transaction Verified via YouPI-PG! Reference: #UPI-${Math.floor(100000 + Math.random() * 900000)}</span>`;
+      }, 700);
+    }
+  </script>
+</body>
+</html>

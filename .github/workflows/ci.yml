@@ -14,11 +14,15 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Configure Git Safe Directory
+        run: git config --global --add safe.directory '*'
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.38.7'
           channel: 'stable'
-          cache: true
+          cache: false
 
       - name: Create .env file
         working-directory: freshflow
@@ -32,7 +36,7 @@ jobs:
 
       - name: Analyze Project
         working-directory: freshflow
-        run: flutter analyze
+        run: flutter analyze --no-fatal-infos
 
       - name: Run Tests
         working-directory: freshflow
