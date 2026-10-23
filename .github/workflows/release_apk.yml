@@ -48,13 +48,6 @@ jobs:
         working-directory: freshflow
         run: flutter pub get
 
-      - name: Configure Android SDK and Gradle
-        working-directory: freshflow
-        run: |
-          chmod +x android/gradlew
-          echo "flutter.sdk=$FLUTTER_ROOT" > android/local.properties
-          yes | flutter doctor --android-licenses || true
-
       - name: Build Universal APK
         working-directory: freshflow
         run: flutter build apk --release
