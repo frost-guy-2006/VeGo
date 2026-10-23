@@ -63,7 +63,17 @@ jobs:
 
       - name: Build Universal APK
         working-directory: freshflow
-        run: flutter build apk --release
+        run: |
+          set +e
+          flutter build apk --release -v > build_output.log 2>&1
+          EXIT_CODE=$?
+          echo "### 🔨 Flutter Build Output (Exit Code: $EXIT_CODE)" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -n 120 build_output.log >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          if [ $EXIT_CODE -ne 0 ]; then
+            exit $EXIT_CODE
+          fi
 
       - name: Prepare Release APK
         run: |
