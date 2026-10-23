@@ -7,6 +7,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vego/core/providers/riverpod/providers.dart';
 import 'package:vego/core/theme/app_colors.dart';
+import 'package:vego/core/models/order_model.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -82,10 +83,20 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
   void _undoOrder() {
     _undoTimer?.cancel();
     if (widget.orderId != null) {
+      final orders = ref.read(orderProvider).orders;
+      final match = orders.where((o) => o.id == widget.orderId).toList();
+      if (match.isNotEmpty) {
+        final orderToRestore = match.first;
+        final cartItems = orderToRestore.items.map((item) => CartItem(
+          product: item.product,
+          quantity: item.quantity,
+        )).toList();
+        ref.read(cartProvider.notifier).restoreCart(cartItems);
+      }
       ref.read(orderProvider.notifier).cancelOrder(widget.orderId!);
     }
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text('Order Cancelled'),
+      content: Text('Order Cancelled & Cart Restored'),
       backgroundColor: Colors.red,
     ));
     Navigator.pop(context);
@@ -96,20 +107,22 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
       final url = Uri.parse(
           'https://router.project-osrm.org/route/v1/driving/${_riderStartLocation.longitude},${_riderStartLocation.latitude};${_userLocation.longitude},${_userLocation.latitude}?overview=full&geometries=geojson');
 
-      final response = await http.get(url);
+      final response = await http.get(url).timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final coordinates =
             data['routes'][0]['geometry']['coordinates'] as List;
 
-        setState(() {
-          _routePoints = coordinates
-              .map((point) => LatLng(point[1].toDouble(), point[0].toDouble()))
-              .toList();
-          _currentPointIndex = 0;
+        if (mounted) {
+          setState(() {
+            _routePoints = coordinates
+                .map((point) => LatLng(point[1].toDouble(), point[0].toDouble()))
+                .toList();
+            _currentPointIndex = 0;
+          });
           _startSimulation();
-        });
+        }
       }
     } catch (e) {
       debugPrint("Error fetching route: $e");
@@ -197,6 +210,14 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final orders = ref.watch(orderProvider).orders;
+    final Order? matchedOrder = widget.orderId != null
+        ? orders.cast<Order?>().firstWhere(
+            (o) => o?.id == widget.orderId,
+            orElse: () => null,
+          )
+        : null;
+
     return Scaffold(
       backgroundColor: context.backgroundColor,
       body: Stack(
@@ -350,10 +371,10 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
               ),
 
               // Order Details
-              const SliverToBoxAdapter(
+              SliverToBoxAdapter(
                 child: Padding(
-                  padding: EdgeInsets.only(bottom: 16),
-                  child: OrderDetailsCard(),
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: OrderDetailsCard(order: matchedOrder),
                 ),
               ),
 

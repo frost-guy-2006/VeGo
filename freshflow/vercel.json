@@ -1,6 +1,6 @@
 {
   "outputDirectory": "build/web",
-  "buildCommand": "flutter/bin/flutter build web --release",
+  "buildCommand": "bash vercel_build.sh",
   "rewrites": [
     {
       "source": "/(.*)",

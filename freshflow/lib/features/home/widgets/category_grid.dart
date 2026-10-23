@@ -19,15 +19,15 @@ class _CategoryGridState extends State<CategoryGrid>
   late Animation<double> _glowAnimation;
 
   final List<Map<String, dynamic>> categories = [
-    {'name': 'Vegetables', 'icon': Icons.eco_rounded, 'color': AppColors.categoryVegetables.value},
-    {'name': 'Fruits', 'icon': Icons.spa_rounded, 'color': AppColors.categoryFruits.value},
-    {'name': 'Dairy', 'icon': Icons.local_drink_rounded, 'color': AppColors.categoryDairy.value},
+    {'name': 'Vegetables', 'icon': Icons.eco_rounded, 'color': AppColors.categoryVegetables},
+    {'name': 'Fruits', 'icon': Icons.spa_rounded, 'color': AppColors.categoryFruits},
+    {'name': 'Dairy', 'icon': Icons.local_drink_rounded, 'color': AppColors.categoryDairy},
     {
       'name': 'Bakery',
       'icon': Icons.breakfast_dining_rounded,
-      'color': AppColors.categoryBakery.value
+      'color': AppColors.categoryBakery
     },
-    {'name': 'Tea/Coffee', 'icon': Icons.coffee_rounded, 'color': AppColors.categoryTeaCoffee.value},
+    {'name': 'Tea/Coffee', 'icon': Icons.coffee_rounded, 'color': AppColors.categoryTeaCoffee},
   ];
 
   @override
@@ -63,7 +63,7 @@ class _CategoryGridState extends State<CategoryGrid>
           itemBuilder: (context, index) {
             final cat = categories[index];
             final isSelected = index == _selectedIndex;
-            final categoryColor = Color(cat['color'] as int);
+            final categoryColor = cat['color'] as Color;
             final categoryName = cat['name'] as String;
             final categoryIcon = cat['icon'] as IconData;
 

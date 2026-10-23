@@ -1,0 +1,84 @@
+name: Build & Release Android APK
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Release Tag (e.g. v1.0.0)'
+        required: false
+        default: 'v1.0.0'
+
+permissions:
+  contents: write
+
+jobs:
+  build-apk:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Create .env file
+        working-directory: freshflow
+        run: |
+          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL || 'https://xstagwqwesafzirsxhjw.supabase.co' }}" > .env
+          echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzdGFnd3F3ZXNhZnppcnN4aGp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkyNDM1NDAsImV4cCI6MjA4NDgxOTU0MH0.-dy7yonmaOf1brijFlzMiS75ve99aeTPiih0CFoxncU' }}" >> .env
+
+      - name: Install Dependencies
+        working-directory: freshflow
+        run: flutter pub get
+
+      - name: Build Universal APK
+        working-directory: freshflow
+        run: flutter build apk --release
+
+      - name: Rename APK
+        run: |
+          mkdir -p release-apks
+          cp freshflow/build/app/outputs/flutter-apk/app-release.apk release-apks/FreshFlow-Release.apk
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: freshflow-apk
+          path: release-apks/FreshFlow-Release.apk
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+        with:
+          tag_name: ${{ github.ref_name || inputs.tag_name }}
+          name: Release ${{ github.ref_name || inputs.tag_name }}
+          draft: false
+          prerelease: false
+          files: release-apks/FreshFlow-Release.apk
+          body: |
+            ### 🚀 FreshFlow / VeGo Release
+            
+            Welcome to the latest build of FreshFlow!
+            
+            #### 📱 What's New:
+            * **YouPI-PG Gateway Integration:** Zero-fee self-hosted UPI payments (Google Pay, PhonePe, Paytm, dynamic QR) and Cash on Delivery (COD).
+            * **Order State Sync:** Automated order loading and caching from Supabase on app launch.
+            * **Cart Integrity:** Order undo rehydrates cart items safely.
+            * **Fixes & Polish:** Guarded against division-by-zero crashes, tab navigation fixes, and null-safety improvements.
+            
+            #### 📥 Download:
+            Download **FreshFlow-Release.apk** attached below to test directly on Android devices!

@@ -92,24 +92,41 @@ class CartNotifier extends StateNotifier<CartState> {
     }
   }
 
+  void restoreCart(List<CartItem> items) {
+    state = CartState(items: items);
+    _saveCart();
+  }
+
   void clearCart() {
     state = const CartState();
     _saveCart();
   }
 
   Future<void> _saveCart() async {
-    final prefs = await SharedPreferences.getInstance();
-    final encodedData = jsonEncode(state.items.map((e) => e.toJson()).toList());
-    await prefs.setString('cart_items', encodedData);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final encodedData = jsonEncode(state.items.map((e) => e.toJson()).toList());
+      await prefs.setString('cart_items', encodedData);
+    } catch (e) {
+      // Ignore storage write error
+    }
   }
 
   Future<void> _loadCart() async {
-    final prefs = await SharedPreferences.getInstance();
-    final encodedData = prefs.getString('cart_items');
-    if (encodedData != null) {
-      final List<dynamic> decodedData = jsonDecode(encodedData);
-      final items = decodedData.map((e) => CartItem.fromJson(e)).toList();
-      state = state.copyWith(items: items);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final encodedData = prefs.getString('cart_items');
+      if (encodedData != null) {
+        final List<dynamic> decodedData = jsonDecode(encodedData);
+        final items = decodedData.map((e) => CartItem.fromJson(e)).toList();
+        state = state.copyWith(items: items);
+      }
+    } catch (e) {
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove('cart_items');
+      } catch (_) {}
+      state = const CartState();
     }
   }
 }

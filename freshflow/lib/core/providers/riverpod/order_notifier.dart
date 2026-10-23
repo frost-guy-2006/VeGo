@@ -62,7 +62,9 @@ class OrderNotifier extends StateNotifier<OrderState> {
 
   OrderNotifier({OrderRepository? repository})
       : _repository = repository ?? OrderRepository(),
-        super(const OrderState());
+        super(const OrderState()) {
+    _loadFromLocalCache();
+  }
 
   /// Create a new order from cart state
   Future<Order> createOrder({
@@ -143,6 +145,7 @@ class OrderNotifier extends StateNotifier<OrderState> {
             ? (oldOrder.deliveredAt ?? DateTime.now())
             : oldOrder.deliveredAt,
         deliveryAddress: oldOrder.deliveryAddress,
+        cancellationReason: oldOrder.cancellationReason,
       );
       state = state.copyWith(orders: orders);
       await _saveToLocalCache();

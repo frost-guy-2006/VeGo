@@ -62,11 +62,13 @@ class _SearchScreenState extends State<SearchScreen> {
       if (_activeColorFilter != null) {
         // Fetch all products using repository and filter by inferred color
         final allProducts = await _productRepository.fetchProducts();
+        if (!mounted) return;
         filtered =
             allProducts.where((p) => p.color == _activeColorFilter).toList();
       } else {
         // Server-side filter by name using ilike
         filtered = await _productRepository.searchProducts(query);
+        if (!mounted) return;
       }
 
       setState(() {
@@ -76,7 +78,9 @@ class _SearchScreenState extends State<SearchScreen> {
       AnalyticsService().logSearch(query, filtered.length);
     } catch (e) {
       debugPrint('Search error: $e');
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 

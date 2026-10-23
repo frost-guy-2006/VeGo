@@ -6,7 +6,9 @@ import 'package:vego/core/providers/riverpod/providers.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:slide_to_act/slide_to_act.dart';
+import 'package:uuid/uuid.dart';
 import 'package:vego/core/widgets/delivery_slot_picker.dart';
+import 'package:vego/features/cart/widgets/youpi_payment_sheet.dart';
 
 class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
@@ -54,11 +56,13 @@ class CartScreen extends ConsumerWidget {
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded,
-              color: context.textPrimary, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
+        leading: Navigator.canPop(context)
+            ? IconButton(
+                icon: Icon(Icons.arrow_back_ios_new_rounded,
+                    color: context.textPrimary, size: 20),
+                onPressed: () => Navigator.pop(context),
+              )
+            : null,
         actions: [
           if (cart.items.isNotEmpty)
             IconButton(
@@ -323,6 +327,19 @@ class CartScreen extends ConsumerWidget {
                                       if (user == null) return null;
                                       final address = ref.read(addressProvider).effectiveDeliveryAddress;
                                       final deliveryAddress = address?.formattedAddress ?? 'Unknown';
+
+                                      // Open YouPI-PG Gateway Sheet for UPI / QR / COD
+                                      final tempOrderId = const Uuid().v4();
+                                      final paymentResult = await YouPiPaymentSheet.show(
+                                        context,
+                                        totalAmount: cart.totalPrice,
+                                        orderTempId: tempOrderId,
+                                        deliveryAddress: deliveryAddress,
+                                      );
+
+                                      if (paymentResult == null || !paymentResult.isSuccess) {
+                                        return null;
+                                      }
 
                                       try {
                                         final order = await ref.read(orderProvider.notifier).createOrder(

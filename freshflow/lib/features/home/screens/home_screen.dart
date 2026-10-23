@@ -8,7 +8,6 @@ import 'package:vego/features/home/widgets/category_grid.dart';
 import 'package:vego/features/wishlist/screens/wishlist_screen.dart';
 import 'package:vego/features/address/widgets/address_picker_sheet.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:vego/core/models/product_model.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:vego/features/home/widgets/flash_price_widget.dart';
@@ -112,6 +111,12 @@ class _HomeContentState extends ConsumerState<HomeContent> {
     super.initState();
     _flashDealsFuture = _loadFlashDeals();
     _scrollController.addListener(_onScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final user = ref.read(authProvider).user;
+      if (user != null) {
+        ref.read(orderProvider.notifier).loadOrdersFromSupabase(user.id);
+      }
+    });
   }
 
   @override

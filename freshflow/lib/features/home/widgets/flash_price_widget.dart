@@ -45,10 +45,9 @@ class _FlashPriceWidgetState extends State<FlashPriceWidget> {
   Widget build(BuildContext context) {
     if (widget.product == null) return const SizedBox.shrink();
     final product = widget.product!;
-    final discount = ((product.marketPrice - product.currentPrice) /
-            product.marketPrice *
-            100)
-        .round();
+    final discount = (product.marketPrice > 0 && product.marketPrice > product.currentPrice)
+        ? (((product.marketPrice - product.currentPrice) / product.marketPrice) * 100).round()
+        : 0;
 
     return GestureDetector(
       onTap: () {

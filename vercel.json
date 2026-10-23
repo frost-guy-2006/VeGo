@@ -1,0 +1,10 @@
+{
+  "outputDirectory": "freshflow/build/web",
+  "buildCommand": "cd freshflow && bash vercel_build.sh",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
