@@ -372,7 +372,7 @@ class _OrderCard extends ConsumerWidget {
                   ElevatedButton(
                     onPressed: () {
                       for (final item in order.items) {
-                        ref.read(cartProvider.notifier).addToCart(item.product);
+                        ref.read(cartProvider.notifier).addToCart(item.product, quantity: item.quantity);
                       }
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(

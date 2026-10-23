@@ -29,7 +29,15 @@ class VeGoApp extends ConsumerWidget {
 
     ref.listen(authProvider, (prev, next) {
       if (prev?.user?.id != next.user?.id) {
-        ref.read(addressProvider.notifier).initForUser(next.user?.id);
+        if (next.user != null) {
+          ref.read(addressProvider.notifier).initForUser(next.user!.id);
+          ref.read(orderProvider.notifier).loadOrdersFromSupabase(next.user!.id);
+        } else {
+          ref.read(addressProvider.notifier).clearForLogout();
+          ref.read(cartProvider.notifier).clearCart();
+          ref.read(wishlistProvider.notifier).clearWishlist();
+          ref.read(orderProvider.notifier).clearHistory();
+        }
       }
     });
 

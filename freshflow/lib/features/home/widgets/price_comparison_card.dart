@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vego/core/models/product_model.dart';
 import 'package:vego/core/theme/app_colors.dart';
@@ -22,25 +23,8 @@ class PriceComparisonCard extends StatefulWidget {
   State<PriceComparisonCard> createState() => _PriceComparisonCardState();
 }
 
-class _PriceComparisonCardState extends State<PriceComparisonCard>
-    with SingleTickerProviderStateMixin {
+class _PriceComparisonCardState extends State<PriceComparisonCard> {
   bool _isPressed = false;
-  late AnimationController _shimmerController;
-
-  @override
-  void initState() {
-    super.initState();
-    _shimmerController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1500),
-    )..repeat();
-  }
-
-  @override
-  void dispose() {
-    _shimmerController.dispose();
-    super.dispose();
-  }
 
   int get discountPercent {
     if (widget.product.marketPrice <= 0) return 0;
@@ -224,24 +208,12 @@ class _PriceComparisonCardState extends State<PriceComparisonCard>
   }
 
   Widget _buildShimmerPlaceholder() {
-    return AnimatedBuilder(
-      animation: _shimmerController,
-      builder: (context, child) {
-        return Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment(-1.0 + 2 * _shimmerController.value, 0),
-              end: Alignment(1.0 + 2 * _shimmerController.value, 0),
-              colors: [
-                AppColors.surfaceAlt,
-                AppColors.surfaceAlt.withValues(alpha: 0.5),
-                AppColors.surfaceAlt,
-              ],
-              stops: const [0.0, 0.5, 1.0],
-            ),
-          ),
-        );
-      },
+    return Shimmer.fromColors(
+      baseColor: AppColors.surfaceAlt,
+      highlightColor: AppColors.surfaceAlt.withValues(alpha: 0.5),
+      child: Container(
+        color: AppColors.surfaceAlt,
+      ),
     );
   }
 

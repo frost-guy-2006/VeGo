@@ -2,6 +2,9 @@ name: Build & Release Android APK
 
 on:
   push:
+    branches:
+      - master
+      - main
     tags:
       - 'v*'
   workflow_dispatch:
@@ -38,8 +41,8 @@ jobs:
       - name: Create .env file
         working-directory: freshflow
         run: |
-          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL || 'https://xstagwqwesafzirsxhjw.supabase.co' }}" > .env
-          echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzdGFnd3F3ZXNhZnppcnN4aGp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkyNDM1NDAsImV4cCI6MjA4NDgxOTU0MH0.-dy7yonmaOf1brijFlzMiS75ve99aeTPiih0CFoxncU' }}" >> .env
+          echo "SUPABASE_URL=https://xstagwqwesafzirsxhjw.supabase.co" > .env
+          echo "SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzdGFnd3F3ZXNhZnppcnN4aGp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkyNDM1NDAsImV4cCI6MjA4NDgxOTU0MH0.-dy7yonmaOf1brijFlzMiS75ve99aeTPiih0CFoxncU" >> .env
 
       - name: Install Dependencies
         working-directory: freshflow
@@ -60,12 +63,13 @@ jobs:
           name: freshflow-apk
           path: release-apks/FreshFlow-Release.apk
 
-      - name: Create GitHub Release
+      - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref_name || inputs.tag_name }}
-          name: Release ${{ github.ref_name || inputs.tag_name }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.0' }}
+          name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'VeGo v1.0.0 (Latest Release)' }}
           draft: false
           prerelease: false
           files: release-apks/FreshFlow-Release.apk
@@ -75,10 +79,12 @@ jobs:
             Welcome to the latest build of FreshFlow!
             
             #### 📱 What's New:
-            * **YouPI-PG Gateway Integration:** Zero-fee self-hosted UPI payments (Google Pay, PhonePe, Paytm, dynamic QR) and Cash on Delivery (COD).
+            * **YouPI-PG Gateway Integration:** Zero-fee self-hosted UPI payments (Google Pay, PhonePe, Paytm, dynamic vector QR) and Cash on Delivery (COD).
             * **Order State Sync:** Automated order loading and caching from Supabase on app launch.
             * **Cart Integrity:** Order undo rehydrates cart items safely.
-            * **Fixes & Polish:** Guarded against division-by-zero crashes, tab navigation fixes, and null-safety improvements.
+            * **Full Session Logout Cleanup:** Complete cache wipe for cart, wishlist, address, and orders on logout.
+            * **Reorder Quantity Preservation:** Reordering retains original quantities.
+            * **Performance Polish:** Replaced continuously ticking shimmer animation controllers with native Shimmer widgets.
             
             #### 📥 Download:
             Download **FreshFlow-Release.apk** attached below to test directly on Android devices!
