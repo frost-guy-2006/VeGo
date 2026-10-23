@@ -1,6 +1,6 @@
 {
   "outputDirectory": "freshflow/build/web",
-  "buildCommand": "cd freshflow && bash vercel_build.sh",
+  "buildCommand": "if [ -d freshflow ]; then cd freshflow; fi; bash vercel_build.sh",
   "rewrites": [
     {
       "source": "/(.*)",
