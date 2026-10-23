@@ -67,13 +67,20 @@ jobs:
           set +e
           flutter build apk --release -v > build_output.log 2>&1
           EXIT_CODE=$?
-          echo "### 🔨 Flutter Build Output (Exit Code: $EXIT_CODE)" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          tail -n 120 build_output.log >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "Flutter build exited with code $EXIT_CODE"
           if [ $EXIT_CODE -ne 0 ]; then
             exit $EXIT_CODE
           fi
+
+      - name: Push Diagnostics Log on Failure
+        if: failure()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          tail -n 250 freshflow/build_output.log > ./build_failure_diagnostic.log || true
+          git add ./build_failure_diagnostic.log || true
+          git commit -m "ci: auto-capture build failure diagnostic [skip ci]" || true
+          git push origin master || true
 
       - name: Prepare Release APK
         run: |
