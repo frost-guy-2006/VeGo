@@ -184,7 +184,7 @@ class _OrderCard extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Order #${order.id}',
+                      'Order #${order.id.length > 8 ? order.id.substring(0, 8).toUpperCase() : order.id}',
                       style: GoogleFonts.jetBrainsMono(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -302,7 +302,7 @@ class _OrderCard extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${order.itemCount} items',
+                      '${order.itemCount} ${order.itemCount == 1 ? 'item' : 'items'}',
                       style: GoogleFonts.outfit(
                         fontSize: 12,
                         color: context.textSecondary,

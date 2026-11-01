@@ -96,7 +96,10 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
       ref.read(orderProvider.notifier).cancelOrder(widget.orderId!);
     }
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text('Order Cancelled & Cart Restored'),
+      content: Text(
+        'Order Cancelled & Cart Restored',
+        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      ),
       backgroundColor: Colors.red,
     ));
     Navigator.pop(context);

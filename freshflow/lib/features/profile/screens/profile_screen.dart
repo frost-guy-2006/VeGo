@@ -224,6 +224,96 @@ class ProfileScreen extends ConsumerWidget {
                       );
                     }),
 
+                                        const SizedBox(height: 14),
+
+                    // Liquid Glass Transparency Slider Control
+                    Consumer(
+                      builder: (context, ref, _) {
+                        final glass = ref.watch(glassSettingsProvider);
+                        final pct = (glass.transparency * 100).toInt();
+                        String modeName = 'Balanced (Default)';
+                        if (glass.transparency < 0.20) {
+                          modeName = 'Pure Crystal Glass';
+                        } else if (glass.transparency > 0.80) {
+                          modeName = 'Dense Frosted Glass';
+                        }
+
+                        return _buildGlassContainer(
+                          context: context,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      _buildGradientIcon(
+                                        Icons.blur_on_rounded,
+                                        AppColors.primary,
+                                      ),
+                                      const SizedBox(width: 14),
+                                      Text(
+                                        'Liquid Glass',
+                                        style: GoogleFonts.outfit(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w600,
+                                          color: context.textPrimary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    '$pct% $modeName',
+                                    style: GoogleFonts.jetBrainsMono(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.neonMint,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              SliderTheme(
+                                data: SliderTheme.of(context).copyWith(
+                                  activeTrackColor: AppColors.primary,
+                                  inactiveTrackColor: context.textSecondary.withValues(alpha: 0.2),
+                                  thumbColor: Colors.white,
+                                  overlayColor: AppColors.primary.withValues(alpha: 0.2),
+                                  trackHeight: 6,
+                                ),
+                                child: Slider(
+                                  value: glass.transparency,
+                                  min: 0.0,
+                                  max: 1.0,
+                                  onChanged: (val) {
+                                    ref.read(glassSettingsProvider.notifier).setTransparency(val);
+                                  },
+                                ),
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  TextButton(
+                                    onPressed: () => ref.read(glassSettingsProvider.notifier).setPureGlass(),
+                                    child: const Text('Pure Glass', style: TextStyle(fontSize: 11)),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => ref.read(glassSettingsProvider.notifier).setBalanced(),
+                                    child: const Text('Balanced', style: TextStyle(fontSize: 11)),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => ref.read(glassSettingsProvider.notifier).setFrosted(),
+                                    child: const Text('Frosted', style: TextStyle(fontSize: 11)),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+
                     const Spacer(),
                     const SizedBox(height: 24),
 
@@ -297,7 +387,7 @@ class ProfileScreen extends ConsumerWidget {
                   fontWeight: FontWeight.w600,
                   color: context.textPrimary,
                 ),
-                maxLines: 1,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
             ],

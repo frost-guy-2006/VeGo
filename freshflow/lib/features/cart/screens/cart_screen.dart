@@ -208,7 +208,7 @@ class CartScreen extends ConsumerWidget {
                                   ),
                                   IconButton(
                                     icon: const Icon(Icons.add_rounded, size: 18),
-                                    color: AppColors.primary,
+                                    color: context.textPrimary,
                                     onPressed: () => ref.read(cartProvider.notifier).addToCart(item.product),
                                     constraints: const BoxConstraints(
                                         minWidth: 36, minHeight: 36),
@@ -416,7 +416,7 @@ class _DeliverySlotButtonState extends State<_DeliverySlotButton> {
             Icon(
               _slot != null ? Icons.check_circle : Icons.schedule_rounded,
               size: 18,
-              color: _slot != null ? AppColors.primary : context.textSecondary,
+              color: _slot != null ? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFF4ADE80) : AppColors.primary) : context.textSecondary,
             ),
             const SizedBox(width: 10),
             Expanded(
@@ -426,7 +426,9 @@ class _DeliverySlotButtonState extends State<_DeliverySlotButton> {
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: _slot != null
-                      ? AppColors.primary
+                      ? (Theme.of(context).brightness == Brightness.dark
+                          ? const Color(0xFF4ADE80)
+                          : AppColors.primary)
                       : context.textSecondary,
                 ),
               ),

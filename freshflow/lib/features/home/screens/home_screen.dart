@@ -12,11 +12,9 @@ import 'package:vego/core/models/product_model.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:vego/features/home/widgets/flash_price_widget.dart';
 import 'package:vego/features/home/widgets/price_comparison_card.dart';
-import 'package:vego/features/home/widgets/rain_mode_overlay.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:vego/features/home/widgets/floating_island_navigation.dart';
-import 'package:vego/features/home/widgets/weather_recommendations.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -27,8 +25,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
-  // Rain Mode toggle (Simulated)
-  final bool _isRaining = false; // Disabled by default as per user request
 
   final List<Widget> _pages = [
     const HomeContent(),
@@ -48,9 +44,6 @@ class _HomeScreenState extends State<HomeScreen> {
             index: _currentIndex,
             children: _pages,
           ),
-
-          // Hero Feature: Rain Mode Overlay
-          if (_currentIndex == 0) RainModeOverlay(isEnabled: _isRaining),
 
           // Gradient Overlay at bottom for better visibility of the floating island
           Positioned(
@@ -294,11 +287,6 @@ class _HomeContentState extends ConsumerState<HomeContent> {
           // Categories Bar (Horizontal)
           const CategoryGrid(),
 
-          // Weather-Based Recommendations
-          const SliverToBoxAdapter(
-            child: WeatherRecommendations(),
-          ),
-
           // Scrollable Flash Widgets
           SliverToBoxAdapter(
             child: Container(
@@ -390,7 +378,7 @@ class _HomeContentState extends ConsumerState<HomeContent> {
             ),
 
           // Bottom Padding for Floating Bar
-          const SliverToBoxAdapter(child: SizedBox(height: 100)),
+          const SliverToBoxAdapter(child: SizedBox(height: 130)),
         ],
       ),
     );

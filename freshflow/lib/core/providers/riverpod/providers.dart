@@ -9,3 +9,4 @@ export 'product_notifier.dart';
 export 'order_notifier.dart';
 export 'address_notifier.dart';
 export 'weather_notifier.dart';
+export 'glass_settings_notifier.dart';

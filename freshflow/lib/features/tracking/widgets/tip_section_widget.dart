@@ -151,11 +151,11 @@ class _TipSectionWidgetState extends State<TipSectionWidget> {
             // Contextual kindness suggestion
             Row(
               children: [
-                const Text('☀️', style: TextStyle(fontSize: 16)),
+                const Text('[PLANT]', style: TextStyle(fontSize: 16)),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'It\'s a hot day! Show some kindness by offering a glass of water to your delivery partner',
+                    'Thank your delivery partner for bringing fresh produce directly to your doorstep.',
                     style: GoogleFonts.outfit(
                       fontSize: 12,
                       color: context.textSecondary,

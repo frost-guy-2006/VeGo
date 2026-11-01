@@ -67,7 +67,10 @@ class _FloatingIslandNavigationState extends ConsumerState<FloatingIslandNavigat
           child: ClipRRect(
             borderRadius: BorderRadius.circular(36),
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+              filter: ImageFilter.blur(
+                sigmaX: 6.0 + 22.0 * ref.watch(glassSettingsProvider).transparency,
+                sigmaY: 6.0 + 22.0 * ref.watch(glassSettingsProvider).transparency,
+              ),
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
                 transitionBuilder: (child, animation) {

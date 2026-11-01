@@ -190,7 +190,12 @@ class _DeliverySlotSheetState extends State<_DeliverySlotSheet> {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
-          disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.3),
+          disabledBackgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? const Color(0xFF1E293B)
+              : const Color(0xFFE2E8F0),
+          disabledForegroundColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white38
+              : AppColors.textMuted,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
         child: Text('Confirm Slot', style: GoogleFonts.plusJakartaSans(

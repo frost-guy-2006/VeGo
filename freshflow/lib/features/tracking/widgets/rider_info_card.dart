@@ -129,7 +129,9 @@ class RiderInfoCard extends StatelessWidget {
                   style: GoogleFonts.outfit(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
-                    color: AppColors.primaryLight,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFF86EFAC)
+                        : AppColors.primaryDark,
                   ),
                 ),
               ),

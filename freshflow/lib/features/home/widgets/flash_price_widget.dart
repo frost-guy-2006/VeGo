@@ -139,53 +139,62 @@ class _FlashPriceWidgetState extends State<FlashPriceWidget> {
               ),
             ),
 
-            // 3D Effect Image - Contained within card
+            // Contained Bento Image with integrated discount badge
             Positioned(
-              right: 10,
-              bottom: 20,
-              child: Hero(
-                tag: 'flash-product-${product.id}',
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    product.imageUrl,
-                    height: 120,
-                    width: 120,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withValues(alpha: 0.3),
-                        borderRadius: BorderRadius.circular(12),
+              right: 16,
+              top: 16,
+              bottom: 16,
+              child: SizedBox(
+                width: 110,
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Hero(
+                          tag: 'flash-product-${product.id}',
+                          child: Image.network(
+                            product.imageUrl,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) => Container(
+                              color: Colors.white.withValues(alpha: 0.1),
+                              child: const Icon(Icons.eco, color: Colors.white70),
+                            ),
+                          ),
+                        ),
                       ),
-                      child: const Icon(Icons.image, color: Colors.white),
                     ),
-                  ),
+                    if (discount > 0)
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppColors.accent,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.accent.withValues(alpha: 0.4),
+                                blurRadius: 6,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            '-$discount%',
+                            style: GoogleFonts.jetBrainsMono(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ),
-
-            // Price Badge
-            if (discount > 0)
-              Positioned(
-                right: 20,
-                top: 20,
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppColors.accent,
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                  child: Text(
-                    '-$discount%',
-                    style: GoogleFonts.plusJakartaSans(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
           ],
         ),
       ),

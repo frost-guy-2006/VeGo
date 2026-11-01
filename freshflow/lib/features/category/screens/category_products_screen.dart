@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:vego/core/models/product_model.dart';
 import 'package:vego/core/theme/app_colors.dart';
 import 'package:vego/features/home/widgets/price_comparison_card.dart';
-import 'package:vego/features/product/screens/product_detail_screen.dart';
 
 /// Screen that displays all products in a specific category
 class CategoryProductsScreen extends StatefulWidget {
@@ -216,19 +214,7 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
                     final product = _products[index];
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          PageTransition(
-                            type: PageTransitionType.scale,
-                            alignment: Alignment.center,
-                            child: ProductDetailScreen(product: product),
-                          ),
-                        );
-                      },
-                      child: PriceComparisonCard(product: product),
-                    );
+                    return PriceComparisonCard(product: product);
                   },
                   childCount: _products.length,
                 ),
@@ -237,7 +223,7 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
 
           // Bottom padding
           const SliverToBoxAdapter(
-            child: SizedBox(height: 100),
+            child: SizedBox(height: 130),
           ),
         ],
       ),

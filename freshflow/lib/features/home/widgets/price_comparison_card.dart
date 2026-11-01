@@ -1,3 +1,4 @@
+import 'package:vego/core/widgets/liquid_glass.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -54,35 +55,18 @@ class _PriceComparisonCardState extends State<PriceComparisonCard> {
         scale: _isPressed ? 0.96 : 1.0,
         duration: const Duration(milliseconds: 150),
         curve: Curves.easeOutQuint,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          decoration: BoxDecoration(
-            color: context.surfaceColor,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: _isPressed
-                    ? AppColors.primary.withValues(alpha: 0.15)
-                    : Colors.black.withValues(alpha: 0.06),
-                blurRadius: _isPressed ? 24 : 16,
-                offset: Offset(0, _isPressed ? 8 : 4),
-                spreadRadius: _isPressed ? 2 : 0,
-              ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Product Image with 1:1 aspect ratio
-                _buildImageSection(product),
+        child: LiquidGlass(
+          borderRadius: 18,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Product Image with 1:1 aspect ratio
+              _buildImageSection(product),
 
-                // Product Details
-                _buildDetailsSection(product),
-              ],
-            ),
+              // Product Details
+              _buildDetailsSection(product),
+            ],
           ),
         ),
       ),
