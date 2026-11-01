@@ -1,3 +1,5 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vego/core/providers/riverpod/glass_settings_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:vego/core/theme/app_colors.dart';
@@ -76,9 +78,11 @@ class _CategoryGridState extends State<CategoryGrid>
 
                 context.push('/category/${Uri.encodeComponent(categoryName)}');
               },
-              child: AnimatedBuilder(
-                animation: _glowAnimation,
-                builder: (context, child) {
+              child: Consumer(
+                builder: (context, ref, _) {
+                  final t = ref.watch(glassSettingsProvider).transparency;
+                  final bgAlpha = isDark ? (0.06 + 0.45 * t) : (0.15 + 0.45 * t);
+                  final borderAlpha = (0.55 - 0.30 * t).clamp(0.15, 0.65);
                   return AnimatedContainer(
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeOutCubic,
@@ -99,16 +103,16 @@ class _CategoryGridState extends State<CategoryGrid>
                       color: isSelected
                           ? null
                           : (isDark
-                              ? Colors.white.withValues(alpha: 0.06)
-                              : AppColors.categoryBgLight),
+                              ? const Color(0xFF14241B).withValues(alpha: bgAlpha)
+                              : AppColors.categoryBgLight.withValues(alpha: bgAlpha)),
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(
                         color: isSelected
-                            ? categoryColor.withValues(alpha: 0.6)
+                            ? categoryColor.withValues(alpha: 0.8)
                             : (isDark
-                                ? Colors.white.withValues(alpha: 0.1)
+                                ? Colors.white.withValues(alpha: borderAlpha)
                                 : AppColors.categoryBorderLight),
-                        width: 1,
+                        width: 1.0,
                       ),
                       boxShadow: isSelected
                           ? [

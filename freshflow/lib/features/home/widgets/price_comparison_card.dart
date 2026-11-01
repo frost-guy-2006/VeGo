@@ -39,25 +39,27 @@ class _PriceComparisonCardState extends State<PriceComparisonCard> {
   Widget build(BuildContext context) {
     final product = widget.product;
 
-    return GestureDetector(
-      onTapDown: (_) => setState(() => _isPressed = true),
-      onTapUp: (_) => setState(() => _isPressed = false),
-      onTapCancel: () => setState(() => _isPressed = false),
-      onTap: () {
-        HapticFeedback.lightImpact();
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (_) => ProductDetailScreen(product: product)),
-        );
-      },
-      child: AnimatedScale(
-        scale: _isPressed ? 0.96 : 1.0,
-        duration: const Duration(milliseconds: 150),
-        curve: Curves.easeOutQuint,
-        child: LiquidGlass(
-          borderRadius: 18,
-          child: Column(
+    return RepaintBoundary(
+      child: GestureDetector(
+        onTapDown: (_) => setState(() => _isPressed = true),
+        onTapUp: (_) => setState(() => _isPressed = false),
+        onTapCancel: () => setState(() => _isPressed = false),
+        onTap: () {
+          HapticFeedback.lightImpact();
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => ProductDetailScreen(product: product)),
+          );
+        },
+        child: AnimatedScale(
+          scale: _isPressed ? 0.96 : 1.0,
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeOutQuint,
+          child: LiquidGlass(
+            borderRadius: 18,
+            enableBlur: false, // 60 FPS optimization: disables redundant per-card offscreen pass in scrolling grid
+            child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -67,6 +69,7 @@ class _PriceComparisonCardState extends State<PriceComparisonCard> {
               // Product Details
               _buildDetailsSection(product),
             ],
+          ),
           ),
         ),
       ),
@@ -85,6 +88,8 @@ class _PriceComparisonCardState extends State<PriceComparisonCard> {
             child: CachedNetworkImage(
               imageUrl: product.imageUrl,
               fit: BoxFit.cover,
+              memCacheWidth: 360,
+              memCacheHeight: 360,
               placeholder: (context, url) => _buildShimmerPlaceholder(),
               errorWidget: (context, url, error) => Container(
                 color: context.surfaceAltColor,

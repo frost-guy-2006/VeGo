@@ -1,3 +1,5 @@
+import 'package:vego/core/widgets/atmospheric_background.dart';
+import 'package:vego/core/widgets/liquid_glass.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -35,8 +37,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.backgroundColor,
-      body: Stack(
+      backgroundColor: Colors.transparent,
+      body: AtmosphericBackground(
+        child: Stack(
         alignment: Alignment.bottomCenter,
         children: [
           // Main Content
@@ -80,6 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ],
+      ),
       ),
       // No standard BottomNavigationBar
     );
@@ -168,7 +172,7 @@ class _HomeContentState extends ConsumerState<HomeContent> {
               return SliverAppBar(
                 pinned: true,
                 floating: true,
-                backgroundColor: context.backgroundColor,
+                backgroundColor: Colors.transparent,
                 elevation: 0,
                 expandedHeight: 72,
                 toolbarHeight: 64,
@@ -251,29 +255,23 @@ class _HomeContentState extends ConsumerState<HomeContent> {
             },
           ),
 
-          // Search Field
+          // Search Field (Liquid Glass)
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 16), // Removed vertical padding
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: GestureDetector(
                 onTap: () {
                   context.push('/search');
                 },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: context.surfaceColor,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: context.borderColor),
-                  ),
+                child: LiquidGlass(
+                  borderRadius: 14,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
                   child: Row(
                     children: [
                       Icon(Icons.search, color: context.textSecondary),
                       const SizedBox(width: 12),
                       Text(
-                        'Search "Red" or "Tomato"', // Updated hint for discovery
+                        'Search "Red" or "Tomato"',
                         style: GoogleFonts.plusJakartaSans(
                             color: context.textSecondary),
                       ),

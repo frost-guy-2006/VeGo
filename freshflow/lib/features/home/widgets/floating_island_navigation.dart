@@ -41,35 +41,49 @@ class _FloatingIslandNavigationState extends ConsumerState<FloatingIslandNavigat
           ),
           margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
           decoration: BoxDecoration(
-            color: hasItems
-                ? (Theme.of(context).brightness == Brightness.dark
-                    ? AppColors.primary
-                    : Theme.of(context).cardColor.withValues(alpha: 0.85))
-                : Theme.of(context).cardColor.withValues(alpha: 0.85),
+            color: () {
+              final t = ref.watch(glassSettingsProvider).transparency;
+              final isDark = Theme.of(context).brightness == Brightness.dark;
+              if (hasItems) {
+                return isDark
+                    ? const Color(0xFF1B4332).withValues(alpha: 0.55 + 0.35 * t)
+                    : AppColors.primary.withValues(alpha: 0.70 + 0.25 * t);
+              }
+              return isDark
+                  ? const Color(0xFF14241B).withValues(alpha: 0.12 + 0.68 * t)
+                  : Theme.of(context).cardColor.withValues(alpha: 0.25 + 0.60 * t);
+            }(),
             borderRadius: BorderRadius.circular(36),
             boxShadow: [
               BoxShadow(
                 color: hasItems
-                    ? AppColors.primary.withValues(alpha: 0.3)
-                    : Colors.black.withValues(alpha: 0.08),
+                    ? AppColors.primary.withValues(alpha: 0.35)
+                    : Colors.black.withValues(alpha: 0.12),
                 blurRadius: 24,
                 offset: const Offset(0, 8),
                 spreadRadius: -2,
               ),
             ],
             border: Border.all(
-              color: hasItems
-                  ? Colors.transparent
-                  : Theme.of(context).dividerColor.withValues(alpha: 0.1),
-              width: 1.5,
+              color: () {
+                final t = ref.watch(glassSettingsProvider).transparency;
+                final isDark = Theme.of(context).brightness == Brightness.dark;
+                if (hasItems) {
+                  return Colors.white.withValues(alpha: (0.60 - 0.30 * t).clamp(0.20, 0.70));
+                }
+                return isDark
+                    ? Colors.white.withValues(alpha: (0.70 - 0.45 * t).clamp(0.18, 0.75))
+                    : Colors.white.withValues(alpha: 0.85);
+              }(),
+              width: 1.2,
             ),
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(36),
             child: BackdropFilter(
               filter: ImageFilter.blur(
-                sigmaX: 6.0 + 22.0 * ref.watch(glassSettingsProvider).transparency,
-                sigmaY: 6.0 + 22.0 * ref.watch(glassSettingsProvider).transparency,
+                sigmaX: 4.0 + 24.0 * ref.watch(glassSettingsProvider).transparency,
+                sigmaY: 4.0 + 24.0 * ref.watch(glassSettingsProvider).transparency,
               ),
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),

@@ -1,3 +1,5 @@
+import 'package:vego/core/widgets/atmospheric_background.dart';
+import 'package:vego/core/widgets/liquid_glass.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -38,7 +40,7 @@ class ProfileScreen extends ConsumerWidget {
             MediaQuery.of(context).platformBrightness == Brightness.dark);
 
     return Scaffold(
-      backgroundColor: context.backgroundColor,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text(
           'Profile',
@@ -47,11 +49,12 @@ class ProfileScreen extends ConsumerWidget {
             color: context.textPrimary,
           ),
         ),
-        backgroundColor: context.surfaceColor,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
       ),
-      body: LayoutBuilder(
+      body: AtmosphericBackground(
+        child: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
@@ -102,19 +105,9 @@ class ProfileScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 24),
 
-                    // Details Card
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: context.surfaceColor,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.04),
-                            blurRadius: 10,
-                          ),
-                        ],
-                      ),
+                    // Details Card (Liquid Glass)
+                    _buildGlassContainer(
+                      context: context,
                       child: Column(
                         children: [
                           _buildProfileRow(
@@ -294,17 +287,20 @@ class ProfileScreen extends ConsumerWidget {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  TextButton(
-                                    onPressed: () => ref.read(glassSettingsProvider.notifier).setPureGlass(),
-                                    child: const Text('Pure Glass', style: TextStyle(fontSize: 11)),
+                                  _buildPresetPill(
+                                    label: 'Pure Glass',
+                                    isActive: glass.transparency < 0.20,
+                                    onTap: () => ref.read(glassSettingsProvider.notifier).setPureGlass(),
                                   ),
-                                  TextButton(
-                                    onPressed: () => ref.read(glassSettingsProvider.notifier).setBalanced(),
-                                    child: const Text('Balanced', style: TextStyle(fontSize: 11)),
+                                  _buildPresetPill(
+                                    label: 'Balanced',
+                                    isActive: glass.transparency >= 0.20 && glass.transparency <= 0.80,
+                                    onTap: () => ref.read(glassSettingsProvider.notifier).setBalanced(),
                                   ),
-                                  TextButton(
-                                    onPressed: () => ref.read(glassSettingsProvider.notifier).setFrosted(),
-                                    child: const Text('Frosted', style: TextStyle(fontSize: 11)),
+                                  _buildPresetPill(
+                                    label: 'Frosted',
+                                    isActive: glass.transparency > 0.80,
+                                    onTap: () => ref.read(glassSettingsProvider.notifier).setFrosted(),
                                   ),
                                 ],
                               ),
@@ -349,6 +345,7 @@ class ProfileScreen extends ConsumerWidget {
           );
         },
       ),
+      ),
     );
   }
 
@@ -380,15 +377,18 @@ class ProfileScreen extends ConsumerWidget {
                   color: context.textSecondary,
                 ),
               ),
-              Text(
-                value,
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: context.textPrimary,
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  value,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: context.textPrimary,
+                    letterSpacing: -0.2,
+                  ),
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -458,21 +458,9 @@ class ProfileScreen extends ConsumerWidget {
     required BuildContext context,
     required Widget child,
   }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Container(
-      constraints: const BoxConstraints(minHeight: 56),
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-      decoration: BoxDecoration(
-        color: isDark
-            ? Colors.white.withValues(alpha: 0.06)
-            : Colors.black.withValues(alpha: 0.03),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.08)
-              : Colors.black.withValues(alpha: 0.05),
-        ),
-      ),
+    return LiquidGlass(
+      borderRadius: 16,
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
       child: child,
     );
   }
@@ -495,6 +483,39 @@ class ProfileScreen extends ConsumerWidget {
         ),
       ),
       child: Icon(icon, color: color, size: 20),
+    );
+  }
+  Widget _buildPresetPill({
+    required String label,
+    required bool isActive,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        decoration: BoxDecoration(
+          color: isActive
+              ? AppColors.primaryLight.withValues(alpha: 0.25)
+              : Colors.white.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isActive
+                ? AppColors.primaryLight
+                : Colors.white.withValues(alpha: 0.12),
+            width: 1.0,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
+            color: isActive ? AppColors.primaryLight : Colors.white70,
+          ),
+        ),
+      ),
     );
   }
 }
