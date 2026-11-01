@@ -1,3 +1,6 @@
+# AI agent skills & config (live globally, not in repo)
+.agent/
+
 # Miscellaneous
 *.class
 *.log

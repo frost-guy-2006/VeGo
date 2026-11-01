@@ -1,2 +1,5 @@
+# AI agent skills & config (live globally, not in repo)
+.agents/
+
 # Playwright CLI output (may contain credentials)
 .playwright-cli/
