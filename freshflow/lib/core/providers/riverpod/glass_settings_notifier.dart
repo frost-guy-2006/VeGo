@@ -54,3 +54,4 @@ final glassSettingsProvider =
     StateNotifierProvider<GlassSettingsNotifier, GlassSettingsState>((ref) {
   return GlassSettingsNotifier();
 });
+
