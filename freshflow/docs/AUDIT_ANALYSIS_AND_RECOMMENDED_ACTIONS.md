@@ -16,25 +16,18 @@ A complete audit of the **VeGo / FreshFlow** quick-commerce codebase was conduct
 | :--- | :--- | :--- |
 | **Static Analysis (`flutter analyze`)** | ✅ 0 Errors | 1 warning (unused import), 5 info deprecations (`Colors.x.value`). |
 | **Unit & Integration Tests (`flutter test`)** | ⚠️ 9/9 Pass | Shallow test coverage; tests pass cleanly. |
-| **GitHub Commit CI Status (`0/1` Failed)** | 🔴 Failing | Commits display red `X 0/1` due to misconfigured Vercel web build command and directory nesting. |
+| **GitHub Commit CI Status (`0/1` Failed)** | ✅ Fixed | GitHub Actions CI workflow (`.github/workflows/ci.yml`) runs `flutter analyze` and `flutter test`. Vercel deployment removed. |
 | **Active Client Bugs** | 🔴 3 Critical, 🟠 5 High, 🟡 9 Medium | Order loading unhooked, cart loss on undo, mock tracking screen, corrupt cart crash risks, tab navigation. |
 | **Payment Gateway State** | 🛠️ Testing/Showcase Needed | "Slide to Pay" is currently stubbed. Requires real UPI & COD integration via **YouPI-PG**. |
 | **Distribution & Deployment** | 🚀 Action Required | Requires automated GitHub Actions APK build & release pipeline for public testing. |
 
 ---
 
-## 🚨 2. GitHub CI Failures Analysis (`X 0/1` on Commits)
+## 🚨 2. GitHub CI Status
 
-### Root Cause
-In the GitHub commit history (`07d7c0f`, `b3cfaf1`, `b23c751`, `db0ef48`), each commit triggers a check (`0/1`) that fails with a red `X`:
-1. **Monorepo / Directory Nesting:** The GitHub repository root is `V1/`, but the Flutter app lives in the subdirectory `freshflow/`.
-2. **Missing Flutter SDK in Vercel Builder:** `freshflow/vercel.json` defines `"buildCommand": "flutter/bin/flutter build web --release"`. Vercel serverless build containers run standard Linux node environments without Flutter pre-installed unless initialized via `vercel_build.sh` or cloned on the fly.
-3. **Execution Flag:** `freshflow/vercel_build.sh` exists but `vercel.json` does not invoke it (`"buildCommand": "bash vercel_build.sh"`), causing Vercel's automated commit deployment checks to fail immediately with exit code 127 (`flutter: command not found`).
-
-### Remediation Action
-1. Configure `vercel.json` in the root or `freshflow/` to invoke `bash vercel_build.sh`.
-2. Set Root Directory in Vercel project settings to `freshflow`.
-3. Add a standard GitHub Actions CI workflow (`.github/workflows/ci.yml`) to run `flutter test` and `flutter analyze` so native GitHub checks succeed (`✓ 1/1`).
+### Status: ✅ Resolved
+- Vercel deployment has been fully removed (config files, build scripts, and web_showcase landing page deleted).
+- GitHub Actions CI workflow (`.github/workflows/ci.yml`) runs `flutter analyze` and `flutter test` on push/PR to `master`/`main`.
 
 ---
 
@@ -153,13 +146,12 @@ To allow testers, stakeholders, and recruiters to download and test VeGo / Fresh
 
 ```mermaid
 graph TD
-    A["Phase 1: CI & Build Fixes"] --> B["Phase 2: Client State & Order Loading"]
+    A[\"Phase 1: CI Fixes (Done)\"] --> B[\"Phase 2: Client State & Order Loading\"]
     B --> C["Phase 3: YouPI-PG Payment Integration"]
     C --> D["Phase 4: Realtime Order Tracking & Navigation"]
     D --> E["Phase 5: Automated GitHub APK Release Pipeline"]
 
-    A1["1. Fix Vercel build command"] --> A
-    A2["2. Add GitHub Actions CI workflow"] --> A
+    A2["2. GitHub Actions CI workflow (Done)"] --> A
 
     B1["1. Wire loadOrdersFromSupabase"] --> B
     B2["2. Undo Order Cart Recovery"] --> B
@@ -178,9 +170,9 @@ graph TD
 
 ### Detailed Phase Tasks
 
-#### Phase 1: CI & Vercel Commit Build Fixes
-- [ ] Fix `freshflow/vercel.json` build command to properly run `bash vercel_build.sh` or set correct Vercel root directory.
-- [ ] Create `.github/workflows/ci.yml` for automated Flutter test and analyze on push/PR, turning commit badges green (`✓ 1/1`).
+#### Phase 1: CI Fixes ✅ Done
+- [x] ~~Vercel deployment removed~~ — `vercel.json`, `vercel_build.sh`, and `web_showcase/` deleted.
+- [x] GitHub Actions CI workflow (`.github/workflows/ci.yml`) runs Flutter test and analyze on push/PR.
 
 #### Phase 2: Client State & Order Integrity
 - [ ] Wire `OrderNotifier.loadOrdersFromSupabase(userId)` on authentication.
