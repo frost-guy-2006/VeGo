@@ -3,3 +3,7 @@
 
 # Playwright CLI output (may contain credentials)
 .playwright-cli/
+
+# Presentation diagrams scratch files
+diagrams/
+
